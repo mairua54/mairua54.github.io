@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>ศักย์ไฟฟ้ารอบวงจร</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: one column on phones (circuit → controls → graph → energy → try-it); two columns from 860px. Colours follow the Daisy Physics sheet: red = current, black = circuit, blue = main graph line, orange = heat, grey = helper lines. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --graph:#1f5fbf; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --graph:#6aa5ff; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --graph:#6aa5ff; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row output{font-variant-numeric:tabular-nums;font-weight:700}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.ylab{font-size:12px}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 4.3</div>
+  <h1>ศักย์ไฟฟ้ารอบวงจรที่แหล่งกำเนิดมีความต้านทานภายใน</h1>
+  <p class="lead">ปรับค่าแล้วดูว่าศักย์ไฟฟ้าเปลี่ยนอย่างไรเมื่อไล่ไปรอบวงจรตามรูปที่ 4.5 กำหนดให้ขั้วลบของแบตเตอรี่ (จุด D) มีศักย์ 0</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-circ">
+    <h2 id="h-circ">วงจร</h2>
+    <svg id="circ" viewBox="0 0 380 288" role="img" aria-label="วงจร: แหล่งกำเนิดในกรอบเส้นประต่อกับตัวต้านทาน R มีโวลต์มิเตอร์คร่อมขั้ว"></svg>
+    <p class="cap">ลูกศรสีแดงเลื่อนไปตามทิศกระแส กระแสยิ่งมาก ลูกศรยิ่งเลื่อนเร็ว ใช้เปรียบเทียบเท่านั้น ความเร็วของลูกศรไม่ได้เป็นสัดส่วนกับกระแส และไม่ใช่ความเร็วจริงของประจุ วงกลมสีน้ำเงินคือตำแหน่งที่เลือกบนกราฟ</p>
+  </section>
+
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="โหมด">
+      <button id="m-sup" aria-pressed="true">แบตเตอรี่จ่ายกระแส</button>
+      <button id="m-chg" aria-pressed="false">แบตเตอรี่ถูกประจุ</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="s-emf"><span>อีเอ็มเอฟของแบตเตอรี่ <i class="m">ε</i></span><output id="o-emf"></output></label>
+        <input type="range" id="s-emf" min="1.5" max="12" step="0.5"></div>
+      <div class="row"><label for="s-r"><span>ความต้านทานภายใน <i class="m">r</i></span><output id="o-r"></output></label>
+        <input type="range" id="s-r" min="0" max="2" step="0.05"></div>
+      <div class="row"><label for="s-R"><span>ความต้านทานภายนอก <i class="m">R</i></span><output id="o-R"></output></label>
+        <input type="range" id="s-R" min="0.5" max="20" step="0.5"></div>
+      <div class="row" id="row-ch" hidden><label for="s-ch"><span>อีเอ็มเอฟของเครื่องประจุ <i class="m">ε</i><sub>เครื่องประจุ</sub></span><output id="o-ch"></output></label>
+        <input type="range" id="s-ch" min="1.5" max="24" step="0.5"></div>
+      <div class="btns">
+        <button class="btn" id="b-reset">กลับค่าตั้งต้น</button>
+        <button class="btn" id="b-anim" aria-pressed="false">หยุดลูกศร</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="col">
+  <section class="card" aria-labelledby="h-graph">
+    <h2 id="h-graph">ศักย์ไฟฟ้าที่ตำแหน่งต่าง ๆ รอบวงจร</h2>
+    <svg id="graph" viewBox="0 0 380 250" role="img" aria-label="กราฟศักย์ไฟฟ้ากับตำแหน่งรอบวงจร D A B C D"></svg>
+    <p class="cap" id="glegend"></p>
+    <p class="cap" id="cur-read">แตะหรือลากบนกราฟเพื่อดูว่าจุดนั้นอยู่ตรงไหนในวงจร</p>
+  </section>
+
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณ</h2>
+    <div class="status" id="status"></div>
+    <div class="eq" id="eq" style="margin-top:10px"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-en">
+    <h2 id="h-en">พลังงานของประจุ 1 C ที่ผ่านแบตเตอรี่</h2>
+    <div id="en-head" class="note"></div>
+    <div class="ebar" id="ebar"><span id="e1"></span><span id="e2"></span></div>
+    <div class="legend" id="en-leg"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ลด R จนกระแสเป็น 4.00 A</summary>
+    <p class="q">เริ่มจากค่าตั้งต้น (<i class="m">ε</i> = 12.0 V, <i class="m">r</i> = 0.50 Ω, <i class="m">R</i> = 5.5 Ω) ทำนายก่อนว่าต้องตั้ง <i class="m">R</i> เท่าใดกระแสจึงเป็น 4.00 A และตอนนั้นโวลต์มิเตอร์อ่านได้เท่าใด แล้วเลื่อนตรวจ</p>
+    <p class="q"><b>คำตอบ</b> <i class="m">R</i> = <i class="m">ε</i>/<i class="m">I</i> - <i class="m">r</i> = 12.0 V/4.00 A - 0.50 Ω = 2.5 Ω และ V<sub>+</sub> - V<sub>-</sub> = 12.0 V - (4.00 A)(0.50 Ω) = 10.0 V กระแสมากขึ้น ประจุเสียพลังงานในความต้านทานภายในมากขึ้น ความต่างศักย์ระหว่างขั้วจึงลดลงจาก 11.0 V</p>
+  </details>
+  <details>
+    <summary>2. จ่ายกระแสกับถูกประจุ ด้วยกระแสเท่ากัน</summary>
+    <p class="q">กด "แบตเตอรี่ถูกประจุ" (ค่าตั้งต้น: เครื่องประจุ 18.0 V, <i class="m">R</i> = 2.5 Ω) กระแสเป็น 2.00 A เท่ากับตอนจ่ายกระแสในข้อ 1 ก่อนลด R แต่โวลต์มิเตอร์อ่านค่าไม่เท่ากัน ต่างกันเท่าใด เพราะอะไร ให้ดูช่วง <i class="m">r</i> ในกราฟประกอบ</p>
+    <p class="q"><b>คำตอบ</b> อ่านได้ 13.0 V กับ 11.0 V ต่างกัน 2.0 V ซึ่งเท่ากับ 2<i class="m">Ir</i> ขณะจ่ายกระแส กระแสภายในไหลจากขั้วลบไปขั้วบวก ศักย์ลดลง <i class="m">Ir</i> ในช่วง <i class="m">r</i> จึงได้ <i class="m">ε</i> - <i class="m">Ir</i> ขณะถูกประจุ กระแสภายในไหลจากขั้วบวกไปขั้วลบ เมื่อไล่จาก D ไป A ซึ่งสวนทางกระแส ศักย์จึงเพิ่มขึ้น <i class="m">Ir</i> ในช่วง <i class="m">r</i> ได้ <i class="m">ε</i> + <i class="m">Ir</i> เส้นกราฟช่วง <i class="m">r</i> จึงเอียงลงในโหมดแรกและเอียงขึ้นในโหมดหลัง</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าสายไฟไม่มีความต้านทาน โวลต์มิเตอร์เป็นอุดมคติ <i class="m">ε</i> และ <i class="m">r</i> คงตัว และเครื่องประจุไม่มีความต้านทานภายใน ค่าตั้งต้นของโหมดจ่ายกระแสตรงกับ Ex. 4.4</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+const DEF={sup:{emf:12,r:0.5,R:5.5},chg:{emf:12,r:0.5,R:2.5,ch:18}};
+const st={mode:"sup",emf:12,r:0.5,Rs:5.5,Rc:2.5,ch:18,anim:true,cur:6.8};
+
+/* ---------- number formatting (sheet style: space before unit, hyphen-minus) ---------- */
+const sig3=x=>{ if(Math.abs(x)<1e-12) return "0"; const s=Number(x.toPrecision(3));
+  const d=Math.max(0,2-Math.floor(Math.log10(Math.abs(s)))); return s.toFixed(d); };
+const f1=x=>x.toFixed(1), f2=x=>x.toFixed(2);
+
+/* ---------- physics ---------- */
+// j = signed current, positive when the current inside the battery flows from - to + (supply direction, clockwise)
+function solve(){
+  const R=st.mode==="sup"?st.Rs:st.Rc, r=st.r, e=st.emf;
+  const Vc=st.mode==="sup"?0:st.ch;                // potential of C (charger + side) relative to D
+  const j=(e-Vc)/(R+r);
+  const VA=e-j*r, VCc=VA-j*R;
+  return {R,r,e,j,I:Math.abs(j),VA,VC:VCc};
+}
+
+/* ---------- geometry ---------- */
+// circuit path in traversal order D -> A -> B -> C -> D (supply-current direction)
+const SEG=[ // [name, svg points, graph width]
+  ["w1",[[276,176],[216,176]],0.6],
+  ["cell",[[216,176],[206,176]],0],
+  ["w2",[[206,176],[164,176]],0.8],
+  ["r",[[164,176],[104,176]],1.6],
+  ["w3",[[104,176],[84,176]],0.6],
+  ["w4",[[84,176],[40,176],[40,56],[130,56]],2.2],
+  ["R",[[130,56],[230,56]],3.0],
+  ["w5",[[230,56],[300,56],[300,100]],1.3],
+  ["chg",[[300,100],[300,126]],0],
+  ["w6",[[300,126],[300,176],[276,176]],1.3]
+];
+let gx=0; for(const s of SEG){ s.g0=gx; gx+=s[2]; s.g1=gx; } const GTOT=gx;
+const len=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);
+function along(pts,t){ // point at fraction t of polyline length
+  let L=0; for(let i=1;i<pts.length;i++) L+=len(pts[i-1],pts[i]);
+  let d=t*L; for(let i=1;i<pts.length;i++){ const l=len(pts[i-1],pts[i]); if(d<=l||i===pts.length-1){ const u=l?Math.min(1,d/l):0;
+    return [pts[i-1][0]+u*(pts[i][0]-pts[i-1][0]), pts[i-1][1]+u*(pts[i][1]-pts[i-1][1])]; } d-=l; }
+}
+function vAt(s,t,p){ // potential within segment s at fraction t
+  switch(s[0]){
+    case "w1": return 0; case "cell": return t*p.e; case "w2": return p.e;
+    case "r": return p.e+(p.VA-p.e)*t; case "w3": case "w4": return p.VA;
+    case "R": return p.VA+(p.VC-p.VA)*t; case "w5": return p.VC;
+    case "chg": return p.VC*(1-t); case "w6": return 0; }
+}
+function locate(g){ // graph x -> {seg,t}
+  g=Math.max(0,Math.min(GTOT,g));
+  for(const s of SEG){ if(s[2]>0 && g<=s.g1+1e-9) return {s,t:(g-s.g0)/s[2]}; }
+  const s=SEG[SEG.length-1]; return {s,t:1};
+}
+
+/* ---------- svg helpers ---------- */
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+function txt(parent,x,y,s,attrs){ const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent); t.textContent=s; return t; }
+const pl=pts=>pts.map(p=>p.join(",")).join(" ");
+function zig(x0,x1,y,n){ const pts=[[x0,y]]; const w=(x1-x0)/(n*2); for(let i=0;i<n*2;i++){ pts.push([x0+w*(i+0.5), y+(i%2?7:-7)]); } pts.push([x1,y]); return pts; }
+
+/* ---------- circuit drawing ---------- */
+const C=$("circ");
+const gStatic=el("g",{},C), gArrows=el("g",{},C), gTop=el("g",{},C);
+let chargerG, wireRight, meterTxt, chLabel, chValue, cursorRing;
+function drawCircuit(){
+  const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+  // wires
+  el("polyline",Object.assign({points:pl([[104,176],[84,176],[40,176],[40,56],[130,56]])},K),gStatic);
+  el("polyline",Object.assign({points:pl([[230,56],[300,56],[300,176],[276,176]])},K),gStatic);
+  el("polyline",Object.assign({points:pl(zig(130,230,56,5))},K),gStatic);
+  txt(gStatic,180,36,"R",{"text-anchor":"middle","font-family":"var(--math)","font-style":"italic","font-size":17});
+  // source in dashed frame
+  el("rect",{x:84,y:144,width:192,height:62,fill:"none",stroke:"var(--ink)","stroke-width":1.2,"stroke-dasharray":"5 4"},gStatic);
+  el("polyline",Object.assign({points:pl([[164,176],[206,176]])},K),gStatic);
+  el("polyline",Object.assign({points:pl(zig(104,164,176,3))},K),gStatic);
+  el("polyline",Object.assign({points:pl([[216,176],[276,176]])},K),gStatic);
+  el("line",{x1:206,y1:161,x2:206,y2:191,stroke:"var(--ink)","stroke-width":2.2},gStatic);
+  el("line",{x1:216,y1:168,x2:216,y2:184,stroke:"var(--ink)","stroke-width":4.5},gStatic);
+  txt(gStatic,197,160,"+",{"text-anchor":"middle","font-weight":700,"font-size":16});
+  txt(gStatic,226,160,"−",{"text-anchor":"middle","font-weight":700,"font-size":16});
+  txt(gStatic,134,200,"r",{"text-anchor":"middle","font-family":"var(--math)","font-style":"italic","font-size":17});
+  txt(gStatic,211,202,"ε",{"text-anchor":"middle","font-family":"var(--math)","font-style":"italic","font-size":17});
+  // voltmeter across A and D
+  el("polyline",Object.assign({points:pl([[84,176],[84,248],[163,248]])},K),gStatic);
+  el("polyline",Object.assign({points:pl([[197,248],[276,248],[276,176]])},K),gStatic);
+  el("circle",{cx:180,cy:248,r:17,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},gStatic);
+  txt(gStatic,180,253.5,"V",{"text-anchor":"middle","font-weight":700,"font-size":16});
+  txt(gStatic,157,240,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+  txt(gStatic,204,240,"−",{"text-anchor":"middle","font-weight":700,"font-size":15});
+  meterTxt=txt(gStatic,180,282,"",{"text-anchor":"middle","font-size":14,"font-variant-numeric":"tabular-nums"});
+  // charger (two cells, + towards C)
+  chargerG=el("g",{},gStatic);
+  el("rect",{x:286,y:98,width:28,height:30,fill:"var(--card)",stroke:"none"},chargerG);
+  el("line",{x1:286,y1:100,x2:314,y2:100,stroke:"var(--ink)","stroke-width":2.2},chargerG);
+  el("line",{x1:293,y1:107,x2:307,y2:107,stroke:"var(--ink)","stroke-width":4.5},chargerG);
+  el("line",{x1:300,y1:107,x2:300,y2:119,stroke:"var(--ink)","stroke-width":2},chargerG);
+  el("line",{x1:286,y1:119,x2:314,y2:119,stroke:"var(--ink)","stroke-width":2.2},chargerG);
+  el("line",{x1:293,y1:126,x2:307,y2:126,stroke:"var(--ink)","stroke-width":4.5},chargerG);
+  txt(chargerG,278,98,"+",{"text-anchor":"middle","font-weight":700,"font-size":16});
+  txt(chargerG,278,136,"−",{"text-anchor":"middle","font-weight":700,"font-size":16});
+  chLabel=txt(chargerG,318,108,"เครื่อง",{"font-size":13});
+  txt(chargerG,318,123,"ประจุ",{"font-size":13});
+  chValue=txt(chargerG,318,140,"",{"font-size":13,"font-variant-numeric":"tabular-nums"});
+  // named points: always a filled dot
+  const P={A:[84,176,-14,-8],B:[130,56,-6,-12],C:[230,56,6,-12],D:[276,176,8,-8]};
+  for(const k in P){ const [x,y,dx,dy]=P[k]; el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},gTop);
+    txt(gTop,x+dx,y+dy,k,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  cursorRing=el("circle",{r:7,fill:"none",stroke:"var(--cursor)","stroke-width":2.5},gTop);
+}
+
+/* moving current arrows along the loop */
+const LOOP=[[276,176],[216,176],[206,176],[164,176],[104,176],[84,176],[40,176],[40,56],[130,56],[230,56],[300,56],[300,100],[300,126],[300,176],[276,176]];
+const LCUM=[0]; for(let i=1;i<LOOP.length;i++) LCUM.push(LCUM[i-1]+len(LOOP[i-1],LOOP[i])); const LTOT=LCUM[LCUM.length-1];
+const BLOCK_ALWAYS=[[LCUM[1]-6,LCUM[2]+6],[LCUM[3]-6,LCUM[4]+6],[LCUM[8]-6,LCUM[9]+6]]; // cell, r, R
+const BLOCK_CHG=[LCUM[11]-8,LCUM[12]+8];
+function posOnLoop(d){ d=((d%LTOT)+LTOT)%LTOT; let i=1; while(i<LCUM.length-1 && LCUM[i]<d) i++;
+  const a=LOOP[i-1], b=LOOP[i], u=(d-LCUM[i-1])/(LCUM[i]-LCUM[i-1]); return {x:a[0]+u*(b[0]-a[0]),y:a[1]+u*(b[1]-a[1]),ang:Math.atan2(b[1]-a[1],b[0]-a[0])}; }
+const NA=19, arrows=[];
+function makeArrows(){ for(let k=0;k<NA;k++) arrows.push(el("path",{d:"M-5,-5 L5,0 L-5,5 Z",fill:"var(--current)"},gArrows)); }
+let phase=0, last=null;
+function placeArrows(p){
+  const dir=p.j>=0?1:-1, show=p.I>1e-6;
+  for(let k=0;k<NA;k++){ const d=k*LTOT/NA+phase; const dd=((d%LTOT)+LTOT)%LTOT;
+    let hide=!show || BLOCK_ALWAYS.some(([a,b])=>dd>a&&dd<b) || (st.mode==="chg" && dd>BLOCK_CHG[0] && dd<BLOCK_CHG[1]);
+    // keep clear of named-point dots
+    if([LCUM[5],LCUM[8],LCUM[9],0,LTOT].some(q=>Math.abs(dd-q)<7)) hide=true;
+    const q=posOnLoop(dd); const a=q.ang*180/Math.PI+(dir<0?180:0);
+    arrows[k].setAttribute("transform",`translate(${q.x.toFixed(1)},${q.y.toFixed(1)}) rotate(${a.toFixed(1)})`);
+    arrows[k].style.display=hide?"none":"";
+  }
+}
+const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function tick(ts){
+  const p=solve();
+  if(last!==null && st.anim && !reduce){ const v=120*p.I/(p.I+3); /* increases with I, never saturates */ phase+=(p.j>=0?1:-1)*v*(ts-last)/1000; }
+  last=ts; placeArrows(p); requestAnimationFrame(tick);
+}
+
+/* ---------- graph ---------- */
+const G=$("graph");
+const PX0=84, PX1=366, PY0=26, PY1=206;
+let gAxes, gLine, gHelp, gCur, gCurDot, gCurLine;
+function yMax(){ return st.mode==="sup"?14:24; }
+const sx=g=>PX0+(PX1-PX0)*g/GTOT;
+const sy=v=>PY1-(PY1-PY0)*v/yMax();
+function drawGraph(p){
+  G.textContent="";
+  const ym=yMax(), step=st.mode==="sup"?2:4;
+  gAxes=el("g",{},G); gHelp=el("g",{},G); gLine=el("g",{},G); gCur=el("g",{},G);
+  for(let v=0;v<=ym;v+=step){ const y=sy(v);
+    el("line",{x1:PX0,y1:y,x2:PX1,y2:y,stroke:"var(--line)","stroke-width":1},gAxes); }
+  // region shading for the source (D -> A)
+  el("rect",{x:sx(0),y:PY0,width:sx(SEG[4].g1)-sx(0),height:PY1-PY0,fill:"var(--chip)",opacity:.8},gAxes);
+  txt(gAxes,sx(SEG[4].g1)-3,PY1-24,"ในแบตเตอรี่",{"text-anchor":"end","font-size":11,fill:"var(--muted)"});
+  el("line",{x1:PX0,y1:PY1,x2:PX1,y2:PY1,stroke:"var(--ink)","stroke-width":1.5},gAxes);
+  el("line",{x1:PX0,y1:PY0,x2:PX0,y2:PY1,stroke:"var(--ink)","stroke-width":1.5},gAxes);
+  const ticks=[["D",0],["A",SEG[4].g1],["B",SEG[5].g1],["C",SEG[6].g1],["D",GTOT]];
+  for(const [n,g] of ticks){ el("line",{x1:sx(g),y1:PY1,x2:sx(g),y2:PY1+5,stroke:"var(--ink)","stroke-width":1.5},gAxes);
+    txt(gAxes,sx(g),PY1+20,n,{"text-anchor":"middle","font-weight":700,"font-size":14}); }
+  // segment hints on the x-axis
+  const mid=s=>sx((s.g0+s.g1)/2);
+  txt(gAxes,mid(SEG[3]),PY1-6,"r",{"text-anchor":"middle","font-family":"var(--math)","font-style":"italic","font-size":14,fill:"var(--muted)"});
+  txt(gAxes,mid(SEG[6]),PY1-6,"R",{"text-anchor":"middle","font-family":"var(--math)","font-style":"italic","font-size":14,fill:"var(--muted)"});
+  txt(gAxes,(PX0+PX1)/2,PY1+40,"ตำแหน่งรอบวงจร",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"});
+  txt(gAxes,PX0,14,"ศักย์ไฟฟ้า (ขั้วลบมีศักย์ 0)",{"font-size":13,fill:"var(--muted)"});
+  // helper lines: dashed, labelled with symbols in the left margin (like fig 4.5 ข.); values go in the legend under the graph
+  const vpmSym=p.I<1e-9?"ε":(p.j>0?"ε - Ir":"ε + Ir");
+  const H=[{v:0,lab:"0"},{v:p.e,lab:"ε"}];
+  if(p.I>1e-9) H.push({v:p.VA,lab:vpmSym});
+  if(st.mode==="chg") H.push({v:p.VC,lab:"ε",sub:"เครื่องประจุ"});
+  H.sort((a,b)=>a.v-b.v);   /* bottom label (0) stays on its line; crowded labels move up */
+  let prevY=1e9;
+  for(const h of H){ const y=sy(h.v);
+    if(h.v>0) el("line",{x1:PX0,y1:y,x2:PX1,y2:y,stroke:"var(--helper)","stroke-width":1.2,"stroke-dasharray":"4 4"},gHelp);
+    el("line",{x1:PX0-4,y1:y,x2:PX0,y2:y,stroke:"var(--ink)","stroke-width":1.5},gHelp);
+    let ly=Math.max(8,Math.min(y+4.5,prevY-(h.sub?17:14))); prevY=ly;
+    const t=txt(gHelp,PX0-7,ly,"",{"text-anchor":"end","font-size":13,fill:"var(--ink)"});
+    const parts=h.lab.split(/(ε|I|r)/).filter(Boolean);
+    for(const q of parts){ const ts=el("tspan",/^(ε|I|r)$/.test(q)?{"font-family":"var(--math)","font-style":"italic","font-size":15}:{},t); ts.textContent=q; }
+    if(h.sub){ const ts=el("tspan",{"font-size":9,dy:3},t); ts.textContent=h.sub; }
+  }
+  const leg=[`ε = ${f1(p.e)} V`]; if(p.I>1e-9) leg.push(`${vpmSym} = ${st.vtStr} V`); if(st.mode==="chg") leg.push(`ε เครื่องประจุ = ${f1(p.VC)} V`);
+  $("glegend").textContent=leg.join("   ·   ");
+  // potential line
+  const pts=[]; for(const s of SEG){ pts.push([sx(s.g0),sy(vAt(s,0,p))]); pts.push([sx(s.g1),sy(vAt(s,1,p))]); }
+  el("polyline",{points:pl(pts),fill:"none",stroke:"var(--graph)","stroke-width":3,"stroke-linejoin":"round"},gLine);
+  // cursor
+  gCurLine=el("line",{y1:PY0,y2:PY1,stroke:"var(--cursor)","stroke-width":1,"stroke-dasharray":"2 3"},gCur);
+  gCurDot=el("circle",{r:5.5,fill:"var(--cursor)",stroke:"var(--card)","stroke-width":2},gCur);
+  setCursor(st.cur,p);
+}
+function setCursor(g,p){
+  st.cur=Math.max(0,Math.min(GTOT,g));
+  const {s,t}=locate(st.cur); const v=vAt(s,t,p); const x=sx(st.cur), y=sy(v);
+  gCurLine.setAttribute("x1",x); gCurLine.setAttribute("x2",x);
+  gCurDot.setAttribute("cx",x); gCurDot.setAttribute("cy",y);
+  const q=along(s[1],t); cursorRing.setAttribute("cx",q[0]); cursorRing.setAttribute("cy",q[1]);
+  const names={w1:"สายไฟในแบตเตอรี่ระหว่างขั้วลบกับเซลล์",w2:"สายไฟในแบตเตอรี่ระหว่างเซลล์กับ r",r:"ภายในความต้านทานภายใน r",w3:"สายไฟระหว่าง r กับขั้วบวก (A)",
+    w4:"สายไฟจาก A ไป B",R:"ภายในตัวต้านทาน R",w5:st.mode==="chg"?"สายไฟจาก C ไปขั้วบวกของเครื่องประจุ":"สายไฟจาก C ไป D",w6:st.mode==="chg"?"สายไฟจากขั้วลบของเครื่องประจุไป D":"สายไฟจาก C ไป D"};
+  $("cur-read").textContent=`ตำแหน่งที่เลือก: ${names[s[0]]}  ศักย์ไฟฟ้า ${sig3(Math.max(0,v))} V  (แตะหรือลากบนกราฟเพื่อเลือกตำแหน่งอื่น)`;
+}
+function pointer(ev){
+  const r=G.getBoundingClientRect(); const x=(ev.clientX-r.left)*380/r.width;
+  setCursor((x-PX0)/(PX1-PX0)*GTOT, solve());
+}
+G.addEventListener("pointerdown",e=>{G.setPointerCapture(e.pointerId); pointer(e);});
+G.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") pointer(e); });
+
+/* ---------- text panels ---------- */
+const sup=s=>`<sub>${s}</sub>`;
+const VPM="V"+sup("+")+" - V"+sup("-");
+const m=s=>`<i class="m">${s}</i>`;
+function update(){
+  const p=solve();
+  $("o-emf").textContent=f1(st.emf)+" V"; $("o-r").textContent=f2(st.r)+" Ω";
+  const R=p.R; $("o-R").textContent=f1(R)+" Ω"; $("o-ch").textContent=f1(st.ch)+" V";
+  $("row-ch").hidden=st.mode!=="chg"; chargerG.style.display=st.mode==="chg"?"":"none";
+  chValue.textContent=f1(st.ch)+" V";
+  // current shown to 3 s.f.; later steps use the displayed (rounded) values, as the sheet does
+  const Id=Number(sig3(p.I)), Ir=Number(sig3(Id*st.r));
+  const supplying=p.j>1e-9, charging=p.j<-1e-9;
+  const Vt = p.I<1e-9 ? st.emf : (supplying ? st.emf-Ir : st.emf+Ir);
+  st.Vt=Vt; const vtStr=p.I<1e-9?f1(st.emf):sig3(Vt); st.vtStr=vtStr; meterTxt.textContent="อ่านได้ "+vtStr+" V";
+  const S=$("status"); S.classList.toggle("rev", st.mode==="chg" && supplying);
+  if(p.I<1e-9) S.innerHTML=`ไม่มีกระแสผ่านแบตเตอรี่ (${m("I")} = 0) จึงได้ ${VPM} = ${m("ε")}`;
+  else if(supplying && st.mode==="sup") S.innerHTML=`กระแสภายในแบตเตอรี่ไหลจากขั้วลบไปขั้วบวก จึงใช้ ${VPM} = ${m("ε")} - ${m("Ir")}`;
+  else if(charging) S.innerHTML=`กระแสภายในแบตเตอรี่ไหลจากขั้วบวกไปขั้วลบ (ถูกประจุ) จึงใช้ ${VPM} = ${m("ε")} + ${m("Ir")}`;
+  else S.innerHTML=`อีเอ็มเอฟของเครื่องประจุน้อยกว่าของแบตเตอรี่ กระแสจึงไหลย้อนทาง แบตเตอรี่กลายเป็นฝ่ายจ่ายกระแส กระแสภายในไหลจากขั้วลบไปขั้วบวก จึงใช้ ${VPM} = ${m("ε")} - ${m("Ir")}`;
+  const lines=[];
+  if(st.mode==="sup"){
+    lines.push(`${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${f1(st.emf)} V)/(${f1(R)} Ω + ${f2(st.r)} Ω) = ${sig3(p.I)} A`);
+  } else {
+    const EC=`${m("ε")}${sup("เครื่องประจุ")}`, chBig=st.ch>=st.emf;
+    lines.push(`อีเอ็มเอฟสมมูล = ${chBig?EC+" - "+m("ε"):m("ε")+" - "+EC} = ${chBig?f1(st.ch)+" V - "+f1(st.emf):f1(st.emf)+" V - "+f1(st.ch)} V = ${f1(Math.abs(st.ch-st.emf))} V|แหล่งกำเนิดสองตัวหันขั้วสวนกัน หัวข้อ 6.1`);
+    lines.push(`${m("I")} = (อีเอ็มเอฟสมมูล)/(${m("R")} + ${m("r")}) = (${f1(Math.abs(st.ch-st.emf))} V)/(${f1(R)} Ω + ${f2(st.r)} Ω) = ${sig3(p.I)} A`);
+  }
+  if(p.I<1e-9) lines.push(`${VPM} = ${m("ε")} = ${vtStr} V`);
+  else lines.push(`${VPM} = ${m("ε")} ${supplying?"-":"+"} ${m("Ir")} = ${f1(st.emf)} V ${supplying?"-":"+"} (${sig3(Id)} A)(${f2(st.r)} Ω) = ${vtStr} V`);
+  $("eq").innerHTML=lines.map(L=>{ const [s,tail]=L.split("|"); return `<div>${s.split(" = ").map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" ")}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join("");
+  // energy per coulomb
+  const e1=$("e1"), e2=$("e2");
+  if(p.I<1e-9){
+    $("en-head").innerHTML="ไม่มีประจุเคลื่อนที่ผ่านแบตเตอรี่ จึงไม่มีการถ่ายโอนพลังงาน";
+    e1.style.width="0%"; e2.style.width="0%"; $("en-leg").innerHTML="";
+  } else if(supplying){
+    const tot=st.emf;
+    $("en-head").innerHTML=`ได้รับพลังงาน (1 C)${m("ε")} = ${f1(tot)} J จากพลังงานเคมี แล้วแบ่งเป็นสองส่วน`;
+    const out=Math.max(0,tot-Ir);
+    e1.style.width=(100*out/tot)+"%"; e1.style.background="var(--chem)";
+    e2.style.width=(100*Math.min(Ir,tot)/tot)+"%"; e2.style.background="var(--heat)";
+    $("en-leg").innerHTML=`<div><span class="sw" style="background:var(--chem)"></span>ให้วงจรภายนอก (1 C)(${m("ε")} - ${m("Ir")}) = ${sig3(Vt)} J</div><div><span class="sw" style="background:var(--heat)"></span>กลายเป็นความร้อนใน ${m("r")}: (1 C)(${m("Ir")}) = ${sig3(Ir)} J</div>`;
+  } else {
+    const tot=Vt;
+    $("en-head").innerHTML=`ได้รับพลังงานไฟฟ้า (1 C)(${VPM}) = ${sig3(tot)} J ซึ่งเครื่องประจุส่งมาผ่านวงจร แล้วแบ่งเป็นสองส่วน`;
+    e1.style.width=(100*st.emf/tot)+"%"; e1.style.background="var(--chem)";
+    e2.style.width=(100*Ir/tot)+"%"; e2.style.background="var(--heat)";
+    $("en-leg").innerHTML=`<div><span class="sw" style="background:var(--chem)"></span>เปลี่ยนเป็นพลังงานเคมี (1 C)${m("ε")} = ${f1(st.emf)} J</div><div><span class="sw" style="background:var(--heat)"></span>กลายเป็นความร้อนใน ${m("r")}: (1 C)(${m("Ir")}) = ${sig3(Ir)} J</div>`;
+  }
+  drawGraph(p);
+}
+
+/* ---------- controls ---------- */
+function syncSliders(){ $("s-emf").value=st.emf; $("s-r").value=st.r; $("s-R").value=st.mode==="sup"?st.Rs:st.Rc; $("s-ch").value=st.ch; }
+$("s-emf").addEventListener("input",e=>{st.emf=+e.target.value; update();});
+$("s-r").addEventListener("input",e=>{st.r=+e.target.value; update();});
+$("s-R").addEventListener("input",e=>{ if(st.mode==="sup") st.Rs=+e.target.value; else st.Rc=+e.target.value; update();});
+$("s-ch").addEventListener("input",e=>{st.ch=+e.target.value; update();});
+function setMode(md){ st.mode=md; $("m-sup").setAttribute("aria-pressed",md==="sup"); $("m-chg").setAttribute("aria-pressed",md==="chg"); syncSliders(); update(); }
+$("m-sup").addEventListener("click",()=>setMode("sup"));
+$("m-chg").addEventListener("click",()=>setMode("chg"));
+$("b-reset").addEventListener("click",()=>{ st.emf=12; st.r=0.5; st.Rs=5.5; st.Rc=2.5; st.ch=18; syncSliders(); update(); });
+$("b-anim").addEventListener("click",e=>{ st.anim=!st.anim; e.target.textContent=st.anim?"หยุดลูกศร":"ให้ลูกศรเลื่อน"; e.target.setAttribute("aria-pressed",!st.anim); });
+if(reduce){ st.anim=false; $("b-anim").textContent="ให้ลูกศรเลื่อน"; }
+
+drawCircuit(); makeArrows(); syncSliders(); update(); requestAnimationFrame(tick);
+})();
+</script>
+
+</body>
+</html>

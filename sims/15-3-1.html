@@ -86,6 +86,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 .bsel label{display:grid;gap:2px;font-size:14px;color:var(--muted)}
 .meter{display:inline-block;height:10px;border-radius:3px;background:var(--glow);vertical-align:middle;min-width:1px}
 .rank{font-size:15px;margin-top:8px;font-weight:600}
+#tbl th,#tbl td{padding:5px 4px}
 </style>
 </head>
 <body>
@@ -100,9 +101,10 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 <div class="col">
   <section class="card" aria-labelledby="h-c">
     <h2 id="h-c">วงจร</h2>
-    <svg id="c" viewBox="0 0 380 320" role="img" aria-label="วงจรหลอดไฟ"></svg>
-    <p class="cap">แตะหลอดเพื่อถอดหรือใส่คืน แตะสวิตช์ S เพื่อเปิดหรือปิด ลูกศรสีแดงบอกทิศกระแส ความสว่างของหลอดแทนด้วยวงแสงรอบหลอด ยิ่งหลอดได้รับกำลังมาก วงแสงยิ่งใหญ่และหลอดยิ่งเข้ม ตัวเลขใต้หลอดคือกำลังที่หลอดได้รับ</p>
+    <svg id="c" viewBox="0 0 380 336" role="img" aria-label="วงจรหลอดไฟ"></svg>
     <div class="rank" id="rank"></div>
+    <p class="cap">แตะหลอดเพื่อถอดหรือใส่คืน แตะสวิตช์ S เพื่อเปิดหรือปิด ลูกศรสีแดงบอกทิศกระแส ตัวเลขตัวหนาใต้หลอดคือความสว่างเทียบกับหลอด 12 Ω ที่ต่อกับแบตเตอรี่ 12 V โดยตรงเพียงหลอดเดียว (ได้รับ 12.0 W คิดเป็น 100 %)</p>
+    <svg id="scale" viewBox="0 0 380 130" role="img" aria-label="มาตราความสว่าง" style="margin-top:6px"></svg>
   </section>
   <section class="card" aria-labelledby="h-ctl">
     <h2 id="h-ctl">ปรับค่า</h2>
@@ -129,7 +131,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   <section class="card" aria-labelledby="h-t">
     <h2 id="h-t">กระแส ความต่างศักย์ และกำลังของแต่ละหลอด</h2>
     <div class="tblwrap"><table class="tbl" id="tbl"></table></div>
-    <p class="cap">แถบสีส้มคือกำลังที่หลอดได้รับ เทียบกับหลอด 6 Ω ที่ต่อกับแบตเตอรี่ 12 V โดยตรง (24.0 W) ซึ่งเป็นกรณีที่สว่างที่สุดในแบบจำลองนี้</p>
+    <p class="cap">ความสว่าง = กำลังที่หลอดได้รับเทียบกับ 12.0 W ของหลอด 12 Ω ที่ต่อกับ 12 V โดยตรง</p>
     <div class="eq" id="eq" style="margin-top:10px"></div>
     <div class="status" id="status" style="margin-top:10px"></div>
   </section>
@@ -242,7 +244,7 @@ return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,
 (function(){
 "use strict";
 const {$,el,txt,fmt,m,sub,eqHTML}=DP;
-const EMF=12, RCH=[6,12,24], PMAX=EMF*EMF/6;
+const EMF=12, RCH=[6,12,24], PREF=EMF*EMF/12;   // 100 % = a single 12 Ω bulb connected straight to 12 V (12.0 W)
 const st={mode:"ser",on:[true,true,true],sw:true,R:[12,12,12]};
 const par=(a,b)=>a*b/(a+b);
 /* currents and voltages of the three bulbs */
@@ -267,17 +269,25 @@ const LAY={
   mix:{wires:[[[40,50],[330,50]],[[40,260],[330,260]],[[40,50],[40,260]],[[250,50],[250,260]],[[330,50],[330,260]]],bulbs:[[150,50],[250,150],[330,150]],sw:[150,260],dots:[[250,50],[250,260]],
        arrows:[[85,50,0,"t"],[250,100,90,1],[330,100,90,2],[205,50,0,"t"]]}
 };
-/* bulb with a glow whose AREA is proportional to the power it receives */
+/* bulb drawn by brightness b = P/PREF: body brightness is linear in b (full at b = 1), glow AREA is proportional to P */
 let gHalo=null;
+function bulbIcon(g,halo,x,y,b){
+  const r=15;
+  if(b>0) el("circle",{cx:x,cy:y,r:r+24*Math.sqrt(b),fill:"var(--glow)",opacity:(0.2+0.35*Math.min(1,b)).toFixed(3)},halo);
+  el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"none"},g);
+  if(b>0) el("circle",{cx:x,cy:y,r,fill:"var(--glow)","fill-opacity":Math.min(1,b).toFixed(3)},g);
+  if(b>1) el("circle",{cx:x,cy:y,r,fill:"#fffbe8","fill-opacity":(0.65*Math.min(1,b-1)).toFixed(3)},g);
+  const ink=b>=0.3?"#1a1d22":"var(--ink)";   // keep the symbol readable on a bright bulb in both themes
+  el("circle",{cx:x,cy:y,r,fill:"none",stroke:ink,"stroke-width":2},g);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:ink,"stroke-width":1.6},g);
+}
 function bulbG(x,y,Pw,removed){
   const g=el("g",{},C), r=15;
   if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},g); txt(g,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return g; }
-  const f=Math.max(0,Math.min(1,Pw/PMAX));
-  if(f>0) el("circle",{cx:x,cy:y,r:r+30*Math.sqrt(f),fill:"var(--glow)",opacity:0.55},gHalo);
-  el("circle",{cx:x,cy:y,r,fill:f>0?"var(--glow)":"var(--card)","fill-opacity":f>0?(0.2+0.8*Math.sqrt(f)).toFixed(3):1,stroke:"var(--ink)","stroke-width":2},g);
-  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},g);
+  bulbIcon(g,gHalo,x,y,Math.max(0,Pw/PREF));
   return g;
 }
+const pct=Pw=>Pw<1e-9?"ดับ":fmt(100*Pw/PREF,2,{intok:1})+" %";
 function draw(){
   C.textContent=""; const L=LAY[st.mode], S=solve(), Pw=P(S);
   gHalo=el("g",{},C);
@@ -292,17 +302,17 @@ function draw(){
   L.bulbs.forEach(([x,y],i)=>{ bulbG(x,y,Pw[i],!st.on[i]);
     const top = st.mode==="ser"||(st.mode==="mix"&&i===0);
     // series / top-wire bulbs: name above, values below inside the loop; branch bulbs: everything under the bottom rail
-    const y1=top?y-22:282, y2=top?y+34:296, y3=top?y+49:311;
+    const y1=top?y-22:282, y2=top?y+34:296, y2b=top?y+48:310, y3=top?y+65:327;
     txt(C,x,y1,"หลอด "+(i+1),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
-    if(st.on[i]){ txt(C,x,y2,`${st.R[i]} Ω`,{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); txt(C,x,y3,fmt(Pw[i],3)+" W",{"text-anchor":"middle","font-size":13,"font-weight":700}); }
+    if(st.on[i]){ txt(C,x,y2,`${st.R[i]} Ω`,{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); txt(C,x,y2b,`${fmt(Pw[i],3)} W`,{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); txt(C,x,y3,pct(Pw[i]),{"text-anchor":"middle","font-size":14,"font-weight":700}); }
     const h=el("circle",{cx:x,cy:y,r:24,fill:"transparent",style:"cursor:pointer"},C); h.addEventListener("click",()=>{ st.on[i]=!st.on[i]; update(); }); });
   for(const [x,y,deg,idx] of L.arrows){ const I= idx==="t"?S.Itot:S.I[idx]; if(I>1e-9) DP.arrowHead(C,x,y,deg); }
 }
 function update(){
   const S=solve(), Pw=P(S); DP.setSeg(["m-ser","m-par","m-mix"],{ser:"m-ser",par:"m-par",mix:"m-mix"}[st.mode]);
   [0,1,2].forEach(i=>{ $("r"+i).value=st.R[i]; });
-  const rows=[0,1,2].map(i=>`<tr><td>หลอด ${i+1} (${st.R[i]} Ω)${st.on[i]?"":" ถอด"}</td><td>${fmt(S.I[i],3)} A</td><td>${fmt(S.V[i],3)} V</td><td>${fmt(Pw[i],3)} W <span class="meter" style="width:${(36*Pw[i]/PMAX).toFixed(1)}px"></span></td></tr>`).join("");
-  $("tbl").innerHTML=`<tr><th></th><th>${m("I")}</th><th>Δ${m("V")}</th><th>${m("P")}</th></tr>${rows}<tr><td>แบตเตอรี่</td><td>${fmt(S.Itot,3)} A</td><td>12.0 V</td><td>${fmt(S.Itot*EMF,3)} W</td></tr>`;
+  const rows=[0,1,2].map(i=>`<tr><td>${i+1} (${st.R[i]} Ω)${st.on[i]?"":" ถอด"}</td><td>${fmt(S.I[i],3)} A</td><td>${fmt(S.V[i],3)} V</td><td>${fmt(Pw[i],3)} W</td><td>${pct(Pw[i])}</td></tr>`).join("");
+  $("tbl").innerHTML=`<tr><th>หลอด</th><th>${m("I")}</th><th>Δ${m("V")}</th><th>${m("P")}</th><th>สว่าง</th></tr>${rows}<tr><td>แบตเตอรี่</td><td>${fmt(S.Itot,3)} A</td><td>12.0 V</td><td>${fmt(S.Itot*EMF,3)} W</td><td></td></tr>`;
   // brightness ranking
   const lit=[0,1,2].filter(i=>Pw[i]>1e-9).sort((a,b)=>Pw[b]-Pw[a]);
   let rank="";
@@ -326,7 +336,7 @@ function update(){
   const same=R[0]===R[1]&&R[1]===R[2]; let msg;
   if(!st.sw) msg="สวิตช์เปิด วงจรขาด ไม่มีกระแส หลอดทุกหลอดดับ";
   else if(st.mode==="ser") msg= !S.Itot ? "ต่ออนุกรม: ทางเดินของกระแสมีทางเดียว เมื่อถอดหลอดหนึ่ง วงจรขาด หลอดทุกหลอดดับ"
-      : same ? "ต่ออนุกรม: กระแสเท่ากันทุกหลอด หลอดเหมือนกันจึงสว่างเท่ากัน ไม่ว่าอยู่ใกล้ขั้วใด แต่ละหลอดได้ความต่างศักย์เพียง 1/3 ของ 12 V จึงสว่างน้อยกว่าเมื่อต่อหลอดเดียว"
+      : same ? "ต่ออนุกรม: กระแสเท่ากันทุกหลอด หลอดเหมือนกันจึงสว่างเท่ากัน ไม่ว่าอยู่ใกล้ขั้วใด แต่ละหลอดได้ความต่างศักย์เพียง 1/3 ของ 12 V และกระแสก็เหลือ 1/3 กำลัง (ΔV × I) จึงเหลือเพียง 1/9 หรือราว 11 % ของเมื่อต่อหลอดเดียว"
       : "ต่ออนุกรม: กระแสเท่ากันทุกหลอด หลอดที่มีความต้านทานมากกว่าได้ความต่างศักย์และกำลังมากกว่า จึงสว่างกว่า ความสว่างไม่ได้ขึ้นกับว่าหลอดอยู่ใกล้ขั้วใด";
   else if(st.mode==="par") msg= same ? "ต่อขนาน: ทุกหลอดได้รับความต่างศักย์ 12 V เท่ากัน การถอดหลอดหนึ่งไม่ทำให้หลอดอื่นเปลี่ยน แต่กระแสจากแบตเตอรี่เปลี่ยนตามจำนวนหลอด"
       : "ต่อขนาน: ทุกหลอดได้รับความต่างศักย์ 12 V เท่ากัน หลอดที่มีความต้านทานน้อยกว่ามีกระแสและกำลังมากกว่า จึงสว่างกว่า ลำดับความสว่างจึงกลับกันกับแบบอนุกรม";
@@ -336,6 +346,10 @@ function update(){
   draw();
 }
 [0,1,2].forEach(i=>{ const s=$("r"+i); RCH.forEach(v=>{ const o=document.createElement("option"); o.value=v; o.textContent=v+" Ω"; s.appendChild(o); }); s.addEventListener("change",e=>{ st.R[i]=+e.target.value; update(); }); });
+/* brightness scale under the circuit */
+(function(){ const S=$("scale"); const g=el("g",{},S), h=el("g",{},S); S.insertBefore(h,g);
+  txt(g,4,14,"มาตราความสว่าง",{"font-size":12,fill:"var(--muted)"});
+  [[0,"0 % (ดับ)"],[0.25,"25 %"],[1,"100 %"],[2,"200 %"]].forEach(([b,l],k)=>{ const x=42+k*96; bulbIcon(g,h,x,56,b); txt(g,x,124,l,{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); }); })();
 DP.seg(["m-ser","m-par","m-mix"],id=>{ st.mode={"m-ser":"ser","m-par":"par","m-mix":"mix"}[id]; update(); });
 $("b-same").addEventListener("click",()=>{ st.R=[12,12,12]; st.on=[true,true,true]; st.sw=true; update(); });
 $("b-diff").addEventListener("click",()=>{ st.R=[6,12,24]; st.on=[true,true,true]; st.sw=true; update(); });

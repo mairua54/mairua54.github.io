@@ -256,7 +256,7 @@ function drawWire(c){
   if(st.mode==="new"){
     const y=80, d=dia(c.A); cyl(x0,y,340*c.l/10,d,false,[["ℓ",{it:1}]," = "+fx(c.l,1)+" m"]);
     txt(S,x0,y-d/2-10,[["A",{it:1}]," = "+fmt(c.A*1e6,3)+" mm²"],{"font-size":14});
-    $("cap-w").textContent="ความยาวในภาพเป็นไปตามสัดส่วน (ความกว้างของภาพเท่ากับ 10 m) ส่วนความหนาวาดขยายมาก โดยเส้นผ่านศูนย์กลางในภาพแปรผันตรงกับ √A";
+    $("cap-w").textContent="ความยาวในภาพเป็นไปตามสัดส่วน (ความยาวเต็มกรอบเท่ากับ 10 m) ส่วนความหนาวาดขยายมาก โดยเส้นผ่านศูนย์กลางในภาพแปรผันตรงกับ √A";
   } else {
     const sc=340/(4*c.l0);   // the longest stretched wire (k = 4) fills the width
     const d0=dia(c.A0), d1=dia(c.A);

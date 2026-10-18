@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>กระแสไฟฟ้าไม่ถูกใช้หมด</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.stat div{background:var(--chip);border-radius:8px;padding:8px;text-align:center}
+.stat b{display:block;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 1.5</div>
+  <h1>กระแสไฟฟ้าไม่ถูกใช้หมด</h1>
+  <p class="lead">นับอิเล็กตรอนที่ผ่านหน้าตัดก่อนและหลังหลอดไฟ แล้วลองหากระแสที่จุดแยกแบบ Ex. 1.4</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-a">
+    <h2 id="h-a">ก. ลวดเส้นเดียวที่มีหลอดไฟ</h2>
+    <canvas id="cv" width="520" height="250" aria-label="อิเล็กตรอนเคลื่อนที่ผ่านลวดส่วนกว้าง ไส้หลอด และลวดส่วนแคบ"></canvas>
+    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนที่กำลังลอยเลื่อน (ไม่แสดงการเคลื่อนที่แบบสุ่ม) ลูกศรสีแดงบอกทิศกระแส ซึ่งตรงข้ามกับทิศที่อิเล็กตรอนเลื่อน เส้นประสีเทา X และ Y คือหน้าตัดที่ใช้นับ ความเร็วในภาพขยายเกินจริงมาก</p>
+    <div class="stat">
+      <div><b id="nX">0</b><span>ผ่านหน้าตัด X</span></div>
+      <div><b id="nY">0</b><span>ผ่านหน้าตัด Y</span></div>
+      <div><b id="nIn">0</b><span>อยู่ในลวดขณะนี้</span></div>
+    </div>
+    <p class="cap" id="t-cnt"></p>
+    <div class="ctl">
+      <div class="row"><label for="s-I"><span>กระแสในวงจร</span><output id="o-I"></output></label>
+        <input type="range" id="s-I" min="1" max="3" step="1"></div>
+      <div class="row"><label for="s-h"><span>หน้าตัดของลวดส่วนขวาเทียบกับส่วนซ้าย</span><output id="o-h"></output></label>
+        <input type="range" id="s-h" min="0.2" max="1" step="0.1"></div>
+      <div class="btns"><button class="btn" id="b-cnt">นับใหม่</button><button class="btn" id="b-pause" aria-pressed="false">หยุดชั่วคราว</button></div>
+    </div>
+    <div class="status" id="status-a" style="margin-top:12px"></div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-b">
+    <h2 id="h-b">ข. กระแสที่จุดแยก</h2>
+    <svg id="jn" viewBox="0 0 380 250" role="img" aria-label="จุดแยก P มีลวดสามเส้น"></svg>
+    <p class="cap">ลูกศรสีแดงบอกทิศกระแสจริงในแต่ละเส้น ความเร็วของลูกศรบอกขนาดกระแสเพื่อเปรียบเทียบเท่านั้น</p>
+    <div class="ctl">
+      <div class="row"><label for="s-1"><span>ลวดเส้นที่ 1: กระแสไหลเข้าจุด P</span><output id="o-1"></output></label>
+        <input type="range" id="s-1" min="0" max="6" step="0.5"></div>
+      <div class="row"><label for="s-2"><span>ลวดเส้นที่ 2: กระแสไหลออกจากจุด P</span><output id="o-2"></output></label>
+        <input type="range" id="s-2" min="0" max="6" step="0.5"></div>
+      <div class="btns"><button class="btn" id="b-ex">ใช้ค่าของ Ex. 1.4</button></div>
+    </div>
+    <div class="eq" id="eq" style="margin-top:12px"></div>
+    <div class="status" id="status-b" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. หลอดไฟใช้กระแสไปบางส่วนหรือไม่</summary>
+    <p class="q">ในช่อง ก. กด "นับใหม่" แล้วรอราว 20 วินาที เทียบจำนวนอิเล็กตรอนที่ผ่านหน้าตัด X (ก่อนถึงหลอดไฟตามทิศกระแส) กับหน้าตัด Y (หลังหลอดไฟ) แล้วลองลดหน้าตัดของลวดส่วนขวา ผลเปลี่ยนไหม</p>
+    <p class="q"><b>คำตอบ</b> ทั้งสองหน้าตัดนับได้เท่ากัน (ต่างกันไม่เกิน 1 ตัวที่กำลังผ่านอยู่) ไม่ว่าหน้าตัดจะใหญ่หรือเล็ก และจำนวนอิเล็กตรอนในลวดคงตัว กระแสเท่ากันทุกหน้าตัด หลอดไฟไม่ได้ใช้กระแส สิ่งที่หลอดไฟรับไปคือพลังงาน (หัวข้อ 4.1) ส่วนที่หน้าตัดเล็ก อิเล็กตรอนต้องเลื่อนเร็วขึ้นเพื่อให้กระแสเท่าเดิม (หัวข้อ 1.6)</p>
+  </details>
+  <details>
+    <summary>2. ค่ากระแสติดลบหมายความว่าอะไร</summary>
+    <p class="q">ในช่อง ข. ตั้งลวดเส้นที่ 1 เป็น 2.0 A และลวดเส้นที่ 2 เป็น 3.5 A ทำนาย i<sub>3</sub> และทิศของกระแสจริงในลวดเส้นที่ 3 ก่อนดูผล</p>
+    <p class="q"><b>คำตอบ</b> 2.0 A + i<sub>3</sub> = 3.5 A จึงได้ i<sub>3</sub> = 1.5 A เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด 1.5 A ถ้า i<sub>3</sub> ติดลบ เช่นใน Ex. 1.4 กระแสจริงไหลออกจากจุด P</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่ากระแสคงตัว ช่อง ก. แสดงเฉพาะการลอยเลื่อนของอิเล็กตรอน ความหนาแน่นของอิเล็กตรอนเท่ากันทุกส่วนของลวด จำนวนและความเร็วไม่ได้เป็นไปตามสัดส่วนจริง</p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub}=DP;
+/* ---------- panel ก: one wire, wide part → bulb filament → narrow part ---------- */
+const W=520,H=250, YC=128, H1=80, HF=6, XB0=212, XB1=308, XX=100, XY=430, DENS=0.0042; // electrons per px²
+const FLUX=[0,26,52,78];  // electrons per second through every cross-section (relative "current")
+const st={I:2,h:0.5,paused:false, i1:4,i2:1.5};
+let seed=777; const rnd=()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
+const h2=()=>Math.max(HF+2,H1*st.h);
+function heightAt(x){ if(x<XB0) return H1; if(x<XB0+20) return H1+(HF-H1)*(x-XB0)/20; if(x<XB1-20) return HF; if(x<XB1) return HF+(h2()-HF)*(x-(XB1-20))/20; return h2(); }
+/* electrons drift from right to left (current flows left to right); local speed keeps the flux the same everywhere: n·h·v = FLUX */
+const speedAt=x=>FLUX[st.I]/(DENS*heightAt(x));
+let P=[], time=0, cX=0, cY=0, cStart=0, spawnAcc=0;
+function fill(){ P=[]; for(let x=0;x<W;x+=0.5){ const n=DENS*heightAt(x)*0.5; let k=Math.floor(n+rnd()); while(k-->0) P.push({x:x+rnd()*0.5,s:rnd()}); } }
+fill();
+function stepA(dt){
+  time+=dt;
+  for(const p of P){ const ox=p.x; p.x-=speedAt(p.x)*dt; if(ox>=XX && p.x<XX) cX++; if(ox>=XY && p.x<XY) cY++; }
+  P=P.filter(p=>p.x>=0);
+  spawnAcc+=FLUX[st.I]*dt; while(spawnAcc>=1){ spawnAcc-=1; P.push({x:W-rnd()*speedAt(W)*dt,s:rnd()}); }
+}
+const cv=$("cv"), ctx=cv.getContext("2d"); let dpr=1;
+function size(){ dpr=Math.min(2,window.devicePixelRatio||1); cv.width=W*dpr; cv.height=H*dpr; } size(); window.addEventListener("resize",size);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let arrowPhase=0;
+function drawA(){
+  const C={bg:css("--card"),ink:css("--ink"),el:css("--elec"),helper:css("--helper"),cur:css("--current"),chip:css("--chip"),glow:css("--glow"),muted:css("--muted")};
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
+  // wire outline
+  ctx.beginPath(); for(let x=0;x<=W;x+=2) ctx.lineTo(x,YC-heightAt(x)/2); for(let x=W;x>=0;x-=2) ctx.lineTo(x,YC+heightAt(x)/2); ctx.closePath();
+  ctx.fillStyle=C.chip; ctx.fill(); ctx.strokeStyle=C.ink; ctx.lineWidth=1.5; ctx.stroke();
+  // bulb glass
+  ctx.beginPath(); ctx.arc((XB0+XB1)/2,YC,46,0,6.283); ctx.strokeStyle=C.ink; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle=C.glow; ctx.globalAlpha=0.18+0.08*st.I; ctx.fill(); ctx.globalAlpha=1;
+  ctx.fillStyle=C.muted; ctx.font="17px Sarabun, Tahoma, sans-serif"; ctx.textAlign="center"; ctx.fillText("หลอดไฟ",(XB0+XB1)/2,YC-54);
+  // electrons
+  ctx.fillStyle=C.el; for(const p of P){ const h=heightAt(p.x); ctx.beginPath(); ctx.arc(p.x,YC-h/2+1.5+p.s*(h-3),2.6,0,6.283); ctx.fill(); }
+  // cross-sections
+  ctx.setLineDash([5,4]); ctx.strokeStyle=C.helper; ctx.lineWidth=1.5;
+  for(const [x,lab] of [[XX,"X"],[XY,"Y"]]){ const h=heightAt(x); ctx.beginPath(); ctx.moveTo(x,YC-h/2-14); ctx.lineTo(x,YC+h/2+14); ctx.stroke();
+    ctx.fillStyle=C.ink; ctx.font="bold 19px sans-serif"; ctx.fillText(lab,x,YC+h/2+34); }
+  ctx.setLineDash([]);
+  // current arrows (red) above the wire, pointing right
+  for(const x0 of [20,372]){ const y=YC-H1/2-24; ctx.strokeStyle=C.cur; ctx.fillStyle=C.cur; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x0+60,y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x0+70,y); ctx.lineTo(x0+58,y-7); ctx.lineTo(x0+58,y+7); ctx.closePath(); ctx.fill();
+    ctx.font="italic 21px 'Times New Roman', serif"; ctx.fillText("I",x0+35,y-10); }
+}
+function panelA(){
+  $("nX").textContent=cX; $("nY").textContent=cY;
+  let inside=0; for(const p of P) if(p.x>=XX && p.x<XY) inside++; $("nIn").textContent=inside;
+  $("t-cnt").textContent=`นับมาแล้ว ${(time-cStart).toFixed(0)} s · "อยู่ในลวดขณะนี้" นับเฉพาะส่วนระหว่าง X กับ Y`;
+  $("o-I").textContent=["","น้อย","ปานกลาง","มาก"][st.I]; $("o-h").textContent=st.h.toFixed(1)+" เท่า";
+  const ratio=H1/h2();
+  $("status-a").innerHTML=`ทุกหน้าตัดมีอิเล็กตรอนผ่านในอัตราเดียวกัน กระแสจึงเท่ากันทั้งก่อนและหลังหลอดไฟ ในลวดส่วนขวาซึ่งมีหน้าตัดเป็น ${st.h.toFixed(1)} เท่าของส่วนซ้าย ${Math.abs(ratio-1)<0.01?"อิเล็กตรอนเลื่อนเร็วเท่ากับในส่วนซ้าย":"อิเล็กตรอนเลื่อนเร็วกว่าในส่วนซ้าย "+fmt(ratio,2)+" เท่า"} (${m("v")}${sub("d")} ∝ 1/${m("A")} หัวข้อ 1.6)`;
+}
+$("s-I").addEventListener("input",e=>{ st.I=+e.target.value; panelA(); });
+$("s-h").addEventListener("input",e=>{ st.h=+e.target.value; fill(); cX=cY=0; cStart=time; panelA(); });
+$("b-cnt").addEventListener("click",()=>{ cX=cY=0; cStart=time; panelA(); });
+$("b-pause").addEventListener("click",e=>{ st.paused=!st.paused; e.target.textContent=st.paused?"เล่นต่อ":"หยุดชั่วคราว"; e.target.setAttribute("aria-pressed",st.paused); });
+
+/* ---------- panel ข: junction P ---------- */
+const J=$("jn"), PX=170, PY=125;
+const WIRES=[{n:1,end:[20,125]},{n:2,end:[350,40]},{n:3,end:[350,210]}];
+const gW=el("g",{},J), gA=el("g",{},J), gT=el("g",{},J);
+for(const w of WIRES){ DP.wire(gW,[w.end,[PX,PY]]); }
+DP.dot(gT,PX,PY); txt(gT,PX-4,PY-14,"P",{"text-anchor":"middle","font-weight":700,"font-size":16});
+txt(gT,40,110,"ลวดเส้นที่ 1",{"font-size":13,fill:"var(--muted)"});
+txt(gT,262,44,"ลวดเส้นที่ 2",{"font-size":13,fill:"var(--muted)","text-anchor":"end"});
+txt(gT,262,226,"ลวดเส้นที่ 3",{"font-size":13,fill:"var(--muted)","text-anchor":"end"});
+const labs={1:txt(gT,90,150,"",{"font-size":15,"text-anchor":"middle"}),2:txt(gT,282,98,"",{"font-size":15}),3:txt(gT,282,162,"",{"font-size":15})};
+const arrows={}; for(const w of WIRES){ arrows[w.n]=[]; for(let k=0;k<4;k++) arrows[w.n].push(DP.arrowHead(gA,0,0,0)); }
+// signed flow out of P along each wire (positive = away from P)
+function flows(){ const i3=st.i2-st.i1; return {1:-st.i1, 2:st.i2, 3:-i3, i3}; }
+let jPhase=0;
+function placeJ(){
+  const f=flows();
+  for(const w of WIRES){ const out=f[w.n], I=Math.abs(out), [ex,ey]=w.end, L=Math.hypot(ex-PX,ey-PY), ang=Math.atan2(ey-PY,ex-PX)*180/Math.PI;
+    arrows[w.n].forEach((a,k)=>{ if(I<1e-9){ a.style.display="none"; return; } a.style.display="";
+      let u=((k/4 + (out>0?1:-1)*jPhase*I/6)%1+1)%1; u=0.12+0.8*u; const x=PX+(ex-PX)*u, y=PY+(ey-PY)*u;
+      a.setAttribute("transform",`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(ang+(out>0?0:180)).toFixed(1)})`); }); }
+}
+function panelB(){
+  const f=flows(), i3=f.i3;
+  $("o-1").textContent=fx(st.i1,1)+" A"; $("o-2").textContent=fx(st.i2,1)+" A";
+  labs[1].textContent=fx(st.i1,1)+" A เข้า"; labs[2].textContent=fx(st.i2,1)+" A ออก";
+  labs[3].textContent=Math.abs(i3)<1e-9?"0 A":fx(Math.abs(i3),1)+" A "+(i3>0?"เข้า":"ออก");
+  $("eq").innerHTML=DP.eqHTML([
+    `กำหนดให้ ${m("i")}${sub("3")} เป็นค่ากระแสในลวดเส้นที่ 3 ตามทิศที่ไหลเข้าจุด P`,
+    `กระแสเข้ารวม = กระแสออกรวม: ${fx(st.i1,1)} A + ${m("i")}${sub("3")} = ${fx(st.i2,1)} A`,
+    `${m("i")}${sub("3")} = ${fx(st.i2,1)} A - ${fx(st.i1,1)} A = ${fx(i3,1)} A`]);
+  const S=$("status-b"); S.classList.toggle("rev",i3<-1e-9);
+  S.innerHTML = Math.abs(i3)<1e-9 ? `${m("i")}${sub("3")} = 0 ไม่มีกระแสในลวดเส้นที่ 3 กระแสที่เข้าทางลวดเส้นที่ 1 ออกทางลวดเส้นที่ 2 ทั้งหมด`
+    : i3>0 ? `${m("i")}${sub("3")} เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด ${m("I")}${sub("3")} = ${fx(i3,1)} A`
+    : `${m("i")}${sub("3")} ติดลบ กระแสจริงในลวดเส้นที่ 3 ไหลออกจากจุด P ตรงข้ามกับทิศที่กำหนด ขนาด ${m("I")}${sub("3")} = |${m("i")}${sub("3")}| = ${fx(-i3,1)} A`;
+}
+function syncB(){ $("s-1").value=st.i1; $("s-2").value=st.i2; panelB(); }
+$("s-1").addEventListener("input",e=>{ st.i1=+e.target.value; panelB(); });
+$("s-2").addEventListener("input",e=>{ st.i2=+e.target.value; panelB(); });
+$("b-ex").addEventListener("click",()=>{ st.i1=4; st.i2=1.5; syncB(); });
+
+$("s-I").value=st.I; $("s-h").value=st.h; fill(); panelA(); syncB();
+let last=null, acc=0;
+function frame(ts){
+  if(last!==null && !st.paused && !DP.reduce){ const d=Math.min(0.1,(ts-last)/1000); acc+=d; const h=1/120; let n=0; while(acc>=h&&n<40){ stepA(h); acc-=h; n++; } jPhase+=d; }
+  last=ts; drawA(); panelA(); placeJ(); requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+window.__sim={st,stepA,counts:()=>({cX,cY,inside:P.filter(p=>p.x>=XX&&p.x<XY).length,total:P.length,time}),reset:()=>{cX=cY=0;cStart=time;},fill,flows,panelB,setI:(a,b)=>{st.i1=a;st.i2=b;syncB();}};
+})();
+</script>
+
+</body>
+</html>

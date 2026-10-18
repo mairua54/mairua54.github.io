@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>ความต้านทานของลวด</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+
+.bars{display:grid;gap:6px;margin-top:8px}
+.bar{display:grid;grid-template-columns:minmax(0,9.5em) 1fr;gap:8px;align-items:center;font-size:14px}
+.bar .t{height:18px;border-radius:4px;background:var(--graph);min-width:2px}
+.bar .t.k2{background:var(--graph2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 2.4</div>
+  <h1>ความต้านทานของลวด <i class="m">R</i> = <i class="m">ρℓ</i>/<i class="m">A</i></h1>
+  <p class="lead">ปรับวัสดุ ความยาว และพื้นที่หน้าตัดของลวดสม่ำเสมอ แล้วดูว่าความต้านทานเปลี่ยนอย่างไร รวมถึงเมื่อดึงลวดเส้นเดิมให้ยาวขึ้น</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-w">
+    <h2 id="h-w">ลวด</h2>
+    <svg id="wire" viewBox="0 0 380 170" role="img" aria-label="ลวดทรงกระบอก"></svg>
+    <p class="cap">ความยาวในภาพเป็นไปตามสัดส่วน ส่วนความหนาวาดขยายมาก (เส้นผ่านศูนย์กลางในภาพแปรผันตรงกับ √A)</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="โหมด">
+      <button id="m-new" aria-pressed="true">ลวดที่เลือกขนาดเอง</button>
+      <button id="m-pull" aria-pressed="false">ดึงลวดเส้นเดิมให้ยาว</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="mat"><span>วัสดุ (ที่ 20 °C)</span></label>
+        <select id="mat"></select></div>
+      <div class="row"><label for="s-l"><span id="l-l">ความยาว <i class="m">ℓ</i></span><output id="o-l"></output></label>
+        <input type="range" id="s-l" min="0.1" max="10" step="0.1"></div>
+      <div class="row"><label for="s-A"><span id="l-A">พื้นที่หน้าตัด <i class="m">A</i></span><output id="o-A"></output></label>
+        <input type="range" id="s-A" min="0.1" max="4" step="0.05"></div>
+      <div class="row" id="row-k" hidden><label for="s-k"><span>ดึงให้ยาวเป็น <i class="m">k</i> เท่า (ปริมาตรคงตัว)</span><output id="o-k"></output></label>
+        <input type="range" id="s-k" min="1" max="4" step="0.5"></div>
+      <div class="btns"><button class="btn" id="p-ex">Ex. 2.4 ลวดนิโครม</button><button class="btn" id="p-cu">สายทองแดง 10 m</button></div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณ</h2>
+    <div class="eq" id="eq"></div>
+    <div class="bars" id="bars"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ยาวขึ้น 2 เท่า กับ หน้าตัดใหญ่ขึ้น 2 เท่า</summary>
+    <p class="q">กด "Ex. 2.4 ลวดนิโครม" (ℓ = 2.0 m, A = 0.50 mm², R = 4.4 Ω) ทำนายความต้านทานเมื่อเปลี่ยนความยาวเป็น 4.0 m โดยหน้าตัดเท่าเดิม และเมื่อเปลี่ยนหน้าตัดเป็น 1.00 mm² โดยยาว 2.0 m เท่าเดิม แล้วตรวจ</p>
+    <p class="q"><b>คำตอบ</b> R ∝ ℓ/A ยาวขึ้น 2 เท่า ความต้านทานเพิ่มเป็น 2 เท่า ได้ 8.8 Ω ส่วนหน้าตัดใหญ่ขึ้น 2 เท่า ความต้านทานเหลือครึ่งหนึ่ง ได้ 2.2 Ω</p>
+  </details>
+  <details>
+    <summary>2. ดึงลวดเส้นเดิมให้ยาว 2 เท่า</summary>
+    <p class="q">กด "ดึงลวดเส้นเดิมให้ยาว" แล้วตั้ง k = 2 ความต้านทานเพิ่มเป็นกี่เท่า ต่างจากลวดเส้นใหม่ที่ยาว 2 เท่าแต่หน้าตัดเท่าเดิมอย่างไร</p>
+    <p class="q"><b>คำตอบ</b> เพิ่มเป็น 4 เท่า เพราะเมื่อดึงให้ยาวเป็น 2 เท่าโดยปริมาตรคงตัว หน้าตัดเหลือครึ่งหนึ่งด้วย R′ = ρ(2ℓ)/(A/2) = 4R ส่วนลวดเส้นใหม่ที่ยาว 2 เท่าแต่หน้าตัดเท่าเดิมมีความต้านทานเพียง 2 เท่า</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าลวดสม่ำเสมอ (วัสดุ หน้าตัด และอุณหภูมิเท่ากันตลอด) กระแสไหลตามแนวความยาวและกระจายทั่วหน้าตัด สภาพต้านทานของโลหะที่ 20 °C ตามตารางที่ 2.1 และของนิโครมตาม Ex. 2.4</p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const MAT=[["เงิน",1.59e-8,3],["ทองแดง",1.72e-8,3],["ทอง",2.44e-8,3],["อะลูมิเนียม",2.65e-8,3],["เหล็ก",9.71e-8,3],["ตะกั่ว",2.20e-7,3],["นิโครม",1.1e-6,2]];
+const st={mode:"new",mat:1,l:2.0,A:1.0,k:2};
+const sel=$("mat"); MAT.forEach(([n,r],i)=>{ const o=document.createElement("option"); o.value=i; o.textContent=`${n} (ρ = ${fmt(r,MAT[i][2],{plain:1})} Ω·m)`; sel.appendChild(o); });
+function calc(){ const [name,rho,n]=MAT[st.mat]; const l0=st.l, A0=st.A*1e-6, R0=rho*l0/A0;
+  if(st.mode==="new") return {name,rho,n,l:l0,A:A0,R:R0,R0};
+  const k=st.k, l=k*l0, A=A0/k; return {name,rho,n,l,A,R:rho*l/A,R0,k,l0,A0}; }
+const S=$("wire");
+function drawWire(c){
+  S.textContent=""; const x0=20, Lpx=340*c.l/(st.mode==="new"?10:40), d=Math.max(3,26*Math.sqrt(c.A*1e6)), y=78;
+  const len=Math.max(4,Lpx);
+  el("rect",{x:x0,y:y-d/2,width:len,height:d,fill:"var(--chip)",stroke:"var(--ink)","stroke-width":1.5},S);
+  el("ellipse",{cx:x0,cy:y,rx:Math.max(2,d*0.18),ry:d/2,fill:"var(--helper)","fill-opacity":0.45,stroke:"var(--ink)","stroke-width":1.5},S);
+  el("ellipse",{cx:x0+len,cy:y,rx:Math.max(2,d*0.18),ry:d/2,fill:"var(--chip)",stroke:"var(--ink)","stroke-width":1.5},S);
+  // length bracket (no arrowheads)
+  const yb=y+d/2+18; el("polyline",{points:DP.pl([[x0,yb-6],[x0,yb],[x0+len,yb],[x0+len,yb-6]]),fill:"none",stroke:"var(--ink)","stroke-width":1.2},S);
+  txt(S,x0+Math.max(len/2,24),yb+18,[["ℓ",{it:1}]," = "+fx(c.l,1)+" m"],{"text-anchor":"middle","font-size":14});
+  txt(S,x0,y-d/2-10,[["A",{it:1}]," = "+fmt(c.A*1e6,3)+" mm²"],{"font-size":14});
+  txt(S,370,y-d/2-10,c.name,{"text-anchor":"end","font-size":14,fill:"var(--muted)"});
+  if(st.mode==="pull") txt(S,370,160,"ก่อนดึง: ℓ = "+fx(c.l0,1)+" m, A = "+fmt(c.A0*1e6,3)+" mm²",{"text-anchor":"end","font-size":12,fill:"var(--muted)"});
+}
+function update(){
+  const c=calc(), n=c.n;
+  $("o-l").textContent=fx(st.l,1)+" m"; $("o-A").textContent=fmt(st.A,3)+" mm²"; $("o-k").textContent=fx(st.k,1)+" เท่า";
+  $("row-k").hidden=st.mode!=="pull";
+  $("l-l").innerHTML=st.mode==="pull"?`ความยาวก่อนดึง ${m("ℓ")}`:`ความยาว ${m("ℓ")}`; $("l-A").innerHTML=st.mode==="pull"?`พื้นที่หน้าตัดก่อนดึง ${m("A")}`:`พื้นที่หน้าตัด ${m("A")}`;
+  const lines=[];
+  if(st.mode==="new"){
+    lines.push(`${m("A")} = ${fmt(st.A,3)} mm<sup>2</sup> = ${fmt(c.A,3)} m<sup>2</sup>|1 mm² = 10⁻⁶ m²`);
+    lines.push(`${m("R")} = ${m("ρℓ")}/${m("A")} = (${fmt(c.rho,n)} Ω·m)(${fx(c.l,1)} m)/(${fmt(c.A,3)} m<sup>2</sup>) = ${fmt(c.R,n)} Ω`);
+    lines.push(`สภาพนำไฟฟ้า ${m("σ")} = 1/${m("ρ")} = ${fmt(1/c.rho,n)} (Ω·m)<sup>-1</sup>`);
+    $("bars").innerHTML="";
+  } else {
+    lines.push(`ปริมาตร ${m("ℓA")} คงตัว: ยาวเป็น ${fx(c.k,1)} เท่า หน้าตัดจึงเหลือ 1/${fx(c.k,1)} เท่า`);
+    lines.push(`${m("ℓ")}′ = ${fx(c.k,1)}(${fx(c.l0,1)} m) = ${fx(c.l,1)} m,  ${m("A")}′ = (${fmt(c.A0,3)} m<sup>2</sup>)/${fx(c.k,1)} = ${fmt(c.A,3)} m<sup>2</sup>`);
+    lines.push(`${m("R")}′ = ${m("ρℓ")}′/${m("A")}′ = ${m("k")}<sup>2</sup>${m("R")} = ${String(c.k*c.k)}(${fmt(c.R0,n)} Ω) = ${fmt(c.R,n)} Ω`);
+    const mx=c.R; const bar=(lab,v,cls)=>`<div class="bar"><span>${lab}</span><div style="display:flex;align-items:center;gap:6px;min-width:0"><div class="t ${cls||""}" style="width:${(100*v/mx).toFixed(1)}%"></div><span class="nw">${fmt(v,n)} Ω</span></div></div>`;
+    $("bars").innerHTML=bar("ลวดเดิม",c.R0)+bar(`ลวดใหม่ยาว ${fx(c.k,1)} เท่า หน้าตัดเท่าเดิม`,c.k*c.R0)+bar(`ลวดเดิมที่ถูกดึง`,c.R,"k2");
+  }
+  $("eq").innerHTML=eqHTML(lines);
+  $("status").innerHTML= st.mode==="new"
+    ? `ความต้านทานแปรผันตรงกับความยาวและแปรผกผันกับพื้นที่หน้าตัด (${m("R")} ∝ ${m("ℓ")}/${m("A")}) ส่วน ${m("ρ")} ขึ้นกับชนิดวัสดุและอุณหภูมิเท่านั้น ลวดวัสดุเดียวกันที่อุณหภูมิเดียวกันมี ${m("ρ")} เท่ากันแม้ขนาดต่างกัน`
+    : `ลวดเส้นเดิมที่ถูกดึงให้ยาวเป็น ${fx(c.k,1)} เท่า มีความต้านทานเพิ่มเป็น ${String(c.k*c.k)} เท่า ไม่ใช่ ${fx(c.k,1)} เท่า เพราะความยาวเพิ่มและหน้าตัดลดลงพร้อมกัน`;
+  drawWire(c);
+}
+function sync(){ $("s-l").value=st.l; $("s-A").value=st.A; $("s-k").value=st.k; sel.value=st.mat; DP.setSeg(["m-new","m-pull"],st.mode==="new"?"m-new":"m-pull"); update(); }
+DP.seg(["m-new","m-pull"],id=>{ st.mode=id==="m-new"?"new":"pull"; update(); });
+sel.addEventListener("change",e=>{ st.mat=+e.target.value; update(); });
+$("s-l").addEventListener("input",e=>{ st.l=+e.target.value; update(); });
+$("s-A").addEventListener("input",e=>{ st.A=+e.target.value; update(); });
+$("s-k").addEventListener("input",e=>{ st.k=+e.target.value; update(); });
+$("p-ex").addEventListener("click",()=>{ Object.assign(st,{mode:"new",mat:6,l:2.0,A:0.5}); sync(); });
+$("p-cu").addEventListener("click",()=>{ Object.assign(st,{mode:"new",mat:1,l:10,A:1.5}); sync(); });
+sync();
+window.__sim={st,MAT,calc,sync};
+})();
+</script>
+
+</body>
+</html>

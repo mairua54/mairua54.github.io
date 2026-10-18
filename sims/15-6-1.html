@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>การต่อแบตเตอรี่หลายก้อน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 6.1 และ 6.2</div>
+  <h1>การต่อแบตเตอรี่แบบอนุกรมและแบบขนาน</h1>
+  <p class="lead">ต่อแบตเตอรี่ที่เหมือนกันหลายก้อนกับตัวต้านทาน R แบบอนุกรมหรือแบบขนาน ในแบบอนุกรมแตะก้อนใดก็ได้เพื่อกลับขั้ว แล้วดูอีเอ็มเอฟสมมูล กระแส และความต่างศักย์ระหว่างขั้วของแต่ละก้อน</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-c">
+    <h2 id="h-c">วงจร</h2>
+    <svg id="c" viewBox="0 0 380 290" role="img" aria-label="วงจรแบตเตอรี่หลายก้อนต่อกับตัวต้านทาน"></svg>
+    <p class="cap" id="cap-c"></p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="การต่อ">
+      <button id="m-ser" aria-pressed="true">อนุกรม</button>
+      <button id="m-par" aria-pressed="false">ขนาน</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="s-n"><span>จำนวนก้อน <i class="m">n</i></span><output id="o-n"></output></label>
+        <input type="range" id="s-n" min="1" max="6" step="1"></div>
+      <div class="row"><label for="s-e"><span>อีเอ็มเอฟของแต่ละก้อน <i class="m">ε</i><sub>ก้อน</sub></span><output id="o-e"></output></label>
+        <input type="range" id="s-e" min="1" max="2" step="0.1"></div>
+      <div class="row"><label for="s-r"><span>ความต้านทานภายในของแต่ละก้อน <i class="m">r</i><sub>ก้อน</sub></span><output id="o-r"></output></label>
+        <input type="range" id="s-r" min="0.05" max="1" step="0.05"></div>
+      <div class="row"><label for="s-R"><span>ความต้านทานภายนอก <i class="m">R</i></span><output id="o-R"></output></label>
+        <input type="range" id="s-R" min="0.5" max="20" step="0.1"></div>
+      <div class="btns"><button class="btn" id="p1">Ex. 6.1</button><button class="btn" id="p2">Ex. 6.2</button><button class="btn" id="p3">Ex. 6.3</button></div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณ</h2>
+    <div class="eq" id="eq"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+  <section class="card" aria-labelledby="h-t">
+    <h2 id="h-t">แต่ละก้อน</h2>
+    <div class="tblwrap"><table class="tbl" id="tbl"></table></div>
+    <p class="cap">ทิศของกระแสภายในก้อน: "ลบ → บวก" คือก้อนนั้นจ่ายพลังงาน ใช้ V₊ - V₋ = ε - Ir ส่วน "บวก → ลบ" เหมือนก้อนที่ถูกประจุ ใช้ V₊ - V₋ = ε + Ir (หัวข้อ 4.3)</p>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ใส่ถ่านกลับขั้วหนึ่งก้อน (Ex. 6.2)</summary>
+    <p class="q">กด "Ex. 6.2" ซึ่งมีถ่าน 4 ก้อน ก้อนละ 1.5 V และ 0.50 Ω ต่อกับหลอด 4.0 Ω โดยก้อนที่ 3 กลับขั้ว เทียบกระแสกับเมื่อใส่ถูกทุกก้อน (แตะก้อนที่ 3 อีกครั้ง) และดู V₊ - V₋ ของก้อนที่กลับขั้ว</p>
+    <p class="q"><b>คำตอบ</b> อีเอ็มเอฟสมมูลเหลือ 3.0 V แต่ความต้านทานภายในสมมูลยัง 2.0 Ω กระแสจึงเป็น 0.500 A ครึ่งหนึ่งของเมื่อใส่ถูก (1.00 A) ก้อนที่กลับขั้วมีกระแสภายในไหลจากขั้วบวกไปขั้วลบ ได้ V₊ - V₋ = ε + Ir = 1.75 V มากกว่าอีเอ็มเอฟ เหมือนก้อนที่กำลังถูกประจุ</p>
+  </details>
+  <details>
+    <summary>2. อนุกรมกับขนาน ใช้ถ่านชุดเดียวกัน</summary>
+    <p class="q">ตั้ง 3 ก้อน ก้อนละ 1.5 V และ 0.30 Ω กับ R = 1.4 Ω เทียบกระแสใน R และกระแสที่ผ่านแต่ละก้อน ระหว่างแบบอนุกรมกับแบบขนาน</p>
+    <p class="q"><b>คำตอบ</b> แบบอนุกรม ε = 4.5 V และ r = 0.90 Ω ได้กระแสใน R 1.96 A ซึ่งผ่านทุกก้อน แบบขนาน ε = 1.5 V และ r = 0.10 Ω ได้กระแสใน R 1.00 A แต่ละก้อนจ่ายเพียง 0.333 A แบบอนุกรมให้อีเอ็มเอฟมากกว่า ส่วนแบบขนานลดความต้านทานภายในและให้แต่ละก้อนจ่ายกระแสเพียงส่วนหนึ่ง</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าแบตเตอรี่ทุกก้อนเหมือนกันทุกประการ อีเอ็มเอฟและความต้านทานภายในคงตัว สายไฟไม่มีความต้านทาน ในแบบขนานไม่ให้กลับขั้ว เพราะจะเกิดกระแสไหลวนระหว่างก้อนซึ่งต้องวิเคราะห์ด้วยวิธีในความรู้เพิ่มเติมของหัวข้อ 6.3</p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const st={mode:"ser",n:4,e:1.5,r:0.2,R:5.2,rev:[false,false,false,false,false,false]};
+/* j > 0: current through the series row from left to right (the row's left end is the − end when no cell is reversed) */
+function solve(){
+  const n=st.n;
+  if(st.mode==="ser"){ const s=[...Array(n)].map((_,k)=>st.rev[k]?-1:1); const E=s.reduce((a,b)=>a+b,0)*st.e, r=n*st.r, j=E/(st.R+r), I=Math.abs(j);
+    const cells=s.map(sk=>{ const sup=sk*j>1e-12, chg=sk*j<-1e-12; return {rev:sk<0,I,dir:sup?"sup":chg?"chg":"none",V:sup?st.e-I*st.r:chg?st.e+I*st.r:st.e}; });
+    return {E,r,j,I,Vset:Math.abs(E)-I*r,cells}; }
+  const E=st.e, r=st.r/n, I=E/(st.R+r), Ik=I/n;
+  return {E,r,j:I,I,Vset:E-I*r,cells:[...Array(n)].map(()=>({rev:false,I:Ik,dir:"sup",V:st.e-Ik*st.r}))};
+}
+const C=$("c");
+/* one source drawn as in fig 4.4: cell + r inside a dashed frame; leftPlus: + terminal on the left */
+function sourceH(g,x0,y,w,leftPlus,k){
+  el("rect",{x:x0,y:y-15,width:w,height:30,fill:"none",stroke:"var(--ink)","stroke-width":1,"stroke-dasharray":"4 3"},g);
+  const cx=leftPlus? x0+w-14 : x0+14, rx0=leftPlus? x0+4 : x0+26, rx1=leftPlus? x0+w-24 : x0+w-4;
+  DP.wire(g,[[x0,y],[x0+w,y]]);
+  DP.cell(g,cx,y,"h",leftPlus?"left":"right",{nosign:true,long:11,short:6});
+  el("rect",{x:rx0,y:y-7,width:rx1-rx0,height:14,fill:"var(--card)"},g); DP.resistor(g,rx0,y,rx1,y,3,5);
+  // + and − above the frame corners (fig 6.2 style)
+  txt(g,x0+3,y-19,leftPlus?"+":"−",{"text-anchor":"middle","font-weight":700,"font-size":15});
+  txt(g,x0+w-3,y-19,leftPlus?"−":"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+  if(k!==undefined) txt(g,x0+w/2,y+30,"ก้อน "+(k+1),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+}
+function draw(){
+  C.textContent=""; C.setAttribute("viewBox","0 0 380 290"); const S=solve(), n=st.n;
+  if(st.mode==="ser"){
+    const w=Math.min(52,300/n-6), gap=(300-n*w)/(n+1), y=70;
+    DP.wire(C,[[40,y],[40,230],[340,230],[340,y]]);
+    let x=40+gap; DP.wire(C,[[40,y],[x,y]]);
+    for(let k=0;k<n;k++){ const g=el("g",{style:"cursor:pointer"},C); sourceH(g,x,y,w,st.rev[k],k);
+      if(st.rev[k]) txt(g,x+w/2,y+44,"กลับขั้ว",{"text-anchor":"middle","font-size":12,fill:"var(--heat)","font-weight":700});
+      el("rect",{x:x-2,y:y-34,width:w+4,height:84,fill:"transparent"},g);
+      g.addEventListener("click",()=>{ st.rev[k]=!st.rev[k]; update(); });
+      const nx=x+w+gap; DP.wire(C,[[x+w,y],[k<n-1?nx:340,y]]); x=nx; }
+    el("rect",{x:150,y:222,width:80,height:16,fill:"var(--card)"},C); DP.resistor(C,150,230,230,230,5,7);
+    txt(C,190,258,[["R",{it:1}]," = "+fx(st.R,1)+" Ω"],{"text-anchor":"middle","font-size":14});
+    if(S.I>1e-9){ const d=S.j>0?1:-1; DP.arrowHead(C,340,150,d>0?90:-90); DP.arrowHead(C,280,230,d>0?180:0); DP.arrowHead(C,40,150,d>0?-90:90); }
+  } else {
+    const top=56, dy=52, xl=110, xr=250, yb=top+dy*(n-1);
+    DP.wire(C,[[xl,top],[xl,yb]]); DP.wire(C,[[xr,top],[xr,yb]]);
+    for(let k=0;k<n;k++){ const y=top+dy*k; DP.wire(C,[[xl,y],[xl+20,y]]); DP.wire(C,[[xr-20,y],[xr,y]]); sourceH(C,xl+20,y,xr-xl-40,false,undefined);
+      if(n>1 && k<n-1){ DP.dot(C,xl,y); DP.dot(C,xr,y); } }
+    const yB=Math.max(yb+50,250), yT=top-36; C.setAttribute("viewBox",`0 0 380 ${yB+20}`);
+    DP.wire(C,[[xr,top],[xr,yT],[340,yT],[340,yB],[60,yB],[60,yT],[xl,yT],[xl,top]]);
+    const ym=(yT+yB)/2; el("rect",{x:332,y:ym-40,width:16,height:80,fill:"var(--card)"},C); DP.resistor(C,340,ym-40,340,ym+40,5,7);
+    txt(C,326,ym+5,[["R",{it:1}]],{"text-anchor":"end","font-size":15});
+    txt(C,200,yB-8,"R = "+fx(st.R,1)+" Ω",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"});
+    if(S.I>1e-9){ DP.arrowHead(C,300,yT,0); DP.arrowHead(C,340,ym+60,90); DP.arrowHead(C,200,yB,180); }
+  }
+}
+function update(){
+  const S=solve(), n=st.n; DP.setSeg(["m-ser","m-par"],st.mode==="ser"?"m-ser":"m-par");
+  $("o-n").textContent=n; $("o-e").textContent=fx(st.e,1)+" V"; $("o-r").textContent=fx(st.r,2)+" Ω"; $("o-R").textContent=fx(st.R,1)+" Ω";
+  $("cap-c").textContent= st.mode==="ser" ? "แตะแบตเตอรี่ก้อนใดก็ได้เพื่อกลับขั้ว แต่ละก้อนวาดเป็นเซลล์ต่อกับความต้านทานภายในในกรอบเส้นประ ลูกศรสีแดงบอกทิศกระแส" : "แบตเตอรี่ทุกก้อนหันขั้วบวกไปทางขวา ต่อเข้ากับจุดเดียวกัน ลูกศรสีแดงบอกทิศกระแสในวงจรภายนอก";
+  const nr=st.rev.slice(0,n).filter(x=>x).length, Id=Number(DP.sig(S.I,3));
+  const lines=[], EA=S.E<0?`(ขนาดของ ${m("ε")})`:m("ε");
+  if(st.mode==="ser"){
+    lines.push(nr? `${m("ε")} = (${n-nr} - ${nr})(${fx(st.e,1)} V) = ${fx(S.E,1)} V|ก้อนที่กลับขั้วคิดอีเอ็มเอฟเป็นลบ`: `${m("ε")} = ${n}(${fx(st.e,1)} V) = ${fx(S.E,1)} V`);
+    lines.push(`${m("r")} = ${n}(${fx(st.r,2)} Ω) = ${fmt(S.r,3)} Ω|ความต้านทานภายในบวกกันทุกก้อน`);
+    lines.push(`${m("I")} = ${EA}/(${m("R")} + ${m("r")}) = (${fx(Math.abs(S.E),1)} V)/(${fx(st.R,1)} Ω + ${fmt(S.r,3)} Ω) = ${fmt(Id,3)} A`+(S.E<0?"|อีเอ็มเอฟสมมูลติดลบ กระแสไหลในทิศตรงข้ามกับเมื่อใส่ถูกทุกก้อน":""));
+  } else {
+    lines.push(`${m("ε")} = ${m("ε")}${sub("ก้อน")} = ${fx(st.e,1)} V|ต่อขนาน อีเอ็มเอฟเท่ากันทุกก้อน`);
+    lines.push(`${m("r")} = ${m("r")}${sub("ก้อน")}/${m("n")} = (${fx(st.r,2)} Ω)/${n} = ${fmt(S.r,3)} Ω`);
+    lines.push(`${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,1)} Ω + ${fmt(S.r,3)} Ω) = ${fmt(Id,3)} A`, `แต่ละก้อนจ่าย ${m("I")}/${m("n")} = ${fmt(Id/n,3)} A`);
+  }
+  if(S.I>1e-9) lines.push(`ความต่างศักย์ระหว่างขั้วของทั้งชุด = ${EA} - ${m("Ir")} = ${fx(Math.abs(S.E),1)} V - (${fmt(Id,3)} A)(${fmt(S.r,3)} Ω) = ${fmt(Math.abs(S.E)-Id*S.r,3)} V`);
+  $("eq").innerHTML=eqHTML(lines);
+  const Sx=$("status"); Sx.classList.toggle("rev",st.mode==="ser"&&nr>0);
+  Sx.innerHTML= st.mode==="par" ? "ต่อขนานไม่ได้เพิ่มอีเอ็มเอฟ แต่ลดความต้านทานภายในสมมูล และแต่ละก้อนจ่ายกระแสเพียงส่วนหนึ่งของกระแสรวม ความต่างศักย์ระหว่างขั้วจึงลดลงน้อยกว่าใช้ก้อนเดียว"
+    : S.I<1e-9 ? "อีเอ็มเอฟสมมูลเป็นศูนย์ ก้อนที่กลับขั้วหักล้างก้อนอื่นพอดี จึงไม่มีกระแส"
+    : nr? `มีก้อนที่กลับขั้ว ${nr} ก้อน อีเอ็มเอฟสมมูลลดลง แต่ความต้านทานภายในยังเพิ่มทุกก้อน กระแสจึงลดลงมาก ก้อนที่${S.cells.some(c=>c.dir==="chg"&&c.rev)?"กลับขั้ว":"หันขั้วตามกัน"}มีกระแสภายในไหลจากขั้วบวกไปขั้วลบ เหมือนก้อนที่กำลังถูกประจุ`
+    : "ต่ออนุกรมโดยหันขั้วไปทางเดียวกัน: อีเอ็มเอฟและความต้านทานภายในบวกกัน ทุกก้อนมีกระแสเท่ากัน";
+  $("tbl").innerHTML=`<tr><th>ก้อน</th><th>${m("I")}</th><th>ทิศภายใน</th><th>V₊ - V₋</th></tr>`+S.cells.map((c,k)=>{
+    const Ik=Number(DP.sig(c.I,3)), V=c.dir==="sup"?st.e-Ik*st.r:c.dir==="chg"?st.e+Ik*st.r:st.e;
+    return `<tr><td>${k+1}${c.rev?" (กลับขั้ว)":""}</td><td>${fmt(Ik,3)} A</td><td>${c.dir==="sup"?"ลบ → บวก":c.dir==="chg"?"บวก → ลบ":"-"}</td><td>${fmt(V,3)} V</td></tr>`; }).join("");
+  draw();
+}
+function sync(){ $("s-n").value=st.n; $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }
+DP.seg(["m-ser","m-par"],id=>{ st.mode=id==="m-ser"?"ser":"par"; update(); });
+$("s-n").addEventListener("input",e=>{ st.n=+e.target.value; update(); });
+$("s-e").addEventListener("input",e=>{ st.e=+e.target.value; update(); });
+$("s-r").addEventListener("input",e=>{ st.r=+e.target.value; update(); });
+$("s-R").addEventListener("input",e=>{ st.R=+e.target.value; update(); });
+$("p1").addEventListener("click",()=>{ Object.assign(st,{mode:"ser",n:4,e:1.5,r:0.2,R:5.2,rev:[false,false,false,false,false,false]}); sync(); });
+$("p2").addEventListener("click",()=>{ Object.assign(st,{mode:"ser",n:4,e:1.5,r:0.5,R:4.0,rev:[false,false,true,false,false,false]}); sync(); });
+$("p3").addEventListener("click",()=>{ Object.assign(st,{mode:"par",n:3,e:1.5,r:0.3,R:1.4,rev:[false,false,false,false,false,false]}); sync(); });
+sync();
+window.__sim={st,solve,sync};
+})();
+</script>
+
+</body>
+</html>

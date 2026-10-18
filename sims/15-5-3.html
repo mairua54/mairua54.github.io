@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>กำลังที่ตัวต้านทานภายนอกได้รับ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 5.3 · ความรู้เพิ่มเติม (ต่อยอด)</div>
+  <h1>กำลังที่ตัวต้านทานภายนอกได้รับ</h1>
+  <p class="lead">ปรับความต้านทานภายนอก R โดย ε และ r คงตัว แล้วดูว่ากำลังที่ R ได้รับมากที่สุดเมื่อใด และพลังงานส่วนใดกลายเป็นความร้อนในแหล่งกำเนิด</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-g">
+    <h2 id="h-g">กำลังที่ R ได้รับ</h2>
+    <svg id="g" viewBox="0 0 380 290" role="img" aria-label="กราฟกำลังที่ตัวต้านทานภายนอกได้รับกับความต้านทานภายนอก"></svg>
+    <p class="cap">จุดสีน้ำเงินคือค่า R ที่เลือก แตะหรือลากบนกราฟเพื่อเปลี่ยน R เส้นประสีเทาบอกตำแหน่งที่กำลังมากที่สุด</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="ctl" style="margin-top:0">
+      <div class="row"><label for="s-e"><span>อีเอ็มเอฟ <i class="m">ε</i></span><output id="o-e"></output></label>
+        <input type="range" id="s-e" min="1.5" max="12" step="0.5"></div>
+      <div class="row"><label for="s-r"><span>ความต้านทานภายใน <i class="m">r</i></span><output id="o-r"></output></label>
+        <input type="range" id="s-r" min="0.1" max="4" step="0.05"></div>
+      <div class="row"><label for="s-R"><span>ความต้านทานภายนอก <i class="m">R</i></span><output id="o-R"></output></label>
+        <input type="range" id="s-R" min="0" max="20" step="0.05"></div>
+      <div class="btns"><button class="btn" id="b-eq">ตั้ง R = r</button><button class="btn" id="b-ex">ค่าของ Ex. 5.5</button></div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">แบ่งกำลัง</h2>
+    <div class="eq" id="eq"></div>
+    <div class="ebar" id="ebar"><span id="e1"></span><span id="e2"></span></div>
+    <div class="legend" id="leg"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ตรวจ Ex. 5.5</summary>
+    <p class="q">กด "ค่าของ Ex. 5.5" (ε = 12.0 V, r = 0.50 Ω, R = 5.5 Ω) แล้วตรวจว่ากำลังที่แบตเตอรี่เปลี่ยนพลังงานเคมีเป็นพลังงานไฟฟ้าเท่ากับผลรวมของกำลังที่ R ได้รับกับอัตราการเกิดความร้อนในแบตเตอรี่</p>
+    <p class="q"><b>คำตอบ</b> I = 2.00 A ได้ Iε = 24.0 W, I<sup>2</sup>R = 22.0 W และ I<sup>2</sup>r = 2.00 W ซึ่งรวมกันได้ 24.0 W พอดี ประสิทธิภาพ R/(R + r) = 91.7 %</p>
+  </details>
+  <details>
+    <summary>2. R เท่าใด ตัวต้านทานได้รับกำลังมากที่สุด</summary>
+    <p class="q">ใช้ค่าเดิม ลองเลื่อน R หาค่าที่ทำให้กำลังที่ R ได้รับมากที่สุด กำลังนั้นเท่าใด และประสิทธิภาพเป็นเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> มากที่สุดเมื่อ R = r = 0.50 Ω ได้ ε<sup>2</sup>/(4r) = (12.0 V)<sup>2</sup>/[4(0.50 Ω)] = 72.0 W แต่ประสิทธิภาพเหลือเพียง 50 % พลังงานอีกครึ่งหนึ่งกลายเป็นความร้อนในแบตเตอรี่ เครื่องใช้ไฟฟ้าจึงออกแบบให้ R มากกว่า r มาก ซึ่งได้รับกำลังน้อยกว่าค่ามากที่สุด แต่สูญเสียเป็นความร้อนในแหล่งกำเนิดน้อย</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่า ε และ r คงตัว และวงจรภายนอกเป็นตัวต้านทานล้วนที่ยุบรวมเป็น R ได้ กำลังที่ R ได้รับคือ <i class="m">P</i><sub>R</sub> = <i class="m">I</i><sup>2</sup><i class="m">R</i> = <i class="m">ε</i><sup>2</sup><i class="m">R</i>/(<i class="m">R</i> + <i class="m">r</i>)<sup>2</sup> (กรอบความรู้เพิ่มเติมในหัวข้อ 5.3)</p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const st={e:12,r:0.5,R:5.5};
+const PR=R=>st.e*st.e*R/((R+st.r)*(R+st.r));
+const niceStep=v=>{ const p=Math.pow(10,Math.floor(Math.log10(v))); for(const k of [1,2,2.5,5,10]) if(k*p>=v-1e-9) return k*p; return 10*p; };
+const G=$("g"), X0=58, X1=360, Y0=26, Y1=236; let RMAX=20, XT=4;
+function draw(){
+  G.textContent=""; const want=Math.max(6*st.r,st.R*1.15,2); XT=niceStep(want/5); RMAX=XT*Math.ceil(want/XT-1e-9);
+  const Pmax=st.e*st.e/(4*st.r), yt=niceStep(Pmax*1.12/4), ymax=yt*Math.ceil(Pmax*1.12/yt-1e-9);
+  const sx=R=>X0+(X1-X0)*R/RMAX, sy=P=>Y1-(Y1-Y0)*P/ymax;
+  for(let v=0;v<=RMAX+1e-9;v+=XT){ const x=sx(v); el("line",{x1:x,y1:Y0,x2:x,y2:Y1,stroke:"var(--line)"},G); txt(G,x,Y1+17,fmt(v,2,{intok:1}),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); }
+  for(let k=0;k<=Math.round(ymax/yt);k++){ const v=k*yt, y=sy(v); el("line",{x1:X0,y1:y,x2:X1,y2:y,stroke:"var(--line)"},G); txt(G,X0-6,y+4,fmt(v,2,{intok:1}),{"text-anchor":"end","font-size":12,fill:"var(--muted)"}); }
+  el("line",{x1:X0,y1:Y1,x2:X1,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G); el("line",{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G);
+  txt(G,(X0+X1)/2,Y1+38,"R (Ω)",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"}); txt(G,X0,Y0-9,"กำลังที่ R ได้รับ (W)",{"font-size":13,fill:"var(--muted)"});
+  const pts=[]; for(let k=0;k<=600;k++){ const R=RMAX*Math.pow(k/600,1.3); pts.push([sx(R),sy(PR(R))]); }
+  el("polyline",{points:DP.pl(pts),fill:"none",stroke:"var(--graph)","stroke-width":3},G);
+  // maximum at R = r
+  const xm=sx(st.r), ym=sy(Pmax);
+  el("polyline",{points:DP.pl([[X0,ym],[xm,ym],[xm,Y1]]),fill:"none",stroke:"var(--helper)","stroke-width":1.3,"stroke-dasharray":"4 4"},G);
+  txt(G,xm+4,Y1-6,[["R",{it:1}]," = ",["r",{it:1}]],{"font-size":13,fill:"var(--muted)"});
+  txt(G,xm+8,ym-6,"สูงสุด "+fmt(Pmax,3)+" W",{"font-size":13,fill:"var(--muted)"});
+  const x=sx(st.R), y=sy(PR(st.R)); el("circle",{cx:x,cy:y,r:6,fill:"var(--graph)",stroke:"var(--card)","stroke-width":2},G);
+}
+function pointer(ev){ const r=G.getBoundingClientRect(); const xx=(ev.clientX-r.left)*380/r.width; let R=(xx-X0)/(X1-X0)*RMAX; R=Math.max(0,Math.min(Math.min(20,RMAX),Math.round(R/0.05)*0.05)); st.R=Number(R.toFixed(2)); $("s-R").value=st.R; update(); }
+G.addEventListener("pointerdown",e=>{ G.setPointerCapture(e.pointerId); pointer(e); });
+G.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") pointer(e); });
+function update(){
+  $("o-e").textContent=fx(st.e,1)+" V"; $("o-r").textContent=fx(st.r,2)+" Ω"; $("o-R").textContent=fx(st.R,2)+" Ω";
+  const I=st.e/(st.R+st.r), Id=Number(DP.sig(I,3));
+  const Pe=Id*st.e, PRd=Id*Id*st.R, Pr=Id*Id*st.r, eta=st.R/(st.R+st.r);
+  $("eq").innerHTML=eqHTML([
+    `${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,2)} Ω + ${fx(st.r,2)} Ω) = ${fmt(Id,3)} A`,
+    `${m("I")}${m("ε")} = (${fmt(Id,3)} A)(${fx(st.e,1)} V) = ${fmt(Pe,3)} W|กำลังที่แบตเตอรี่เปลี่ยนพลังงานเคมีเป็นพลังงานไฟฟ้า`,
+    `${m("I")}<sup>2</sup>${m("R")} = (${fmt(Id,3)} A)<sup>2</sup>(${fx(st.R,2)} Ω) = ${fmt(PRd,3)} W|กำลังที่ R ได้รับ`,
+    `${m("I")}<sup>2</sup>${m("r")} = (${fmt(Id,3)} A)<sup>2</sup>(${fx(st.r,2)} Ω) = ${fmt(Pr,3)} W|อัตราการเกิดความร้อนในแบตเตอรี่`,
+    `ประสิทธิภาพ ${m("η")} = ${m("R")}/(${m("R")} + ${m("r")}) = ${fmt(100*eta,3,{intok:1})} %`]);
+  $("e1").style.width=(100*eta)+"%"; $("e1").style.background="var(--chem)"; $("e2").style.width=(100*(1-eta))+"%"; $("e2").style.background="var(--heat)";
+  $("leg").innerHTML=`<div><span class="sw" style="background:var(--chem)"></span>ส่งให้ R ${fmt(100*eta,3,{intok:1})} %</div><div><span class="sw" style="background:var(--heat)"></span>กลายเป็นความร้อนใน r ${fmt(100*(1-eta),3,{intok:1})} %</div>`;
+  const d=st.R-st.r;
+  $("status").innerHTML= Math.abs(d)<1e-9 ? `${m("R")} = ${m("r")}: ${m("R")} ได้รับกำลังมากที่สุด ${m("ε")}<sup>2</sup>/(4${m("r")}) = ${fmt(st.e*st.e/(4*st.r),3)} W แต่ประสิทธิภาพเพียง 50 % พลังงานอีกครึ่งหนึ่งกลายเป็นความร้อนในแบตเตอรี่`
+    : st.R===0 ? "R = 0 (ลัดวงจร): กระแสมากที่สุด แต่ R ไม่ได้รับกำลังเลย กำลังทั้งหมดกลายเป็นความร้อนในแบตเตอรี่"
+    : d<0 ? `${m("R")} น้อยกว่า ${m("r")}: กระแสมาก แต่ ${m("R")} ได้รับกำลังน้อยกว่าเมื่อ ${m("R")} = ${m("r")} และประสิทธิภาพต่ำกว่า 50 %`
+    : `${m("R")} มากกว่า ${m("r")}: ${m("R")} ได้รับกำลังน้อยกว่าค่ามากที่สุด แต่ประสิทธิภาพสูงกว่า 50 % พลังงานส่วนใหญ่ไปถึง ${m("R")}`;
+  draw();
+}
+function sync(){ $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }
+$("s-e").addEventListener("input",e=>{ st.e=+e.target.value; update(); });
+$("s-r").addEventListener("input",e=>{ st.r=+e.target.value; update(); });
+$("s-R").addEventListener("input",e=>{ st.R=+e.target.value; update(); });
+$("b-eq").addEventListener("click",()=>{ st.R=st.r; sync(); });
+$("b-ex").addEventListener("click",()=>{ Object.assign(st,{e:12,r:0.5,R:5.5}); sync(); });
+sync();
+window.__sim={st,PR,sync};
+})();
+</script>
+
+</body>
+</html>

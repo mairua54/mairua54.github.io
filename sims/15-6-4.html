@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>มิเตอร์ที่ไม่เป็นอุดมคติ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 6.4</div>
+  <h1>ผลของมิเตอร์ที่ไม่เป็นอุดมคติ</h1>
+  <p class="lead">แทนมิเตอร์ด้วยตัวต้านทานที่มีความต้านทานเท่ากับความต้านทานของมิเตอร์ แล้วดูว่าค่าที่อ่านได้ต่างจากค่าก่อนต่อมิเตอร์เท่าใด</p>
+</header>
+
+<div class="seg" role="group" aria-label="สถานการณ์">
+  <button id="t-a" aria-pressed="true">แอมมิเตอร์</button>
+  <button id="t-v" aria-pressed="false">โวลต์มิเตอร์</button>
+  <button id="t-r" aria-pressed="false">วัด R (ต่อยอด)</button>
+</div>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-c">
+    <h2 id="h-c">วงจร</h2>
+    <svg id="c" viewBox="0 0 380 262" role="img" aria-label="วงจรที่มีมิเตอร์"></svg>
+    <p class="cap" id="cap"></p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="ctl" id="ctl" style="margin-top:0"></div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">ค่าที่อ่านได้เทียบกับค่าก่อนต่อมิเตอร์</h2>
+    <div class="eq" id="eq"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. โวลต์มิเตอร์ 10 kΩ กับ 1.0 MΩ</summary>
+    <p class="q">เลือก "โวลต์มิเตอร์" ตัวต้านทาน 10 kΩ สองตัวต่ออนุกรมกับแหล่งกำเนิด 12 V วัดคร่อมตัวหนึ่งด้วยโวลต์มิเตอร์ 10 kΩ แล้วเปลี่ยนเป็น 1.0 MΩ ค่าที่อ่านได้เป็นเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> ก่อนต่อโวลต์มิเตอร์ ความต่างศักย์คร่อมแต่ละตัวเป็น 6.00 V โวลต์มิเตอร์ 10 kΩ ทำให้ส่วนที่วัดเหลือ 5.0 kΩ จึงอ่านได้ (12 V)(5.0 kΩ)/(15 kΩ) = 4.00 V ส่วนโวลต์มิเตอร์ 1.0 MΩ อ่านได้ประมาณ 5.97 V ใกล้ค่าเดิมมาก โวลต์มิเตอร์จึงควรมีความต้านทานมากกว่าส่วนที่วัดมาก</p>
+  </details>
+  <details>
+    <summary>2. วัด R สองแบบ (ต่อยอด)</summary>
+    <p class="q">เลือก "วัด R" ตั้ง R = 100 Ω แอมมิเตอร์ 1.0 Ω และโวลต์มิเตอร์ 10 kΩ ค่า ΔV/I ของแต่ละแบบมากหรือน้อยกว่า R แบบใดคลาดเคลื่อนน้อยกว่า และถ้า R = 10 kΩ ผลเปลี่ยนอย่างไร</p>
+    <p class="q"><b>คำตอบ</b> แบบที่ 1 ได้ 99.0 Ω น้อยกว่า R เพราะแอมมิเตอร์อ่านกระแสรวมของ R กับโวลต์มิเตอร์ แบบที่ 2 ได้ 101 Ω มากกว่า R เพราะโวลต์มิเตอร์อ่านความต่างศักย์รวมของ R กับแอมมิเตอร์ ที่ R = 100 Ω ทั้งสองแบบคลาดเคลื่อนราวร้อยละ 1 แต่เมื่อ R = 10 kΩ แบบที่ 1 ได้ 5.00 kΩ (คลาดเคลื่อนครึ่งหนึ่ง) ส่วนแบบที่ 2 ได้ 10.0 kΩ แทบไม่คลาดเคลื่อน แบบที่ 1 เหมาะเมื่อ R<sub>V</sub> มากกว่า R มาก แบบที่ 2 เหมาะเมื่อ R<sub>A</sub> น้อยกว่า R มาก</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าแหล่งกำเนิดไม่มีความต้านทานภายใน สายไฟไม่มีความต้านทาน และแทนมิเตอร์แต่ละตัวด้วยตัวต้านทานเท่ากับความต้านทานของมิเตอร์ ตัวอย่างค่าเริ่มต้นตรงกับตัวอย่างในหัวข้อ 6.4</p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const SEQ=[1e3,2e3,5e3,1e4,2e4,5e4,1e5,2e5,5e5,1e6,2e6,5e6,1e7];
+const RSEQ=[1,2,5,10,20,50,100,200,500,1e3,2e3,5e3,1e4];
+const st={tab:"a", a:{e:1.5,R:10,RA:0.5}, v:{e:12,R:1e4,RV:1e4}, r:{e:6,R:100,RA:1,RV:1e4,cfg:1}};
+/* resistance with unit prefix */
+function fR(x,n){ n=n||3; if(x>=1e6) return fmt(x/1e6,n,{intok:1})+" MΩ"; if(x>=1e3) return fmt(x/1e3,n,{intok:1})+" kΩ"; return fmt(x,n,{intok:1})+" Ω"; }
+const par=(a,b)=>a*b/(a+b);
+function results(){
+  if(st.tab==="a"){ const c=st.a; const I0=c.e/c.R, I=c.e/(c.R+c.RA); return {I0,I,err:100*(I-I0)/I0}; }
+  if(st.tab==="v"){ const c=st.v; const V0=c.e*c.R/(2*c.R), Rp=par(c.R,c.RV), V=c.e*Rp/(c.R+Rp); return {V0,Rp,V,err:100*(V-V0)/V0}; }
+  const c=st.r; const R1=par(c.R,c.RV), R2=c.R+c.RA;   // measured ΔV/I in configuration 1 (voltmeter across R only) and 2 (voltmeter across R and ammeter)
+  const I1=c.e/(R1+c.RA), V1=I1*R1; const I2=c.e/R2, V2=c.e;
+  return {R1,R2,I1,V1,I2,V2,err1:100*(R1-c.R)/c.R,err2:100*(R2-c.R)/c.R};
+}
+/* controls per tab */
+function slider(id,label,min,max,step,val,out){ return `<div class="row"><label for="${id}"><span>${label}</span><output id="o-${id}">${out}</output></label><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}"></div>`; }
+function buildCtl(){
+  const C=$("ctl");
+  if(st.tab==="a"){ const c=st.a; C.innerHTML=slider("x1","ความต้านทาน R",1,50,1,c.R,"")+slider("x2",`ความต้านทานของแอมมิเตอร์ ${m("R")}${sub("A")}`,0,5,0.1,c.RA,"")+`<div class="btns"><button class="btn" id="pre">ค่าในหัวข้อ 6.4</button></div>`;
+    $("x1").oninput=e=>{c.R=+e.target.value;update();}; $("x2").oninput=e=>{c.RA=+e.target.value;update();}; $("pre").onclick=()=>{Object.assign(c,{R:10,RA:0.5}); buildCtl(); update();}; }
+  else if(st.tab==="v"){ const c=st.v; C.innerHTML=slider("x1","ความต้านทานของตัวต้านทานแต่ละตัว",0,RSEQ.length-1,1,RSEQ.indexOf(c.R),"")+slider("x2",`ความต้านทานของโวลต์มิเตอร์ ${m("R")}${sub("V")}`,0,SEQ.length-1,1,SEQ.indexOf(c.RV),"")+`<div class="btns"><button class="btn" id="pre">10 kΩ</button><button class="btn" id="pre2">1.0 MΩ</button></div>`;
+    $("x1").oninput=e=>{c.R=RSEQ[+e.target.value];update();}; $("x2").oninput=e=>{c.RV=SEQ[+e.target.value];update();};
+    $("pre").onclick=()=>{Object.assign(c,{R:1e4,RV:1e4}); buildCtl(); update();}; $("pre2").onclick=()=>{Object.assign(c,{R:1e4,RV:1e6}); buildCtl(); update();}; }
+  else { const c=st.r; C.innerHTML=`<div class="seg" role="group" aria-label="แบบการต่อ"><button id="c1" aria-pressed="${c.cfg===1}">แบบที่ 1</button><button id="c2" aria-pressed="${c.cfg===2}">แบบที่ 2</button></div>`+
+      slider("x1","ความต้านทานที่ต้องการวัด R",0,RSEQ.length-1,1,RSEQ.indexOf(c.R),"")+slider("x2",`ความต้านทานของแอมมิเตอร์ ${m("R")}${sub("A")}`,0,5,0.1,c.RA,"")+slider("x3",`ความต้านทานของโวลต์มิเตอร์ ${m("R")}${sub("V")}`,0,SEQ.length-1,1,SEQ.indexOf(c.RV),"");
+    DP.seg(["c1","c2"],id=>{ c.cfg=id==="c1"?1:2; update(); });
+    $("x1").oninput=e=>{c.R=RSEQ[+e.target.value];update();}; $("x2").oninput=e=>{c.RA=+e.target.value;update();}; $("x3").oninput=e=>{c.RV=SEQ[+e.target.value];update();}; }
+}
+/* drawings */
+const S=$("c");
+function batt(x,y){ DP.cell(S,x,y,"v","up"); }
+function res(x0,y0,x1,y1,label,lx,ly){ const v=x0===x1; el("rect",v?{x:x0-9,y:Math.min(y0,y1),width:18,height:Math.abs(y1-y0),fill:"var(--card)"}:{x:Math.min(x0,x1),y:y0-9,width:Math.abs(x1-x0),height:18,fill:"var(--card)"},S); DP.resistor(S,x0,y0,x1,y1,4,7); txt(S,lx,ly,label,{"text-anchor":"middle","font-size":14}); }
+function meterAt(x,y,letter,plusDir){ // plusDir: side of the + terminal ("left","right","up","down")
+  DP.meter(S,x,y,letter,15);
+  const off={left:[-21,-10],right:[21,-10],up:[-14,-17],down:[-14,27]}[plusDir], offm={left:[21,-10],right:[-21,-10],up:[-14,27],down:[-14,-17]}[plusDir];
+  txt(S,x+off[0],y+off[1],"+",{"text-anchor":"middle","font-weight":700,"font-size":14}); txt(S,x+offm[0],y+offm[1],"−",{"text-anchor":"middle","font-weight":700,"font-size":14}); }
+function draw(){
+  S.textContent=""; const R=results();
+  if(st.tab==="a"){ const c=st.a;
+    DP.wire(S,[[40,50],[340,50],[340,210],[40,210],[40,50]]); batt(40,130); txt(S,62,135,fx(c.e,1)+" V",{"font-size":14});
+    res(150,50,230,50,"R = "+fR(c.R,2),190,34); el("rect",{x:325,y:112,width:30,height:36,fill:"var(--card)"},S); meterAt(340,130,"A","up");
+    txt(S,318,175,[["R",{it:1}],["A",{sub:1}]," = "+fx(c.RA,1)+" Ω"],{"font-size":13,"text-anchor":"end"});
+    DP.arrowHead(S,290,50,0); DP.arrowHead(S,190,210,180);
+    $("cap").textContent="แอมมิเตอร์ต่ออนุกรมในวงจร ความต้านทานของแอมมิเตอร์จึงรวมเข้ากับความต้านทานของสาขานั้น";
+  } else if(st.tab==="v"){ const c=st.v;
+    DP.wire(S,[[40,90],[340,90],[340,220],[40,220],[40,90]]); batt(40,155); txt(S,62,160,"12 V",{"font-size":14});
+    res(90,90,160,90,[["R",{it:1}],["1",{sub:1}]],125,118); res(230,90,300,90,[["R",{it:1}],["2",{sub:1}]],265,118);
+    DP.wire(S,[[195,90],[195,40],[250,40]]); DP.wire(S,[[280,40],[340,40],[340,90]]); el("rect",{x:248,y:28,width:34,height:24,fill:"var(--card)"},S); meterAt(265,40,"V","left");
+    DP.dot(S,195,90); DP.dot(S,340,90);
+    txt(S,265,72,[["R",{it:1}],["V",{sub:1}]," = "+fR(c.RV,2)],{"text-anchor":"middle","font-size":13});
+    txt(S,190,245,"R₁ = R₂ = "+fR(c.R,2),{"text-anchor":"middle","font-size":13,fill:"var(--muted)"});
+    DP.arrowHead(S,70,90,0); DP.arrowHead(S,190,220,180);
+    $("cap").textContent="โวลต์มิเตอร์ต่อคร่อม R₂ จึงเป็นสาขาขนานที่เพิ่มขึ้น ความต้านทานของส่วนที่วัดจึงน้อยกว่า R₂";
+  } else { const c=st.r;
+    DP.wire(S,[[40,84],[40,220],[340,220],[340,84]]); batt(40,152); txt(S,62,157,"6.0 V",{"font-size":14});
+    if(c.cfg===1){ // ammeter in series, voltmeter across R only
+      DP.wire(S,[[40,84],[110,84]]); DP.wire(S,[[140,84],[340,84]]); el("rect",{x:108,y:68,width:34,height:32,fill:"var(--card)"},S); meterAt(125,84,"A","left");
+      res(220,84,300,84,"R",260,112); DP.wire(S,[[200,84],[200,40],[245,40]]); DP.wire(S,[[275,40],[320,40],[320,84]]); el("rect",{x:243,y:28,width:34,height:24,fill:"var(--card)"},S); meterAt(260,40,"V","left");
+      DP.dot(S,200,84); DP.dot(S,320,84);
+      $("cap").textContent="แบบที่ 1: โวลต์มิเตอร์ต่อคร่อม R เท่านั้น แอมมิเตอร์อ่านกระแสรวมของ R กับโวลต์มิเตอร์";
+    } else { // ammeter in series with R, voltmeter across both
+      DP.wire(S,[[40,84],[340,84]]); el("rect",{x:158,y:68,width:34,height:32,fill:"var(--card)"},S); meterAt(175,84,"A","left");
+      res(230,84,300,84,"R",265,112); DP.wire(S,[[120,84],[120,40],[205,40]]); DP.wire(S,[[235,40],[320,40],[320,84]]); el("rect",{x:203,y:28,width:34,height:24,fill:"var(--card)"},S); meterAt(220,40,"V","left");
+      DP.dot(S,120,84); DP.dot(S,320,84);
+      $("cap").textContent="แบบที่ 2: แอมมิเตอร์ต่ออนุกรมกับ R และโวลต์มิเตอร์ต่อคร่อมทั้ง R และแอมมิเตอร์";
+    }
+    txt(S,190,245,[["R",{it:1}]," = "+fR(c.R,2)+" · ",["R",{it:1}],["A",{sub:1}]," = "+fx(c.RA,1)+" Ω · ",["R",{it:1}],["V",{sub:1}]," = "+fR(c.RV,2)],{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+    DP.arrowHead(S,70,84,0); DP.arrowHead(S,190,220,180);
+  }
+}
+function update(){
+  const R=results(); DP.setSeg(["t-a","t-v","t-r"],{a:"t-a",v:"t-v",r:"t-r"}[st.tab]);
+  let lines=[], msg="";
+  if(st.tab==="a"){ const c=st.a; $("o-x1").textContent=fR(c.R,2); $("o-x2").textContent=fx(c.RA,1)+" Ω";
+    lines=[`ก่อนต่อแอมมิเตอร์: ${m("I")} = ${m("ε")}/${m("R")} = (${fx(c.e,1)} V)/(${fR(c.R,2)}) = ${fmt(R.I0,3)} A`,
+      `ค่าที่อ่านได้: ${m("I")} = ${m("ε")}/(${m("R")} + ${m("R")}${sub("A")}) = (${fx(c.e,1)} V)/(${fR(c.R,2)} + ${fx(c.RA,1)} Ω) = ${fmt(R.I,3)} A`,
+      `อ่านได้${R.err<-1e-9?"น้อยกว่า":"เท่ากับ"}ค่าเดิม ${fmt(Math.abs(R.err),2,{intok:1})} %`];
+    msg= c.RA===0? "แอมมิเตอร์อุดมคติไม่มีความต้านทาน ค่าที่อ่านได้จึงเท่ากับกระแสก่อนต่อ" : "แอมมิเตอร์ทำให้ความต้านทานของสาขาเพิ่มขึ้น ค่าที่อ่านได้จึงน้อยกว่ากระแสก่อนต่อแอมมิเตอร์ ผลนี้น้อยเมื่อ R_A น้อยกว่าความต้านทานอื่นในสาขามาก";
+  } else if(st.tab==="v"){ const c=st.v; $("o-x1").textContent=fR(c.R,2); $("o-x2").textContent=fR(c.RV,2);
+    lines=[`ก่อนต่อโวลต์มิเตอร์: Δ${m("V")}${sub("2")} = (12 V)/2 = ${fmt(R.V0,3)} V|ตัวต้านทานเท่ากัน แบ่งความต่างศักย์ได้เท่ากัน`,
+      `ส่วนที่วัด: ${m("R")}${sub("2")} ขนาน ${m("R")}${sub("V")} = (${fR(c.R,2)})(${fR(c.RV,2)})/(${fR(c.R,2)} + ${fR(c.RV,2)}) = ${fR(R.Rp,3)}`,
+      `ค่าที่อ่านได้: (12 V)(${fR(R.Rp,3)})/(${fR(c.R,2)} + ${fR(R.Rp,3)}) = ${fmt(R.V,3)} V`,
+      `อ่านได้น้อยกว่าค่าเดิม ${fmt(Math.abs(R.err),2,{intok:1})} %`];
+    msg="โวลต์มิเตอร์เป็นสาขาขนานที่เพิ่มขึ้น ความต้านทานของส่วนที่วัดลดลง ความต่างศักย์คร่อมส่วนนั้นจึงลดลง ผลนี้น้อยเมื่อ R_V มากกว่าความต้านทานของส่วนที่วัดมาก";
+  } else { const c=st.r; $("o-x1").textContent=fR(c.R,2); $("o-x2").textContent=fx(c.RA,1)+" Ω"; $("o-x3").textContent=fR(c.RV,2);
+    lines= c.cfg===1 ? [`แอมมิเตอร์อ่านกระแสรวมของ ${m("R")} กับโวลต์มิเตอร์ ค่าที่คำนวณได้จึงเป็นความต้านทานของ ${m("R")} ขนาน ${m("R")}${sub("V")}`,
+        `Δ${m("V")}/${m("I")} = ${m("R")}${m("R")}${sub("V")}/(${m("R")} + ${m("R")}${sub("V")}) = ${fR(R.R1,3)}`, `น้อยกว่า R อยู่ ${fmt(Math.abs(R.err1),2,{intok:1})} %`,
+        `เทียบ: แบบที่ 2 ได้ ${fR(R.R2,3)} (มากกว่า R อยู่ ${fmt(Math.abs(R.err2),2,{intok:1})} %)`]
+      : [`โวลต์มิเตอร์อ่านความต่างศักย์รวมของ ${m("R")} กับแอมมิเตอร์ ค่าที่คำนวณได้จึงเป็น ${m("R")} + ${m("R")}${sub("A")}`,
+        `Δ${m("V")}/${m("I")} = ${m("R")} + ${m("R")}${sub("A")} = ${fR(c.R,2)} + ${fx(c.RA,1)} Ω = ${fR(R.R2,3)}`, `มากกว่า R อยู่ ${fmt(Math.abs(R.err2),2,{intok:1})} %`,
+        `เทียบ: แบบที่ 1 ได้ ${fR(R.R1,3)} (น้อยกว่า R อยู่ ${fmt(Math.abs(R.err1),2,{intok:1})} %)`];
+    msg = Math.abs(R.err1)<Math.abs(R.err2) ? "ค่านี้ แบบที่ 1 คลาดเคลื่อนน้อยกว่า เพราะ R_V มากกว่า R มาก" : Math.abs(R.err1)>Math.abs(R.err2) ? "ค่านี้ แบบที่ 2 คลาดเคลื่อนน้อยกว่า เพราะ R_A น้อยกว่า R มาก" : "ค่านี้ ทั้งสองแบบคลาดเคลื่อนเท่ากัน";
+  }
+  $("eq").innerHTML=eqHTML(lines); $("status").innerHTML=msg.replace("R_A",`${m("R")}${sub("A")}`).replace("R_V",`${m("R")}${sub("V")}`);
+  draw();
+}
+DP.seg(["t-a","t-v","t-r"],id=>{ st.tab={"t-a":"a","t-v":"v","t-r":"r"}[id]; buildCtl(); update(); });
+buildCtl(); update();
+window.__sim={st,results,update,buildCtl,setTab:t=>{st.tab=t;buildCtl();update();}};
+})();
+</script>
+
+</body>
+</html>

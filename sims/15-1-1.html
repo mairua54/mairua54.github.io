@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>อิเล็กตรอนอิสระในลวดโลหะ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.stat div{background:var(--chip);border-radius:8px;padding:8px;text-align:center}
+.stat b{display:block;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 1.1 และ 1.6</div>
+  <h1>อิเล็กตรอนอิสระในลวดโลหะ</h1>
+  <p class="lead">ดูการเคลื่อนที่แบบสุ่มของอิเล็กตรอนอิสระที่ชนกับไอออนบวก แล้วต่อแหล่งกำเนิดเพื่อดูการลอยเลื่อนที่ซ้อนเข้ามา</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-wire">
+    <h2 id="h-wire">ในเนื้อลวด</h2>
+    <canvas id="cv" width="720" height="280" aria-label="อิเล็กตรอนอิสระ (จุดสีน้ำเงิน) เคลื่อนที่ระหว่างไอออนบวก (วงกลมสีแดง)"></canvas>
+    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนอิสระ วงกลมสีแดงคือไอออนบวกที่สั่นอยู่กับที่ วงจางรอบไอออนคือบริเวณที่ไอออนสั่น (อิเล็กตรอนชนเมื่อถึงขอบวงนี้) เส้นสีดำคือเส้นทางของอิเล็กตรอน 1 ตัว (○ จุดเริ่ม ● ตำแหน่งปัจจุบัน) เส้นประสีเทาคือหน้าตัดที่ใช้นับ ภาพนี้วาดการลอยเลื่อนให้มากเกินจริงมากเพื่อให้เห็นชัด</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="แหล่งกำเนิด">
+      <button id="m-off" aria-pressed="true">ไม่ได้ต่อแหล่งกำเนิด</button>
+      <button id="m-on" aria-pressed="false">ต่อแหล่งกำเนิด</button>
+    </div>
+    <div class="ctl">
+      <div class="row" id="row-E"><label for="s-E"><span>ความต่างศักย์ระหว่างปลายลวด</span><output id="o-E"></output></label>
+        <input type="range" id="s-E" min="1" max="3" step="1"></div>
+      <div class="row"><label for="s-T"><span>อุณหภูมิของลวด</span><output id="o-T"></output></label>
+        <input type="range" id="s-T" min="1" max="3" step="1"></div>
+      <div class="btns">
+        <button class="btn" id="b-trail">เริ่มเส้นทางใหม่</button>
+        <button class="btn" id="b-count">นับใหม่</button>
+        <button class="btn" id="b-pause" aria-pressed="false">หยุดชั่วคราว</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-count">
+    <h2 id="h-count">นับอิเล็กตรอนที่ผ่านหน้าตัด</h2>
+    <div class="stat">
+      <div><b id="n-left">0</b><span>ผ่านไปทางซ้าย</span></div>
+      <div><b id="n-right">0</b><span>ผ่านไปทางขวา</span></div>
+      <div><b id="n-net">0</b><span>สุทธิไปทางซ้าย</span></div>
+    </div>
+    <p class="cap" id="t-count"></p>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+  <section class="card" aria-labelledby="h-vel">
+    <h2 id="h-vel">ความเร็วเฉลี่ยของอิเล็กตรอน</h2>
+    <svg id="vel" viewBox="0 0 380 92" role="img" aria-label="ลูกศรความเร็วเฉลี่ยของอิเล็กตรอน"></svg>
+    <p class="cap" id="t-vel"></p>
+    <p class="note" style="margin-top:8px">ความเร็วเฉลี่ยของตัวพาประจุที่เคลื่อนที่เพราะสนามไฟฟ้า คือ<b>ความเร็วลอยเลื่อน</b> <i class="m">v</i><sub>d</sub> (หัวข้อ 1.6) ในลวดจริง อัตราเร็วสุ่มของอิเล็กตรอนประมาณ 10<sup>6</sup> m/s แต่ความเร็วลอยเลื่อนมักไม่เกินระดับมิลลิเมตรต่อวินาที ต่างกันราว 10<sup>9</sup>–10<sup>10</sup> เท่า ภาพนี้จึงขยายการลอยเลื่อนไว้มาก</p>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ไม่ได้ต่อแหล่งกำเนิด มีกระแสไหม</summary>
+    <p class="q">เลือก "ไม่ได้ต่อแหล่งกำเนิด" กด "นับใหม่" แล้วรอราว 20 วินาที จำนวนอิเล็กตรอนที่ผ่านหน้าตัดไปทางซ้ายกับทางขวาเป็นอย่างไร มีกระแสไฟฟ้าผ่านหน้าตัดไหม</p>
+    <p class="q"><b>คำตอบ</b> ทั้งสองทางมีจำนวนใกล้เคียงกัน ผลต่างขึ้นลงแบบสุ่มรอบศูนย์ และความเร็วเฉลี่ยใกล้ศูนย์ ไม่มีประจุสุทธิผ่านหน้าตัด จึงไม่มีกระแส แม้อิเล็กตรอนทุกตัวจะเคลื่อนที่เร็วตลอดเวลา</p>
+  </details>
+  <details>
+    <summary>2. ลวดร้อนขึ้น</summary>
+    <p class="q">ต่อแหล่งกำเนิด ตั้งความต่างศักย์ไว้ค่าหนึ่ง แล้วเพิ่มอุณหภูมิของลวด ความเร็วเฉลี่ยของอิเล็กตรอนเปลี่ยนอย่างไร เพราะอะไร</p>
+    <p class="q"><b>คำตอบ</b> ความเร็วเฉลี่ยลดลง เมื่อลวดร้อนขึ้น ไอออนบวกสั่นแรงขึ้น อิเล็กตรอนจึงชนบ่อยขึ้น ช่วงที่ถูกสนามไฟฟ้าเร่งระหว่างการชนสั้นลง กระแสจึงลดลงแม้ความต่างศักย์เท่าเดิม ซึ่งเป็นเหตุที่ความต้านทานของโลหะเพิ่มขึ้นเมื่ออุณหภูมิสูงขึ้น (หัวข้อ 2.5)</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้เป็นแบบจำลองอิเล็กตรอนอิสระอย่างง่ายในสองมิติ: อิเล็กตรอนเปลี่ยนทิศเมื่อชนไอออนเท่านั้น หลังชนทิศเป็นสุ่มและอัตราเร็วกลับเป็นค่าเดิม ระหว่างการชนถูกแรงไฟฟ้าคงตัวเร่งไปทางปลาย + ส่วนผลของอุณหภูมิแทนด้วยการที่ไอออนสั่นแรงขึ้นและชนได้ง่ายขึ้น จำนวนอนุภาค ขนาด และความเร็วไม่ได้เป็นไปตามสัดส่วนจริง</p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,fmt}=DP;
+const W=720,H=280, NE=80, V0=140, RE=3.5;
+const A_FIELD=[0,40,80,120];             // acceleration toward the + end (px/s²) for E level 0..3
+const R_ION=10, T_AMP=[0,1.5,4,7];      // drawn ion radius; vibration amplitude for temperature level 1..3 (collision radius = R_ION + amplitude, the faint halo)
+const st={on:false,E:2,T:1,paused:false};
+/* seeded random numbers so the run is repeatable */
+let seed=12345; const rnd=()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
+const ions=[]; for(let i=0;i<9;i++) for(let j=0;j<5;j++) ions.push({bx:40+i*80+(j%2?40:0)+(rnd()-0.5)*28,by:30+j*55+(rnd()-0.5)*20,ph1:rnd()*6.28,ph2:rnd()*6.28,w1:9+rnd()*5,w2:9+rnd()*5,x:0,y:0});
+for(const o of ions){ o.by=Math.max(20,Math.min(H-20,o.by)); }
+for(const o of ions){ if(o.bx>W) o.bx-=W; }
+const els=[];
+function placeIons(t){ const a=T_AMP[st.T]; for(const o of ions){ o.x=o.bx+a*Math.sin(o.w1*t+o.ph1); o.y=o.by+a*Math.sin(o.w2*t+o.ph2); } }
+function freeSpot(){ for(let k=0;k<500;k++){ const x=rnd()*W, y=RE+rnd()*(H-2*RE); if(ions.every(o=>Math.hypot(x-o.bx,y-o.by)>R_ION+T_AMP[3]+RE+2)) return [x,y]; } return [10,10]; }
+placeIons(0);
+for(let k=0;k<NE;k++){ const [x,y]=freeSpot(), a=rnd()*6.283; els.push({x,y,vx:V0*Math.cos(a),vy:V0*Math.sin(a)}); }
+let time=0, trail=[], crossL=0, crossR=0, countStart=0, emaVx=0, emaInit=false;
+function resetTrail(){ trail=[[els[0].x,els[0].y]]; }
+function resetCount(){ crossL=0; crossR=0; countStart=time; }
+resetTrail();
+/* one fixed time step */
+function step(dt){
+  time+=dt; placeIons(time);
+  const ax=st.on?-A_FIELD[st.E]:0, R=R_ION+T_AMP[st.T]+RE;
+  let sumVx=0;
+  for(let k=0;k<NE;k++){ const e=els[k];
+    e.vx+=ax*dt;
+    const ox=e.x; e.x+=e.vx*dt; e.y+=e.vy*dt;
+    if(e.y<RE){ e.y=2*RE-e.y; e.vy=Math.abs(e.vy); } else if(e.y>H-RE){ e.y=2*(H-RE)-e.y; e.vy=-Math.abs(e.vy); }
+    // count crossings of the middle cross-section
+    if(ox<W/2 && e.x>=W/2) crossR++; else if(ox>=W/2 && e.x<W/2) crossL++;
+    let wrapped=false; if(e.x<0){ e.x+=W; wrapped=true; } else if(e.x>=W){ e.x-=W; wrapped=true; }
+    for(const o of ions){ let dx=e.x-o.bx; if(dx>W/2) dx-=W; else if(dx<-W/2) dx+=W; const dy=e.y-o.by, d=Math.hypot(dx,dy);
+      if(d<R && (e.vx*dx+e.vy*dy)<0){ // collision: new random direction away from the ion, speed back to V0
+        const nx=dx/d, ny=dy/d; let a=Math.asin(2*rnd()-1); const base=Math.atan2(ny,nx); a+=base;
+        e.vx=V0*Math.cos(a); e.vy=V0*Math.sin(a); if(k===0) trail.push([e.x,e.y]); break; } }
+    if(k===0){ if(wrapped) trail.push(null); trail.push([e.x,e.y]); if(trail.length>2600) trail.splice(0,trail.length-2600); }
+    sumVx+=e.vx;
+  }
+  const mvx=sumVx/NE, tau=5; if(!emaInit){ emaVx=mvx; emaInit=true; } else emaVx+=(mvx-emaVx)*dt/tau;
+}
+/* drawing */
+const cv=$("cv"), ctx=cv.getContext("2d"); let dpr=1;
+function size(){ dpr=Math.min(2,window.devicePixelRatio||1); cv.width=W*dpr; cv.height=H*dpr; }
+size(); window.addEventListener("resize",size);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function draw(){
+  const C={bg:css("--chip"),ink:css("--ink"),pos:css("--pos"),el:css("--elec"),helper:css("--helper"),card:css("--card")};
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
+  ctx.setLineDash([5,5]); ctx.strokeStyle=C.helper; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke(); ctx.setLineDash([]);
+  for(const o of ions){ ctx.beginPath(); ctx.arc(o.bx,o.by,R_ION+T_AMP[st.T],0,6.283); ctx.fillStyle=C.pos; ctx.globalAlpha=0.12; ctx.fill(); ctx.globalAlpha=1; }
+  for(const o of ions){ ctx.beginPath(); ctx.arc(o.x,o.y,R_ION,0,6.283); ctx.fillStyle=C.card; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle=C.pos; ctx.stroke();
+    ctx.fillStyle=C.pos; ctx.font="bold 14px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("+",o.x,o.y+1); }
+  // trail of electron 0
+  ctx.strokeStyle=C.ink; ctx.lineWidth=1.6; ctx.beginPath(); let pen=false;
+  for(const p of trail){ if(!p){ pen=false; continue; } if(!pen){ ctx.moveTo(p[0],p[1]); pen=true; } else ctx.lineTo(p[0],p[1]); } ctx.stroke();
+  if(trail[0]){ ctx.beginPath(); ctx.arc(trail[0][0],trail[0][1],5,0,6.283); ctx.fillStyle=C.card; ctx.fill(); ctx.strokeStyle=C.ink; ctx.lineWidth=2; ctx.stroke(); }
+  for(let k=0;k<NE;k++){ const e=els[k]; ctx.beginPath(); ctx.arc(e.x,e.y,k===0?5:RE,0,6.283); ctx.fillStyle=k===0?C.ink:C.el; ctx.fill(); }
+  if(st.on){ ctx.fillStyle=C.ink; ctx.font="bold 22px sans-serif"; ctx.textBaseline="middle";
+    ctx.fillStyle=C.card; ctx.fillRect(0,H/2-16,22,32); ctx.fillRect(W-22,H/2-16,22,32);
+    ctx.fillStyle=C.ink; ctx.textAlign="center"; ctx.fillText("+",11,H/2); ctx.fillText("−",W-11,H/2); }
+}
+const vel=$("vel");
+function drawVel(){
+  vel.textContent="";
+  const cx=190, y=40, scale=500/V0; // arrow length: 50 px = 10 % of the random speed
+  el("line",{x1:40,y1:y,x2:340,y2:y,stroke:"var(--line)","stroke-width":1},vel);
+  el("line",{x1:cx,y1:y-12,x2:cx,y2:y+12,stroke:"var(--helper)","stroke-width":1.5},vel);
+  txt(vel,cx,y+28,"0",{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+  txt(vel,40,y+28,"ไปทางซ้าย",{"font-size":12,fill:"var(--muted)"}); txt(vel,340,y+28,"ไปทางขวา",{"text-anchor":"end","font-size":12,fill:"var(--muted)"});
+  const L=emaVx*scale;
+  if(Math.abs(L)>3){ const x2=cx+L, dir=L<0?-1:1;
+    el("line",{x1:cx,y1:y,x2:x2-dir*8,y2:y,stroke:"var(--ink)","stroke-width":4},vel);
+    el("path",{d:`M${x2},${y} L${x2-dir*12},${y-8} L${x2-dir*12},${y+8} Z`,fill:"var(--ink)"},vel); }
+  else el("circle",{cx,cy:y,r:4,fill:"var(--ink)"},vel);
+  const pct=100*emaVx/V0;
+  $("t-vel").textContent=`ความเร็วเฉลี่ยในภาพ ≈ ${Math.abs(pct).toFixed(0)} % ของอัตราเร็วสุ่ม ${Math.abs(pct)<4?"(ใกล้ศูนย์ ขึ้นลงแบบสุ่ม)":(emaVx<0?"ไปทางซ้าย":"ไปทางขวา")} (ค่าเฉลี่ยของอิเล็กตรอนทุกตัวในช่วงไม่กี่วินาทีล่าสุด)`;
+}
+function updatePanel(){
+  $("n-left").textContent=crossL; $("n-right").textContent=crossR; $("n-net").textContent=crossL-crossR;
+  $("t-count").textContent=`นับมาแล้ว ${(time-countStart).toFixed(0)} s (เวลาในแบบจำลอง)`;
+  $("status").innerHTML=st.on
+    ? "สนามไฟฟ้าในลวดชี้จากปลาย + ไปปลาย - อิเล็กตรอนถูกแรงไฟฟ้าในทิศตรงข้ามกับสนาม จึงเลื่อนไปทางปลาย + (ทางซ้าย) มีประจุลบสุทธิผ่านหน้าตัดไปทางซ้าย กระแสไฟฟ้าจึงมีทิศไปทางขวา จากปลาย + ไปปลาย - (หัวข้อ 1.3)"
+    : "ไม่มีสนามไฟฟ้าในลวด อิเล็กตรอนเคลื่อนที่แบบสุ่ม จำนวนที่ผ่านหน้าตัดไปทางซ้ายกับทางขวาเท่ากันโดยเฉลี่ย ไม่มีประจุสุทธิผ่านหน้าตัด จึงไม่มีกระแสไฟฟ้า";
+}
+const ELAB=["","น้อย","ปานกลาง","มาก"], TLAB=["","ต่ำ","ปานกลาง","สูง"];
+function syncUI(){ $("s-E").value=st.E; $("s-T").value=st.T; $("o-E").textContent=st.on?ELAB[st.E]:"0"; $("o-T").textContent=TLAB[st.T]; $("s-E").disabled=!st.on; $("row-E").style.opacity=st.on?1:0.5; }
+DP.seg(["m-off","m-on"],id=>{ st.on=id==="m-on"; syncUI(); updatePanel(); });
+$("s-E").addEventListener("input",e=>{ st.E=+e.target.value; syncUI(); });
+$("s-T").addEventListener("input",e=>{ st.T=+e.target.value; syncUI(); });
+$("b-trail").addEventListener("click",resetTrail);
+$("b-count").addEventListener("click",()=>{ resetCount(); updatePanel(); });
+$("b-pause").addEventListener("click",e=>{ st.paused=!st.paused; e.target.textContent=st.paused?"เล่นต่อ":"หยุดชั่วคราว"; e.target.setAttribute("aria-pressed",st.paused); });
+let last=null, acc=0;
+function frame(ts){
+  if(last!==null && !st.paused){ acc+=Math.min(0.1,(ts-last)/1000); const h=1/120; let n=0; while(acc>=h && n<40){ step(h); acc-=h; n++; } }
+  last=ts; draw(); drawVel(); updatePanel(); requestAnimationFrame(frame);
+}
+if(DP.reduce){ st.paused=true; $("b-pause").textContent="เล่นต่อ"; $("b-pause").setAttribute("aria-pressed",true); }
+syncUI(); updatePanel(); draw(); drawVel(); requestAnimationFrame(frame);
+/* hook for the automated physics check */
+window.__sim={st,step,stats:()=>({time,crossL,crossR,emaVx,meanVx:els.reduce((s,e)=>s+e.vx,0)/NE,V0}),resetCount,reset:()=>{emaInit=false;}};
+})();
+</script>
+
+</body>
+</html>

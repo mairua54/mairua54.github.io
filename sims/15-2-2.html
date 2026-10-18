@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>กราฟความต่างศักย์กับกระแส</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 2.2 และ 2.3</div>
+  <h1>กราฟระหว่างความต่างศักย์กับกระแส</h1>
+  <p class="lead">เลื่อนจุดไปตามกราฟของตัวต้านทาน หลอดไส้ และไดโอด แล้วเทียบความต้านทาน ΔV/I ของจุดนั้นกับความชันของเส้นสัมผัส</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-g">
+    <h2 id="h-g">กราฟ</h2>
+    <svg id="g" viewBox="0 0 380 300" role="img" aria-label="กราฟระหว่างความต่างศักย์กับกระแส"></svg>
+    <div class="legend" id="leg" style="margin-top:6px;font-size:14px"></div>
+    <p class="cap">จุดสีน้ำเงินคือสภาวะที่เลือก แตะหรือลากบนกราฟเพื่อเลื่อนจุด</p>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">เลือกอุปกรณ์</h2>
+    <div class="seg" role="group" aria-label="อุปกรณ์">
+      <button id="d-res" aria-pressed="true">ตัวต้านทาน</button>
+      <button id="d-lamp" aria-pressed="false">หลอดไส้</button>
+      <button id="d-dio" aria-pressed="false">ไดโอด</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="s-I"><span>กระแส <i class="m">I</i></span><output id="o-I"></output></label>
+        <input type="range" id="s-I"></div>
+      <div class="row" id="row-R"><label for="s-R"><span>ความต้านทานของตัวต้านทาน</span><output id="o-R"></output></label>
+        <input type="range" id="s-R" min="5" max="50" step="5"></div>
+      <div class="btns" id="presets"></div>
+      <div class="seg" role="group" aria-label="แกน">
+        <button id="ax-v" aria-pressed="true">ΔV บนแกนตั้ง</button>
+        <button id="ax-i" aria-pressed="false">I บนแกนตั้ง</button>
+      </div>
+    </div>
+  </section>
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">ความต้านทานที่จุดนี้</h2>
+    <div class="eq" id="eq"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. เส้นที่ชันกว่ามีความต้านทานมากกว่าเสมอหรือไม่</summary>
+    <p class="q">เลือกตัวต้านทาน กด "X (20 Ω)" แล้ว "Y (10 Ω)" สังเกตว่าเส้นใดชันกว่า จากนั้นกด "I บนแกนตั้ง" แล้วเทียบอีกครั้ง</p>
+    <p class="q"><b>คำตอบ</b> เมื่อ ΔV อยู่บนแกนตั้ง เส้นของ X (20 Ω) ชันกว่า เพราะความชันคือ ΔV/I = R เมื่อ I อยู่บนแกนตั้ง ความชันคือ I/ΔV = 1/R เส้นของ Y (10 Ω) จึงชันกว่า (0.10 A/V เทียบกับ 0.050 A/V) ก่อนอ่านกราฟจึงต้องดูว่าปริมาณใดอยู่บนแกนใดทุกครั้ง หรืออ่าน ΔV และ I ของจุดหนึ่งแล้วหา R = ΔV/I ซึ่งใช้ได้กับกราฟทั้งสองแบบ</p>
+  </details>
+  <details>
+    <summary>2. ความต้านทานของไดโอดที่จุด P และ Q (Ex. 2.3)</summary>
+    <p class="q">เลือกไดโอด กด "P" และ "Q" เทียบ ΔV/I กับความชันของเส้นสัมผัสที่แต่ละจุด ค่าใดคือความต้านทาน</p>
+    <p class="q"><b>คำตอบ</b> ความต้านทานคือ ΔV/I ของจุดนั้น ได้ 3.0 × 10<sup>2</sup> Ω ที่ P และ 35 Ω ที่ Q ซึ่งเท่ากับความชันของเส้นสีแดงจากจุดกำเนิด ส่วนความชันของเส้นสัมผัสมีค่าน้อยกว่ามาก และไม่ใช่ความต้านทาน</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าอุณหภูมิของตัวต้านทานและไดโอดคงตัว กราฟของไดโอดเป็นไดโอดซิลิคอนที่ต่อในทิศที่กระแสผ่านได้ง่าย และผ่านจุด P และ Q ของ Ex. 2.3 กราฟของหลอดไส้เป็นแบบจำลองอย่างง่ายของหลอดพิกัด 6 V 0.5 A ซึ่งไส้หลอดร้อนขึ้นเมื่อกระแสมากขึ้น ค่าจริงของหลอดแต่ละรุ่นต่างกัน</p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const Is=2e-9, LAMP_R0=1.2, LAMP_A=36;
+/* device models: I in A; V(I), dV/dI */
+const DEV={
+  res:{name:"ตัวต้านทาน",Imax:0.5,Vmax:25,Vtick:5,Itick:0.1,step:0.01,Imin:0.01,unitI:"A",scaleI:1,
+       V:I=>st.R*I, dV:I=>st.R},
+  lamp:{name:"หลอดไส้",Imax:0.5,Vmax:6,Vtick:1,Itick:0.1,step:0.01,Imin:0.01,unitI:"A",scaleI:1,
+       V:I=>LAMP_R0*I*(1+LAMP_A*I*I), dV:I=>LAMP_R0*(1+3*LAMP_A*I*I)},
+  dio:{name:"ไดโอด",Imax:0.025,Vmax:0.8,Vtick:0.1,Itick:0.005,step:0.0005,Imin:0.0005,unitI:"mA",scaleI:1000,
+       V:I=>0.1*Math.log10(1+I/Is), dV:I=>0.1/(Math.LN10*(I+Is))}
+};
+const st={dev:"res",R:20,I:{res:0.20,lamp:0.30,dio:0.002},swap:false};
+const D=()=>DEV[st.dev];
+/* displayed values (sheet convention: later steps use the displayed numbers) */
+function shown(){ const d=D(), I=st.I[st.dev], V=d.V(I);
+  if(st.dev==="dio"){ const Ims=Number((I*1000).toFixed(1)), Vs=Number(V.toFixed(3)); return {Itxt:fx(Ims,1)+" mA",Iset:Ims/1000,Vs,Vtxt:fx(Vs,3)+" V",Isi:Ims/1000,R:Vs/(Ims/1000)}; }
+  const Is_=Number(I.toFixed(2)), Vs=Number(V.toPrecision(3)); return {Itxt:fx(Is_,2)+" A",Iset:Is_,Vs,Vtxt:fmt(Vs,3)+" V",Isi:Is_,R:Vs/Is_}; }
+/* graph */
+const G=$("g"), X0=62, X1=362, Y0=24, Y1=246;
+let clipId="clp";
+function axes(){ const d=D(); return st.swap? {xmax:d.Vmax,ymax:d.Imax,xt:d.Vtick,yt:d.Itick,xq:"V",yq:"I"} : {xmax:d.Imax,ymax:d.Vmax,xt:d.Itick,yt:d.Vtick,xq:"I",yq:"V"}; }
+function px(I,V){ const a=axes(); const xv=st.swap?V:I, yv=st.swap?I:V; return [X0+(X1-X0)*xv/a.xmax, Y1-(Y1-Y0)*yv/a.ymax]; }
+const lab=(q)=>{ const d=D(); return q==="V"?"ΔV (V)":`I (${d.unitI})`; };
+function tickLab(q,v){ const d=D(); if(q==="I") return fmt(v*d.scaleI,2,{intok:1}); return d.Vmax<1?v.toFixed(1):(d.Vmax<10?v.toFixed(0):v.toFixed(0)); }
+function draw(){
+  G.textContent=""; const d=D(), a=axes();
+  const defs=el("defs",{},G); const cp=el("clipPath",{id:clipId},defs); el("rect",{x:X0,y:Y0,width:X1-X0,height:Y1-Y0},cp);
+  for(let v=0;v<=a.xmax+1e-9;v+=a.xt){ const x=X0+(X1-X0)*v/a.xmax; el("line",{x1:x,y1:Y0,x2:x,y2:Y1,stroke:"var(--line)"},G); txt(G,x,Y1+17,tickLab(a.xq,v),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); }
+  for(let v=0;v<=a.ymax+1e-9;v+=a.yt){ const y=Y1-(Y1-Y0)*v/a.ymax; el("line",{x1:X0,y1:y,x2:X1,y2:y,stroke:"var(--line)"},G); txt(G,X0-6,y+4,tickLab(a.yq,v),{"text-anchor":"end","font-size":12,fill:"var(--muted)"}); }
+  el("line",{x1:X0,y1:Y1,x2:X1,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G); el("line",{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G);
+  txt(G,(X0+X1)/2,Y1+38,lab(a.xq),{"text-anchor":"middle","font-size":13,fill:"var(--muted)"});
+  txt(G,X0,Y0-9,lab(a.yq),{"font-size":13,fill:"var(--muted)"});
+  const g=el("g",{"clip-path":`url(#${clipId})`},G);
+  // curve
+  const Is_=[]; const N=400; for(let k=0;k<=N;k++) Is_.push(d.Imax*k/N);
+  if(st.dev==="dio") for(let k=0;k<=80;k++) Is_.push(1e-9*Math.pow(d.Imax/400/1e-9,k/80));   // fine steps near the origin where the diode curve is steep
+  Is_.sort((p,q)=>p-q);
+  el("polyline",{points:DP.pl(Is_.map(I=>px(I,d.V(I)))),fill:"none",stroke:"var(--graph)","stroke-width":3},g);
+  // selected point, helper dashed lines, origin line and tangent
+  const S=shown(), I=S.Iset, V=d.V(I), [x,y]=px(I,V);
+  el("polyline",{points:DP.pl([[X0,y],[x,y],[x,Y1]]),fill:"none",stroke:"var(--helper)","stroke-width":1.2,"stroke-dasharray":"4 4"},g);
+  // origin line through the point, extended
+  const ex=x+(x-X0)*3, ey=y+(y-Y1)*3;
+  el("line",{x1:X0,y1:Y1,x2:ex,y2:ey,stroke:"var(--graph2)","stroke-width":2.2,"stroke-dasharray":"2 4","stroke-linecap":"round"},g);
+  // tangent: dV/dI at the point
+  const s=d.dV(I); const T=(t)=>{ const Ii=I+t, Vi=V+s*t; return px(Ii,Vi); };
+  const span=d.Imax*2; const [ta,tb]=[T(-span),T(span)];
+  el("line",{x1:ta[0],y1:ta[1],x2:tb[0],y2:tb[1],stroke:"var(--chem)","stroke-width":2,"stroke-dasharray":"8 4 2 4"},g);
+  el("circle",{cx:x,cy:y,r:6,fill:"var(--graph)",stroke:"var(--card)","stroke-width":2},G);
+  // labels placed in the plot's free corner
+  $("leg").innerHTML=`<div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--graph2)" stroke-width="2.2" stroke-dasharray="2 4" stroke-linecap="round"/></svg> เส้นจากจุดกำเนิดมายังจุดที่เลือก ความชัน = ${st.swap?"1/<i class='m'>R</i>":"<i class='m'>R</i>"} ที่จุดนี้</div><div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--chem)" stroke-width="2" stroke-dasharray="8 4 2 4"/></svg> เส้นสัมผัสกราฟที่จุดที่เลือก</div>`;
+}
+function pointer(ev){ const r=G.getBoundingClientRect(); const d=D(), a=axes();
+  let I; if(!st.swap){ const xx=(ev.clientX-r.left)*380/r.width; I=(xx-X0)/(X1-X0)*a.xmax; }
+  else { const yy=(ev.clientY-r.top)*300/r.height; I=(Y1-yy)/(Y1-Y0)*a.ymax; }
+  I=Math.max(d.Imin,Math.min(d.Imax,Math.round(I/d.step)*d.step)); st.I[st.dev]=I; $("s-I").value=I; update(); }
+G.addEventListener("pointerdown",e=>{ G.setPointerCapture(e.pointerId); pointer(e); });
+G.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") pointer(e); });
+function update(){
+  const d=D(), S=shown(), I=S.Iset, s=d.dV(I);
+  DP.setSeg(["ax-v","ax-i"],st.swap?"ax-i":"ax-v");
+  $("o-I").textContent=S.Itxt; $("o-R").textContent=st.R+" Ω"; $("row-R").hidden=st.dev!=="res";
+  const Isi = st.dev==="dio" ? fmt(S.Isi,2)+" A" : fx(S.Isi,2)+" A";
+  const R = S.R, nR = st.dev==="dio"?2:3;
+  const lines=[`ที่จุดนี้ ${m("I")} = ${S.Itxt} และ Δ${m("V")} = ${S.Vtxt}`,
+    `${m("R")} = Δ${m("V")}/${m("I")} = (${S.Vtxt})/(${Isi}) = ${fmt(R,nR)} Ω`];
+  if(!st.swap) lines.push(`ความชันของเส้นสัมผัส = ${fmt(s,nR)} Ω|${Math.abs(s-R)/R<0.005?"เท่ากับ ΔV/I":"ไม่เท่ากับ ΔV/I"}`);
+  else lines.push(`ความชันของเส้นสีแดง = ${m("I")}/Δ${m("V")} = 1/${m("R")} = ${fmt(1/R,nR)} A/V`, `ความชันของเส้นสัมผัส = ${fmt(1/s,nR)} A/V|${Math.abs(s-R)/R<0.005?"เท่ากับ 1/R":"ไม่ใช่ 1/R"}`);
+  $("eq").innerHTML=eqHTML(lines);
+  const msg={res:"ตัวนำโอห์มิก: กราฟเป็นเส้นตรงผ่านจุดกำเนิด อัตราส่วน ΔV/I ของทุกจุดเท่ากันและเท่ากับความชันของเส้น จึงหาความต้านทานจากจุดใดก็ได้ หรือจากความชันก็ได้",
+    lamp:"หลอดไส้: ยิ่งกระแสมาก ไส้หลอดยิ่งร้อน ความต้านทาน ΔV/I จึงเพิ่มขึ้น (หัวข้อ 2.5) กราฟจึงโค้งขึ้น ความต้านทานต้องหาจาก ΔV/I ของจุดนั้นเอง ไม่ใช่ความชันของเส้นสัมผัส",
+    dio:"ไดโอด: ต้องมีความต่างศักย์ราว 0.6 V กระแสจึงเพิ่มขึ้นมาก ความต้านทาน ΔV/I ลดลงเมื่อกระแสมากขึ้น และไม่เท่ากับความชันของเส้นสัมผัส"};
+  $("status").innerHTML=msg[st.dev]+(st.swap?" เมื่อ I อยู่บนแกนตั้ง ความชันของเส้นจากจุดกำเนิดคือ 1/R เส้นที่ชันกว่าจึงมีความต้านทานน้อยกว่า":"");
+  draw();
+}
+function setDev(dev){ st.dev=dev; DP.setSeg(["d-res","d-lamp","d-dio"],{res:"d-res",lamp:"d-lamp",dio:"d-dio"}[dev]); const d=D(); const s=$("s-I"); s.min=d.Imin; s.max=d.Imax; s.step=d.step; s.value=st.I[dev];
+  const P=$("presets"); P.innerHTML="";
+  const add=(label,fn)=>{ const b=document.createElement("button"); b.className="btn"; b.textContent=label; b.addEventListener("click",fn); P.appendChild(b); };
+  if(dev==="res"){ add("X (20 Ω)",()=>{ st.R=20; st.I.res=0.20; sync(); }); add("Y (10 Ω)",()=>{ st.R=10; st.I.res=0.40; sync(); }); }
+  if(dev==="dio"){ add("P (2.0 mA)",()=>{ st.I.dio=0.002; sync(); }); add("Q (20 mA)",()=>{ st.I.dio=0.020; sync(); }); }
+  update(); }
+function sync(){ $("s-I").value=st.I[st.dev]; $("s-R").value=st.R; update(); }
+DP.seg(["d-res","d-lamp","d-dio"],id=>setDev({"d-res":"res","d-lamp":"lamp","d-dio":"dio"}[id]));
+DP.seg(["ax-v","ax-i"],id=>{ st.swap=id==="ax-i"; update(); });
+$("s-I").addEventListener("input",e=>{ st.I[st.dev]=+e.target.value; update(); });
+$("s-R").addEventListener("input",e=>{ st.R=+e.target.value; update(); });
+$("s-R").value=st.R; setDev("res");
+window.__sim={st,DEV,shown,update,setDev,sync};
+})();
+</script>
+
+</body>
+</html>

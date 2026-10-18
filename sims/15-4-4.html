@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>กราฟ ΔV–I ของเซลล์</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 4.4</div>
+  <h1>กราฟระหว่างความต่างศักย์ระหว่างขั้วกับกระแสของเซลล์</h1>
+  <p class="lead">ปรับความต้านทานภายนอก R แล้วดูจุดเลื่อนไปบนเส้นตรง ΔV = ε - Ir บันทึกหลายจุดเหมือนการทดลอง แล้วอ่าน ε และ r จากกราฟ</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-g">
+    <h2 id="h-g">กราฟ</h2>
+    <svg id="g" viewBox="0 0 380 300" role="img" aria-label="กราฟความต่างศักย์ระหว่างขั้วกับกระแสของเซลล์"></svg>
+    <div class="legend" id="leg" style="margin-top:6px;font-size:14px"></div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="ctl" style="margin-top:0">
+      <div class="row"><label for="s-e"><span>อีเอ็มเอฟ <i class="m">ε</i></span><output id="o-e"></output></label>
+        <input type="range" id="s-e" min="1.5" max="12" step="0.5"></div>
+      <div class="row"><label for="s-r"><span>ความต้านทานภายใน <i class="m">r</i></span><output id="o-r"></output></label>
+        <input type="range" id="s-r" min="0.1" max="2" step="0.1"></div>
+      <div class="row"><label for="s-R"><span>ความต้านทานภายนอก <i class="m">R</i></span><output id="o-R"></output></label>
+        <input type="range" id="s-R" min="0" max="30" step="0.5"></div>
+      <div class="btns">
+        <button class="btn" id="b-rec">บันทึกจุดนี้</button>
+        <button class="btn" id="b-act">วัดชุดตัวต้านทานในกิจกรรม</button>
+        <button class="btn" id="b-clr">ล้างจุดที่บันทึก</button>
+        <button class="btn" id="b-ex">ค่าของ Ex. 4.6</button>
+      </div>
+    </div>
+  </section>
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">ค่าที่มิเตอร์อ่านได้</h2>
+    <div class="eq" id="eq"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. อ่านค่าจากกราฟแบบ Ex. 4.6</summary>
+    <p class="q">กด "ค่าของ Ex. 4.6" แล้วอ่านจากกราฟ: อีเอ็มเอฟ ความต้านทานภายใน และกระแสลัดวงจร จากนั้นปรับ R จนกระแสเป็น 0.50 A ความต้านทานภายนอกเป็นเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> จุดตัดแกนตั้งคือ ε = 6.0 V ความชันคือ (4.0 V - 6.0 V)/(2.0 A - 0) = -1.0 Ω จึงได้ r = 1.0 Ω กระแสลัดวงจร ε/r = 6.0 A และเมื่อ I = 0.50 A ได้ ΔV = 5.5 V จึงได้ R = ΔV/I = 11 Ω ซึ่งเป็นความชันของเส้นจากจุดกำเนิดมายังจุดนั้น ไม่ใช่ r</p>
+  </details>
+  <details>
+    <summary>2. หา ε และ r จากสองจุด (Ex. 4.7)</summary>
+    <p class="q">ตั้ง ε = 3.0 V และ r = 0.50 Ω แต่อย่าดูค่าทั้งสอง บันทึกจุดที่ R = 1.0 Ω และ R = 2.5 Ω แล้วใช้สองจุดนั้นหา ε และ r</p>
+    <p class="q"><b>คำตอบ</b> สองจุดคือ (2.00 A, 2.00 V) และ (1.00 A, 2.50 V) ความชัน = (2.00 V - 2.50 V)/(2.00 A - 1.00 A) = -0.50 Ω จึงได้ r = 0.50 Ω และ ε = 2.50 V + (1.00 A)(0.50 Ω) = 3.0 V</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่า ε และ r คงตัว เซลล์จ่ายกระแสให้ตัวต้านทานเท่านั้น และมิเตอร์เป็นอุดมคติ เส้นประคือแนวของเส้นตรงที่ต่อออกไปจนตัดแกนนอน ส่วนเส้นทึบคือช่วงที่วัดจริง ซึ่งเริ่มจาก I = 0</p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const st={e:6.0,r:1.0,R:2.0,pts:[]};
+const ACT=[1000,100,10,3.3,1];
+const niceStep=v=>{ const p=Math.pow(10,Math.floor(Math.log10(v))); for(const k of [1,2,2.5,5,10]) if(k*p>=v-1e-9) return k*p; return 10*p; };
+function point(R){ const I=st.e/(R+st.r); return {R,I,V:st.e-I*st.r}; }
+/* displayed values: I to 3 s.f., later steps use the displayed I */
+function shown(R){ const p=point(R), Id=Number(DP.sig(p.I,3)), Vd=R===0?0:Number(DP.sig(st.e-Id*st.r,3)); return {Id,Vd,Itxt:fmt(Id,3),Vtxt:R===0?"0":fmt(Vd,3)}; }
+const G=$("g"), X0=58, X1=360, Y0=26, Y1=246;
+function draw(){
+  G.textContent=""; const Isc=st.e/st.r, xt=niceStep(Isc*1.05/5), xmax=xt*Math.ceil(Isc*1.05/xt-1e-9), yt=niceStep(st.e*1.1/4), ymax=yt*Math.ceil(st.e*1.1/yt-1e-9);
+  const sx=I=>X0+(X1-X0)*I/xmax, sy=V=>Y1-(Y1-Y0)*V/ymax;
+  const nx=Math.round(xmax/xt); for(let k=0;k<=nx;k++){ const v=k*xt, x=sx(v); el("line",{x1:x,y1:Y0,x2:x,y2:Y1,stroke:"var(--line)"},G); txt(G,x,Y1+17,fmt(v,2,{intok:1}),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); }
+  const ny=Math.round(ymax/yt); for(let k=0;k<=ny;k++){ const v=k*yt, y=sy(v); el("line",{x1:X0,y1:y,x2:X1,y2:y,stroke:"var(--line)"},G); txt(G,X0-6,y+4,fmt(v,2,{intok:1}),{"text-anchor":"end","font-size":12,fill:"var(--muted)"}); }
+  el("line",{x1:X0,y1:Y1,x2:X1,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G); el("line",{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G);
+  txt(G,(X0+X1)/2,Y1+38,"I (A)",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"}); txt(G,X0,Y0-9,"ΔV (V)",{"font-size":13,fill:"var(--muted)"});
+  // line ΔV = ε - rI : solid over the measured range (0 .. largest current measured or shown), dashed beyond to ε/r
+  const Imeas=Math.max(point(st.R).I,...st.pts.map(q=>point(q).I));
+  el("line",{x1:sx(0),y1:sy(st.e),x2:sx(Imeas),y2:sy(st.e-st.r*Imeas),stroke:"var(--graph)","stroke-width":3},G);
+  if(Imeas<Isc-1e-9) el("line",{x1:sx(Imeas),y1:sy(st.e-st.r*Imeas),x2:sx(Isc),y2:sy(0),stroke:"var(--graph)","stroke-width":2,"stroke-dasharray":"6 5"},G);
+  // intercept labels
+  txt(G,X0+6,sy(st.e)-8,[["ε",{it:1}]],{"font-size":15});
+  txt(G,sx(Isc),Y1-8,[["ε",{it:1}],"/",["r",{it:1}]],{"text-anchor":"middle","font-size":15});
+  // recorded points
+  for(const R of st.pts){ const q=point(R); el("circle",{cx:sx(q.I),cy:sy(q.V),r:4.5,fill:"var(--card)",stroke:"var(--graph)","stroke-width":2},G); }
+  // current point and the line from the origin (slope = R external)
+  const p=point(st.R), x=sx(p.I), y=sy(p.V);
+  if(st.R>0) el("line",{x1:X0,y1:Y1,x2:x,y2:y,stroke:"var(--graph2)","stroke-width":2.2,"stroke-dasharray":"2 4","stroke-linecap":"round"},G);
+  el("polyline",{points:DP.pl([[X0,y],[x,y],[x,Y1]]),fill:"none",stroke:"var(--helper)","stroke-width":1.2,"stroke-dasharray":"4 4"},G);
+  el("circle",{cx:x,cy:y,r:6,fill:"var(--graph)",stroke:"var(--card)","stroke-width":2},G);
+  $("leg").innerHTML=`<div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--graph)" stroke-width="3"/></svg> เส้นของเซลล์ ความชัน = -${m("r")}</div>`+
+    `<div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--graph2)" stroke-width="2.2" stroke-dasharray="2 4" stroke-linecap="round"/></svg> เส้นจากจุดกำเนิดมายังจุดปัจจุบัน ความชัน = ${m("R")} ของวงจรภายนอก</div>`+
+    `<div><svg width="26" height="12" style="display:inline;width:26px;vertical-align:middle"><circle cx="13" cy="6" r="4.5" fill="var(--card)" stroke="var(--graph)" stroke-width="2"/></svg> จุดที่บันทึกไว้ ${st.pts.length} จุด</div>`;
+}
+function update(){
+  $("o-e").textContent=fx(st.e,1)+" V"; $("o-r").textContent=fx(st.r,1)+" Ω"; $("o-R").textContent=st.R===0?"0 (ลัดวงจร)":fx(st.R,1)+" Ω";
+  const S=shown(st.R);
+  const lines=[`แอมมิเตอร์: ${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,1)} Ω + ${fx(st.r,1)} Ω) = ${S.Itxt} A`];
+  if(st.R>0){ lines.push(`โวลต์มิเตอร์: Δ${m("V")} = ${m("ε")} - ${m("Ir")} = ${fx(st.e,1)} V - (${S.Itxt} A)(${fx(st.r,1)} Ω) = ${S.Vtxt} V`);
+    lines.push(`Δ${m("V")}/${m("I")} = (${S.Vtxt} V)/(${S.Itxt} A) = ${fmt(S.Vd/S.Id,3)} Ω|เท่ากับ R ของวงจรภายนอก ไม่ใช่ r`); }
+  else lines.push(`โวลต์มิเตอร์: Δ${m("V")} = 0 เพราะขั้วทั้งสองต่อถึงกันด้วยลวด`);
+  lines.push(`กระแสลัดวงจร = ${m("ε")}/${m("r")} = (${fx(st.e,1)} V)/(${fx(st.r,1)} Ω) = ${fmt(st.e/st.r,3)} A`);
+  $("eq").innerHTML=eqHTML(lines);
+  const Sx=$("status"); Sx.classList.toggle("rev",st.R===0);
+  Sx.innerHTML= st.R===0 ? `R = 0 คือการต่อขั้วทั้งสองด้วยลวดโดยตรง กระแสเท่ากับกระแสลัดวงจร ${m("ε")}/${m("r")} ซึ่งเป็นกระแสมากที่สุดที่เซลล์จ่ายได้ และพลังงานทั้งหมดกลายเป็นความร้อนในเซลล์ เซลล์จริงจะร้อนมาก ห้ามทำ`
+    : `ยิ่ง R น้อย กระแสยิ่งมาก จุดจึงเลื่อนลงไปทางขวาตามเส้นตรง จุดตัดแกนตั้งคือ ${m("ε")} ขนาดของความชันคือ ${m("r")}`;
+  draw();
+}
+function sync(){ $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }
+$("s-e").addEventListener("input",e=>{ st.e=+e.target.value; update(); });
+$("s-r").addEventListener("input",e=>{ st.r=+e.target.value; update(); });
+$("s-R").addEventListener("input",e=>{ st.R=+e.target.value; update(); });
+$("b-rec").addEventListener("click",()=>{ if(!st.pts.includes(st.R)) st.pts.push(st.R); update(); });
+$("b-act").addEventListener("click",()=>{ for(const R of ACT) if(!st.pts.includes(R)) st.pts.push(R); update(); });
+$("b-clr").addEventListener("click",()=>{ st.pts=[]; update(); });
+$("b-ex").addEventListener("click",()=>{ Object.assign(st,{e:6.0,r:1.0,R:2.0,pts:[]}); sync(); });
+sync();
+window.__sim={st,point,shown,sync};
+})();
+</script>
+
+</body>
+</html>

@@ -100,8 +100,8 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 <div class="col">
   <section class="card" aria-labelledby="h-w">
     <h2 id="h-w">ลวด</h2>
-    <svg id="wire" viewBox="0 0 380 170" role="img" aria-label="ลวดทรงกระบอก"></svg>
-    <p class="cap">ความยาวในภาพเป็นไปตามสัดส่วน ส่วนความหนาวาดขยายมาก (เส้นผ่านศูนย์กลางในภาพแปรผันตรงกับ √A)</p>
+    <svg id="wire" viewBox="0 0 380 190" role="img" aria-label="ลวดทรงกระบอก"></svg>
+    <p class="cap" id="cap-w"></p>
   </section>
   <section class="card" aria-labelledby="h-ctl">
     <h2 id="h-ctl">ปรับค่า</h2>
@@ -240,18 +240,33 @@ function calc(){ const [name,rho,n]=MAT[st.mat]; const l0=st.l, A0=st.A*1e-6, R0
   if(st.mode==="new") return {name,rho,n,l:l0,A:A0,R:R0,R0};
   const k=st.k, l=k*l0, A=A0/k; return {name,rho,n,l,A,R:rho*l/A,R0,k,l0,A0}; }
 const S=$("wire");
+/* one cylinder: left end face shaded (cross-section), length bracket underneath */
+function cyl(x0,y,len,d,dashed,labs){
+  len=Math.max(4,len); const st_=dashed?{"stroke-dasharray":"5 4"}:{};
+  el("rect",Object.assign({x:x0,y:y-d/2,width:len,height:d,fill:dashed?"none":"var(--chip)",stroke:"var(--ink)","stroke-width":1.5},st_),S);
+  el("ellipse",Object.assign({cx:x0,cy:y,rx:Math.max(2,d*0.18),ry:d/2,fill:dashed?"none":"var(--helper)","fill-opacity":0.45,stroke:"var(--ink)","stroke-width":1.5},st_),S);
+  el("ellipse",Object.assign({cx:x0+len,cy:y,rx:Math.max(2,d*0.18),ry:d/2,fill:dashed?"none":"var(--chip)",stroke:"var(--ink)","stroke-width":1.5},st_),S);
+  const yb=y+d/2+12; el("polyline",{points:DP.pl([[x0,yb-5],[x0,yb],[x0+len,yb],[x0+len,yb-5]]),fill:"none",stroke:"var(--ink)","stroke-width":1.2},S);
+  txt(S,x0+Math.max(len/2,30),yb+15,labs,{"text-anchor":"middle","font-size":13});
+}
+const dia=A=>Math.max(3,26*Math.sqrt(A*1e6));   // drawn diameter ∝ √A (exaggerated)
 function drawWire(c){
-  S.textContent=""; const x0=20, Lpx=340*c.l/(st.mode==="new"?10:40), d=Math.max(3,26*Math.sqrt(c.A*1e6)), y=78;
-  const len=Math.max(4,Lpx);
-  el("rect",{x:x0,y:y-d/2,width:len,height:d,fill:"var(--chip)",stroke:"var(--ink)","stroke-width":1.5},S);
-  el("ellipse",{cx:x0,cy:y,rx:Math.max(2,d*0.18),ry:d/2,fill:"var(--helper)","fill-opacity":0.45,stroke:"var(--ink)","stroke-width":1.5},S);
-  el("ellipse",{cx:x0+len,cy:y,rx:Math.max(2,d*0.18),ry:d/2,fill:"var(--chip)",stroke:"var(--ink)","stroke-width":1.5},S);
-  // length bracket (no arrowheads)
-  const yb=y+d/2+18; el("polyline",{points:DP.pl([[x0,yb-6],[x0,yb],[x0+len,yb],[x0+len,yb-6]]),fill:"none",stroke:"var(--ink)","stroke-width":1.2},S);
-  txt(S,x0+Math.max(len/2,24),yb+18,[["ℓ",{it:1}]," = "+fx(c.l,1)+" m"],{"text-anchor":"middle","font-size":14});
-  txt(S,x0,y-d/2-10,[["A",{it:1}]," = "+fmt(c.A*1e6,3)+" mm²"],{"font-size":14});
-  txt(S,370,y-d/2-10,c.name,{"text-anchor":"end","font-size":14,fill:"var(--muted)"});
-  if(st.mode==="pull") txt(S,370,160,"ก่อนดึง: ℓ = "+fx(c.l0,1)+" m, A = "+fmt(c.A0*1e6,3)+" mm²",{"text-anchor":"end","font-size":12,fill:"var(--muted)"});
+  S.textContent=""; const x0=20; S.setAttribute("viewBox","0 0 380 190");
+  txt(S,370,18,c.name,{"text-anchor":"end","font-size":14,fill:"var(--muted)"});
+  if(st.mode==="new"){
+    const y=80, d=dia(c.A); cyl(x0,y,340*c.l/10,d,false,[["ℓ",{it:1}]," = "+fx(c.l,1)+" m"]);
+    txt(S,x0,y-d/2-10,[["A",{it:1}]," = "+fmt(c.A*1e6,3)+" mm²"],{"font-size":14});
+    $("cap-w").textContent="ความยาวในภาพเป็นไปตามสัดส่วน (ความกว้างของภาพเท่ากับ 10 m) ส่วนความหนาวาดขยายมาก โดยเส้นผ่านศูนย์กลางในภาพแปรผันตรงกับ √A";
+  } else {
+    const sc=340/(4*c.l0);   // the longest stretched wire (k = 4) fills the width
+    const d0=dia(c.A0), d1=dia(c.A);
+    txt(S,x0,30,"ก่อนดึง: "+fmt(c.A0*1e6,3)+" mm²",{"font-size":13,fill:"var(--muted)"});
+    cyl(x0,30+d0/2+10,sc*c.l0,d0,true,[["ℓ",{it:1}]," = "+fx(c.l0,1)+" m"]);
+    const L=30+d0+62, y1=L+10+d1/2; txt(S,x0,L,"หลังดึง: "+fmt(c.A*1e6,3)+" mm²",{"font-size":13});
+    S.setAttribute("viewBox",`0 0 380 ${Math.max(190,Math.ceil(y1+d1/2+36))}`);
+    cyl(x0,y1,sc*c.l,d1,false,[["ℓ",{it:1}],"′ = "+fx(c.l,1)+" m"]);
+    $("cap-w").textContent="เส้นประคือลวดก่อนดึง เส้นทึบคือลวดหลังดึง ทั้งสองเส้นใช้มาตราส่วนความยาวเดียวกัน ส่วนความหนาวาดขยายมาก โดยเส้นผ่านศูนย์กลางในภาพแปรผันตรงกับ √A";
+  }
 }
 function update(){
   const c=calc(), n=c.n;

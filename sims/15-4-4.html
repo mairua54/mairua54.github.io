@@ -135,7 +135,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   </details>
   <details>
     <summary>2. หา ε และ r จากสองจุด (Ex. 4.7)</summary>
-    <p class="q">ตั้ง ε = 3.0 V และ r = 0.50 Ω แต่อย่าดูค่าทั้งสอง บันทึกจุดที่ R = 1.0 Ω และ R = 2.5 Ω แล้วใช้สองจุดนั้นหา ε และ r</p>
+    <p class="q">ให้เพื่อนตั้ง ε = 3.0 V และ r = 0.50 Ω โดยไม่บอก (หรือตั้งเองแล้วสมมติว่าไม่รู้ค่า) บันทึกจุดที่ R = 1.0 Ω และ R = 2.5 Ω แล้วใช้เฉพาะค่าที่มิเตอร์อ่านได้ของสองจุดนั้นหา ε และ r</p>
     <p class="q"><b>คำตอบ</b> สองจุดคือ (2.00 A, 2.00 V) และ (1.00 A, 2.50 V) ความชัน = (2.00 V - 2.50 V)/(2.00 A - 1.00 A) = -0.50 Ω จึงได้ r = 0.50 Ω และ ε = 2.50 V + (1.00 A)(0.50 Ω) = 3.0 V</p>
   </details>
 </section>
@@ -260,13 +260,13 @@ function draw(){
     `<div><svg width="26" height="12" style="display:inline;width:26px;vertical-align:middle"><circle cx="13" cy="6" r="4.5" fill="var(--card)" stroke="var(--graph)" stroke-width="2"/></svg> จุดที่บันทึกไว้ ${st.pts.length} จุด</div>`;
 }
 function update(){
-  $("o-e").textContent=fx(st.e,1)+" V"; $("o-r").textContent=fx(st.r,1)+" Ω"; $("o-R").textContent=st.R===0?"0 (ลัดวงจร)":fx(st.R,1)+" Ω";
+  $("o-e").textContent=fx(st.e,1)+" V"; $("o-r").textContent=fx(st.r,2)+" Ω"; $("o-R").textContent=st.R===0?"0 (ลัดวงจร)":fx(st.R,1)+" Ω";
   const S=shown(st.R);
-  const lines=[`แอมมิเตอร์: ${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,1)} Ω + ${fx(st.r,1)} Ω) = ${S.Itxt} A`];
-  if(st.R>0){ lines.push(`โวลต์มิเตอร์: Δ${m("V")} = ${m("ε")} - ${m("Ir")} = ${fx(st.e,1)} V - (${S.Itxt} A)(${fx(st.r,1)} Ω) = ${S.Vtxt} V`);
+  const lines=[`แอมมิเตอร์: ${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,1)} Ω + ${fx(st.r,2)} Ω) = ${S.Itxt} A`];
+  if(st.R>0){ lines.push(`โวลต์มิเตอร์: Δ${m("V")} = ${m("ε")} - ${m("Ir")} = ${fx(st.e,1)} V - (${S.Itxt} A)(${fx(st.r,2)} Ω) = ${S.Vtxt} V`);
     lines.push(`Δ${m("V")}/${m("I")} = (${S.Vtxt} V)/(${S.Itxt} A) = ${fmt(S.Vd/S.Id,3)} Ω|เท่ากับ R ของวงจรภายนอก ไม่ใช่ r`); }
   else lines.push(`โวลต์มิเตอร์: Δ${m("V")} = 0 เพราะขั้วทั้งสองต่อถึงกันด้วยลวด`);
-  lines.push(`กระแสลัดวงจร = ${m("ε")}/${m("r")} = (${fx(st.e,1)} V)/(${fx(st.r,1)} Ω) = ${fmt(st.e/st.r,3)} A`);
+  lines.push(`กระแสลัดวงจร = ${m("ε")}/${m("r")} = (${fx(st.e,1)} V)/(${fx(st.r,2)} Ω) = ${fmt(st.e/st.r,3)} A`);
   $("eq").innerHTML=eqHTML(lines);
   const Sx=$("status"); Sx.classList.toggle("rev",st.R===0);
   Sx.innerHTML= st.R===0 ? `R = 0 คือการต่อขั้วทั้งสองด้วยลวดโดยตรง กระแสเท่ากับกระแสลัดวงจร ${m("ε")}/${m("r")} ซึ่งเป็นกระแสมากที่สุดที่เซลล์จ่ายได้ และพลังงานทั้งหมดกลายเป็นความร้อนในเซลล์ เซลล์จริงจะร้อนมาก ห้ามทำ`

@@ -279,7 +279,7 @@ function draw(){
   el("line",{x1:ta[0],y1:ta[1],x2:tb[0],y2:tb[1],stroke:"var(--chem)","stroke-width":2,"stroke-dasharray":"8 4 2 4"},g);
   el("circle",{cx:x,cy:y,r:6,fill:"var(--graph)",stroke:"var(--card)","stroke-width":2},G);
   // labels placed in the plot's free corner
-  $("leg").innerHTML=`<div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--graph2)" stroke-width="2.2" stroke-dasharray="2 4" stroke-linecap="round"/></svg> เส้นจากจุดกำเนิดมายังจุดที่เลือก ความชัน = ${st.swap?"1/<i class='m'>R</i>":"<i class='m'>R</i>"} ที่จุดนี้</div><div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--chem)" stroke-width="2" stroke-dasharray="8 4 2 4"/></svg> เส้นสัมผัสกราฟที่จุดที่เลือก</div>`;
+  $("leg").innerHTML=`<div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--graph2)" stroke-width="2.2" stroke-dasharray="2 4" stroke-linecap="round"/></svg> เส้นจากจุดกำเนิดมายังจุดที่เลือก ความชัน = ${st.swap?"1/<i class='m'>R</i>":"<i class='m'>R</i>"} ที่จุดนี้</div><div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--chem)" stroke-width="2" stroke-dasharray="8 4 2 4"/></svg> เส้นสัมผัสกราฟที่จุดที่เลือก</div>`+(st.dev==="res"?`<div class="note">กราฟของตัวต้านทานเป็นเส้นตรงผ่านจุดกำเนิด เส้นทั้งสามจึงซ้อนกันพอดี</div>`:"");
 }
 function pointer(ev){ const r=G.getBoundingClientRect(); const d=D(), a=axes();
   let I; if(!st.swap){ const xx=(ev.clientX-r.left)*380/r.width; I=(xx-X0)/(X1-X0)*a.xmax; }
@@ -298,10 +298,12 @@ function update(){
   if(!st.swap) lines.push(`ความชันของเส้นสัมผัส = ${fmt(s,nR)} Ω|${Math.abs(s-R)/R<0.005?"เท่ากับ ΔV/I":"ไม่เท่ากับ ΔV/I"}`);
   else lines.push(`ความชันของเส้นสีแดง = ${m("I")}/Δ${m("V")} = 1/${m("R")} = ${fmt(1/R,nR)} A/V`, `ความชันของเส้นสัมผัส = ${fmt(1/s,nR)} A/V|${Math.abs(s-R)/R<0.005?"เท่ากับ 1/R":"ไม่ใช่ 1/R"}`);
   $("eq").innerHTML=eqHTML(lines);
-  const msg={res:"ตัวนำโอห์มิก: กราฟเป็นเส้นตรงผ่านจุดกำเนิด อัตราส่วน ΔV/I ของทุกจุดเท่ากันและเท่ากับความชันของเส้น จึงหาความต้านทานจากจุดใดก็ได้ หรือจากความชันก็ได้",
-    lamp:"หลอดไส้: ยิ่งกระแสมาก ไส้หลอดยิ่งร้อน ความต้านทาน ΔV/I จึงเพิ่มขึ้น (หัวข้อ 2.5) กราฟจึงโค้งขึ้น ความต้านทานต้องหาจาก ΔV/I ของจุดนั้นเอง ไม่ใช่ความชันของเส้นสัมผัส",
-    dio:"ไดโอด: ต้องมีความต่างศักย์ราว 0.6 V กระแสจึงเพิ่มขึ้นมาก ความต้านทาน ΔV/I ลดลงเมื่อกระแสมากขึ้น และไม่เท่ากับความชันของเส้นสัมผัส"};
-  $("status").innerHTML=msg[st.dev]+(st.swap?" เมื่อ I อยู่บนแกนตั้ง ความชันของเส้นจากจุดกำเนิดคือ 1/R เส้นที่ชันกว่าจึงมีความต้านทานน้อยกว่า":"");
+  const sw=st.swap;
+  const msg={res: sw ? "ตัวนำโอห์มิก: กราฟเป็นเส้นตรงผ่านจุดกำเนิด อัตราส่วน ΔV/I ของทุกจุดเท่ากัน เมื่อ I อยู่บนแกนตั้ง ความชันของเส้นคือ I/ΔV = 1/R เส้นที่ชันกว่าจึงมีความต้านทานน้อยกว่า"
+                   : "ตัวนำโอห์มิก: กราฟเป็นเส้นตรงผ่านจุดกำเนิด อัตราส่วน ΔV/I ของทุกจุดเท่ากันและเท่ากับความชันของเส้น จึงหาความต้านทานจากจุดใดก็ได้ หรือจากความชันก็ได้",
+    lamp:"หลอดไส้: ยิ่งกระแสมาก ไส้หลอดยิ่งร้อน ความต้านทาน ΔV/I จึงเพิ่มขึ้น (หัวข้อ 2.5) กราฟจึง"+(sw?"โค้งลง (I เพิ่มช้าลงเมื่อ ΔV เพิ่ม)":"โค้งขึ้น (ΔV เพิ่มเร็วขึ้นเมื่อ I เพิ่ม)")+" ความต้านทานต้องหาจาก ΔV/I ของจุดนั้นเอง ไม่ใช่จากความชันของเส้นสัมผัส",
+    dio:"ไดโอด: ต้องมีความต่างศักย์ราว 0.6 V กระแสจึงเพิ่มขึ้นมาก ความต้านทาน ΔV/I ลดลงเมื่อกระแสมากขึ้น ความต้านทานต้องหาจาก ΔV/I ของจุดนั้นเอง ไม่ใช่จากความชันของเส้นสัมผัส"};
+  $("status").innerHTML=msg[st.dev]+(sw&&st.dev!=="res"?" เมื่อ I อยู่บนแกนตั้ง ความชันของเส้นจากจุดกำเนิดมายังจุดหนึ่งคือ 1/R ของจุดนั้น":"");
   draw();
 }
 function setDev(dev){ st.dev=dev; DP.setSeg(["d-res","d-lamp","d-dio"],{res:"d-res",lamp:"d-lamp",dio:"d-dio"}[dev]); const d=D(); const s=$("s-I"); s.min=d.Imin; s.max=d.Imax; s.step=d.step; s.value=st.I[dev];

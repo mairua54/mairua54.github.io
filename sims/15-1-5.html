@@ -141,7 +141,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   <details>
     <summary>1. หลอดไฟใช้กระแสไปบางส่วนหรือไม่</summary>
     <p class="q">ในช่อง ก. กด "นับใหม่" แล้วรอราว 20 วินาที เทียบจำนวนอิเล็กตรอนที่ผ่านหน้าตัด X (ก่อนถึงหลอดไฟตามทิศกระแส) กับหน้าตัด Y (หลังหลอดไฟ) แล้วลองลดหน้าตัดของลวดส่วนขวา ผลเปลี่ยนไหม</p>
-    <p class="q"><b>คำตอบ</b> ทั้งสองหน้าตัดนับได้เท่ากัน (ต่างกันไม่เกิน 1 ตัวที่กำลังผ่านอยู่) ไม่ว่าหน้าตัดจะใหญ่หรือเล็ก และจำนวนอิเล็กตรอนในลวดคงตัว กระแสเท่ากันทุกหน้าตัด หลอดไฟไม่ได้ใช้กระแส สิ่งที่หลอดไฟรับไปคือพลังงาน (หัวข้อ 4.1) ส่วนที่หน้าตัดเล็ก อิเล็กตรอนต้องเลื่อนเร็วขึ้นเพื่อให้กระแสเท่าเดิม (หัวข้อ 1.6)</p>
+    <p class="q"><b>คำตอบ</b> ทั้งสองหน้าตัดนับได้เท่ากัน (ต่างกันได้ไม่เกิน 1 ตัว) ไม่ว่าหน้าตัดจะใหญ่หรือเล็ก และจำนวนอิเล็กตรอนในลวดคงตัว กระแสเท่ากันทุกหน้าตัด หลอดไฟไม่ได้ใช้กระแส สิ่งที่หลอดไฟรับไปคือพลังงาน (หัวข้อ 4.1) ส่วนที่หน้าตัดเล็ก อิเล็กตรอนต้องเลื่อนเร็วขึ้นเพื่อให้กระแสเท่าเดิม (หัวข้อ 1.6)</p>
   </details>
   <details>
     <summary>2. ค่ากระแสติดลบหมายความว่าอะไร</summary>
@@ -246,15 +246,23 @@ const h2=()=>Math.max(HF+2,H1*st.h);
 function heightAt(x){ if(x<XB0) return H1; if(x<XB0+20) return H1+(HF-H1)*(x-XB0)/20; if(x<XB1-20) return HF; if(x<XB1) return HF+(h2()-HF)*(x-(XB1-20))/20; return h2(); }
 /* electrons drift from right to left (current flows left to right); local speed keeps the flux the same everywhere: n·h·v = FLUX */
 const speedAt=x=>FLUX[st.I]/(DENS*heightAt(x));
-let P=[], time=0, cX=0, cY=0, cStart=0, spawnAcc=0;
-function fill(){ P=[]; for(let x=0;x<W;x+=0.5){ const n=DENS*heightAt(x)*0.5; let k=Math.floor(n+rnd()); while(k-->0) P.push({x:x+rnd()*0.5,s:rnd()}); } }
-fill();
+let P=[], time=0, cX=0, cY=0, cStart=0;
+/* Each electron is tracked by u(x) = ∫ n·h dx from the left end (how many electrons fit in the wire to its left).
+   With a steady current every electron's u decreases at the same rate FLUX, so the spacing stays exact everywhere:
+   the counts at X and Y can differ by at most one, and the drift speed at any x is FLUX/(n·h(x)). */
+let UX=[], UT=0, UXX=0, UXY=0, lastU=0; const DX=0.25;
+function buildU(){ UX=[0]; let u=0; for(let x=DX;x<=W+1e-9;x+=DX){ u+=DENS*heightAt(x-DX/2)*DX; UX.push(u); } UT=u; UXX=uAt(XX); UXY=uAt(XY); }
+function uAt(x){ const i=Math.min(UX.length-2,Math.max(0,Math.floor(x/DX))), f=x/DX-i; return UX[i]+(UX[i+1]-UX[i])*f; }
+function xAt(u){ let lo=0, hi=UX.length-1; while(hi-lo>1){ const mid=(lo+hi)>>1; if(UX[mid]<=u) lo=mid; else hi=mid; } return (lo+(u-UX[lo])/(UX[hi]-UX[lo]))*DX; }
 function stepA(dt){
-  time+=dt;
-  for(const p of P){ const ox=p.x; p.x-=speedAt(p.x)*dt; if(ox>=XX && p.x<XX) cX++; if(ox>=XY && p.x<XY) cY++; }
-  P=P.filter(p=>p.x>=0);
-  spawnAcc+=FLUX[st.I]*dt; while(spawnAcc>=1){ spawnAcc-=1; P.push({x:W-rnd()*speedAt(W)*dt,s:rnd()}); }
+  time+=dt; const du=FLUX[st.I]*dt;
+  for(const p of P){ const ou=p.u; p.u-=du; if(ou>=UXX && p.u<UXX) cX++; if(ou>=UXY && p.u<UXY) cY++; }
+  P=P.filter(p=>p.u>=0);
+  // new electrons enter at the right end, one for every unit of u that has moved in
+  lastU-=du; while(lastU+1<=UT){ lastU+=1; P.push({u:lastU,s:rnd()}); }
 }
+/* fill the whole wire with electrons at equal spacing in u */
+function fill(){ buildU(); P=[]; for(let u=0.5; u<UT; u+=1){ P.push({u,s:rnd()}); lastU=u; } cX=cY=0; cStart=time; }
 const cv=$("cv"), ctx=cv.getContext("2d"); let dpr=1;
 function size(){ dpr=Math.min(2,window.devicePixelRatio||1); cv.width=W*dpr; cv.height=H*dpr; } size(); window.addEventListener("resize",size);
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -270,7 +278,7 @@ function drawA(){
   ctx.fillStyle=C.glow; ctx.globalAlpha=0.18+0.08*st.I; ctx.fill(); ctx.globalAlpha=1;
   ctx.fillStyle=C.muted; ctx.font="17px Sarabun, Tahoma, sans-serif"; ctx.textAlign="center"; ctx.fillText("หลอดไฟ",(XB0+XB1)/2,YC-54);
   // electrons
-  ctx.fillStyle=C.el; for(const p of P){ const h=heightAt(p.x); ctx.beginPath(); ctx.arc(p.x,YC-h/2+1.5+p.s*(h-3),2.6,0,6.283); ctx.fill(); }
+  ctx.fillStyle=C.el; for(const p of P){ const x=xAt(p.u), h=heightAt(x); ctx.beginPath(); ctx.arc(x,YC-h/2+1.5+p.s*(h-3),2.6,0,6.283); ctx.fill(); }
   // cross-sections
   ctx.setLineDash([5,4]); ctx.strokeStyle=C.helper; ctx.lineWidth=1.5;
   for(const [x,lab] of [[XX,"X"],[XY,"Y"]]){ const h=heightAt(x); ctx.beginPath(); ctx.moveTo(x,YC-h/2-14); ctx.lineTo(x,YC+h/2+14); ctx.stroke();
@@ -283,14 +291,14 @@ function drawA(){
 }
 function panelA(){
   $("nX").textContent=cX; $("nY").textContent=cY;
-  let inside=0; for(const p of P) if(p.x>=XX && p.x<XY) inside++; $("nIn").textContent=inside;
+  let inside=0; for(const p of P) if(p.u>=UXX && p.u<UXY) inside++; $("nIn").textContent=inside;
   $("t-cnt").textContent=`นับมาแล้ว ${(time-cStart).toFixed(0)} s · "อยู่ในลวดขณะนี้" นับเฉพาะส่วนระหว่าง X กับ Y`;
   $("o-I").textContent=["","น้อย","ปานกลาง","มาก"][st.I]; $("o-h").textContent=st.h.toFixed(1)+" เท่า";
   const ratio=H1/h2();
   $("status-a").innerHTML=`ทุกหน้าตัดมีอิเล็กตรอนผ่านในอัตราเดียวกัน กระแสจึงเท่ากันทั้งก่อนและหลังหลอดไฟ ในลวดส่วนขวาซึ่งมีหน้าตัดเป็น ${st.h.toFixed(1)} เท่าของส่วนซ้าย ${Math.abs(ratio-1)<0.01?"อิเล็กตรอนเลื่อนเร็วเท่ากับในส่วนซ้าย":"อิเล็กตรอนเลื่อนเร็วกว่าในส่วนซ้าย "+fmt(ratio,2)+" เท่า"} (${m("v")}${sub("d")} ∝ 1/${m("A")} หัวข้อ 1.6)`;
 }
 $("s-I").addEventListener("input",e=>{ st.I=+e.target.value; panelA(); });
-$("s-h").addEventListener("input",e=>{ st.h=+e.target.value; fill(); cX=cY=0; cStart=time; panelA(); });
+$("s-h").addEventListener("input",e=>{ st.h=+e.target.value; fill(); panelA(); });
 $("b-cnt").addEventListener("click",()=>{ cX=cY=0; cStart=time; panelA(); });
 $("b-pause").addEventListener("click",e=>{ st.paused=!st.paused; e.target.textContent=st.paused?"เล่นต่อ":"หยุดชั่วคราว"; e.target.setAttribute("aria-pressed",st.paused); });
 
@@ -341,7 +349,7 @@ function frame(ts){
   last=ts; drawA(); panelA(); placeJ(); requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__sim={st,stepA,counts:()=>({cX,cY,inside:P.filter(p=>p.x>=XX&&p.x<XY).length,total:P.length,time}),reset:()=>{cX=cY=0;cStart=time;},fill,flows,panelB,setI:(a,b)=>{st.i1=a;st.i2=b;syncB();}};
+window.__sim={st,stepA,counts:()=>({cX,cY,inside:P.filter(p=>p.u>=UXX&&p.u<UXY).length,total:P.length,time}),reset:()=>{cX=cY=0;cStart=time;},fill,flows,panelB,setI:(a,b)=>{st.i1=a;st.i2=b;syncB();}};
 })();
 </script>
 

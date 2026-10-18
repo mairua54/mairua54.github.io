@@ -101,7 +101,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   <section class="card" aria-labelledby="h-wire">
     <h2 id="h-wire">ในเนื้อลวด</h2>
     <canvas id="cv" width="720" height="280" aria-label="อิเล็กตรอนอิสระ (จุดสีน้ำเงิน) เคลื่อนที่ระหว่างไอออนบวก (วงกลมสีแดง)"></canvas>
-    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนอิสระ วงกลมสีแดงคือไอออนบวกที่สั่นอยู่กับที่ วงจางรอบไอออนคือบริเวณที่ไอออนสั่น (อิเล็กตรอนชนเมื่อถึงขอบวงนี้) เส้นสีดำคือเส้นทางของอิเล็กตรอน 1 ตัว (○ จุดเริ่ม ● ตำแหน่งปัจจุบัน) เส้นประสีเทาคือหน้าตัดที่ใช้นับ ภาพนี้วาดการลอยเลื่อนให้มากเกินจริงมากเพื่อให้เห็นชัด</p>
+    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนอิสระ วงกลมสีแดงคือไอออนบวกที่สั่นอยู่กับที่ วงจางรอบไอออนคือบริเวณที่ไอออนสั่น (อิเล็กตรอนชนเมื่อถึงขอบวงนี้) เส้นทึบคือเส้นทางของอิเล็กตรอน 1 ตัวที่วาดมีขอบ (○ จุดเริ่ม) เส้นประสีเทาคือหน้าตัดที่ใช้นับ ภาพนี้วาดการลอยเลื่อนให้มากเกินจริงมากเพื่อให้เห็นชัด</p>
   </section>
   <section class="card" aria-labelledby="h-ctl">
     <h2 id="h-ctl">ปรับค่า</h2>
@@ -128,7 +128,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
     <div class="stat">
       <div><b id="n-left">0</b><span>ผ่านไปทางซ้าย</span></div>
       <div><b id="n-right">0</b><span>ผ่านไปทางขวา</span></div>
-      <div><b id="n-net">0</b><span>สุทธิไปทางซ้าย</span></div>
+      <div><b id="n-net">0</b><span>ทางซ้าย ลบ ทางขวา</span></div>
     </div>
     <p class="cap" id="t-count"></p>
     <div class="status" id="status" style="margin-top:10px"></div>
@@ -298,7 +298,7 @@ function draw(){
   ctx.strokeStyle=C.ink; ctx.lineWidth=1.6; ctx.beginPath(); let pen=false;
   for(const p of trail){ if(!p){ pen=false; continue; } if(!pen){ ctx.moveTo(p[0],p[1]); pen=true; } else ctx.lineTo(p[0],p[1]); } ctx.stroke();
   if(trail[0]){ ctx.beginPath(); ctx.arc(trail[0][0],trail[0][1],5,0,6.283); ctx.fillStyle=C.card; ctx.fill(); ctx.strokeStyle=C.ink; ctx.lineWidth=2; ctx.stroke(); }
-  for(let k=0;k<NE;k++){ const e=els[k]; ctx.beginPath(); ctx.arc(e.x,e.y,k===0?5:RE,0,6.283); ctx.fillStyle=k===0?C.ink:C.el; ctx.fill(); }
+  for(let k=0;k<NE;k++){ const e=els[k]; ctx.beginPath(); ctx.arc(e.x,e.y,k===0?5.5:RE,0,6.283); ctx.fillStyle=C.el; ctx.fill(); if(k===0){ ctx.lineWidth=2; ctx.strokeStyle=C.ink; ctx.stroke(); } }
   if(st.on){ ctx.fillStyle=C.ink; ctx.font="bold 22px sans-serif"; ctx.textBaseline="middle";
     ctx.fillStyle=C.card; ctx.fillRect(0,H/2-16,22,32); ctx.fillRect(W-22,H/2-16,22,32);
     ctx.fillStyle=C.ink; ctx.textAlign="center"; ctx.fillText("+",11,H/2); ctx.fillText("−",W-11,H/2); }

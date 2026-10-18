@@ -303,15 +303,16 @@ function update(){
   const Sx=$("status"); Sx.classList.toggle("rev",st.mode==="ser"&&nr>0);
   Sx.innerHTML= st.mode==="par" ? "ต่อขนานไม่ได้เพิ่มอีเอ็มเอฟ แต่ลดความต้านทานภายในสมมูล และแต่ละก้อนจ่ายกระแสเพียงส่วนหนึ่งของกระแสรวม ความต่างศักย์ระหว่างขั้วจึงลดลงน้อยกว่าใช้ก้อนเดียว"
     : S.I<1e-9 ? "อีเอ็มเอฟสมมูลเป็นศูนย์ ก้อนที่กลับขั้วหักล้างก้อนอื่นพอดี จึงไม่มีกระแส"
-    : nr? `มีก้อนที่กลับขั้ว ${nr} ก้อน อีเอ็มเอฟสมมูลลดลง แต่ความต้านทานภายในยังเพิ่มทุกก้อน กระแสจึงลดลงมาก ก้อนที่${S.cells.some(c=>c.dir==="chg"&&c.rev)?"กลับขั้ว":"หันขั้วตามกัน"}มีกระแสภายในไหลจากขั้วบวกไปขั้วลบ เหมือนก้อนที่กำลังถูกประจุ`
+    : nr? `มีก้อนที่กลับขั้ว ${nr} ก้อน อีเอ็มเอฟสมมูลลดลง แต่ความต้านทานภายในยังเพิ่มทุกก้อน กระแสจึงลดลงมาก ก้อนที่ ${S.cells.map((c,k)=>c.dir==="chg"?k+1:0).filter(Boolean).join(", ")} มีกระแสภายในไหลจากขั้วบวกไปขั้วลบ เหมือนก้อนที่กำลังถูกประจุ`+(S.E<0?" (ก้อนที่กลับขั้วมีมากกว่า กระแสจึงไหลในทิศตรงข้ามกับเมื่อใส่ถูกทุกก้อน ก้อนที่ไม่ได้กลับขั้วจึงกลายเป็นฝ่ายที่ถูกประจุ)":"")
+    : n===1 ? "มีแบตเตอรี่ก้อนเดียว ลองเพิ่มจำนวนก้อนเพื่อดูผลของการต่ออนุกรม"
     : "ต่ออนุกรมโดยหันขั้วไปทางเดียวกัน: อีเอ็มเอฟและความต้านทานภายในบวกกัน ทุกก้อนมีกระแสเท่ากัน";
   $("tbl").innerHTML=`<tr><th>ก้อน</th><th>${m("I")}</th><th>ทิศภายใน</th><th>V₊ - V₋</th></tr>`+S.cells.map((c,k)=>{
     const Ik=Number(DP.sig(c.I,3)), V=c.dir==="sup"?st.e-Ik*st.r:c.dir==="chg"?st.e+Ik*st.r:st.e;
     return `<tr><td>${k+1}${c.rev?" (กลับขั้ว)":""}</td><td>${fmt(Ik,3)} A</td><td>${c.dir==="sup"?"ลบ → บวก":c.dir==="chg"?"บวก → ลบ":"-"}</td><td>${fmt(V,3)} V</td></tr>`; }).join("");
   draw();
 }
-function sync(){ $("s-n").value=st.n; $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }
-DP.seg(["m-ser","m-par"],id=>{ st.mode=id==="m-ser"?"ser":"par"; update(); });
+function sync(){ $("s-n").min=st.mode==="par"?2:1; if(st.mode==="par"&&st.n<2) st.n=2; $("s-n").value=st.n; $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }
+DP.seg(["m-ser","m-par"],id=>{ st.mode=id==="m-ser"?"ser":"par"; sync(); });
 $("s-n").addEventListener("input",e=>{ st.n=+e.target.value; update(); });
 $("s-e").addEventListener("input",e=>{ st.e=+e.target.value; update(); });
 $("s-r").addEventListener("input",e=>{ st.r=+e.target.value; update(); });

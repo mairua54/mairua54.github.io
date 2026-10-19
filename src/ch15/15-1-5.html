@@ -1,0 +1,197 @@
+<title>กระแสไฟฟ้าไม่ถูกใช้หมด</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.stat div{background:var(--chip);border-radius:8px;padding:8px;text-align:center}
+.stat b{display:block;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 1.5</div>
+  <h1>กระแสไฟฟ้าไม่ถูกใช้หมด</h1>
+  <p class="lead">นับอิเล็กตรอนที่ผ่านหน้าตัดก่อนและหลังหลอดไฟ แล้วลองหากระแสที่จุดแยกแบบ Ex. 1.4</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-a">
+    <h2 id="h-a">ก. ลวดเส้นเดียวที่มีหลอดไฟ</h2>
+    <canvas id="cv" width="520" height="250" aria-label="อิเล็กตรอนเคลื่อนที่ผ่านลวดส่วนกว้าง ไส้หลอด และลวดส่วนแคบ"></canvas>
+    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนที่กำลังลอยเลื่อน (ไม่แสดงการเคลื่อนที่แบบสุ่ม) ลูกศรสีแดงบอกทิศกระแส ซึ่งตรงข้ามกับทิศที่อิเล็กตรอนเลื่อน เส้นประสีเทา X และ Y คือหน้าตัดที่ใช้นับ ความเร็วในภาพขยายเกินจริงมาก</p>
+    <div class="stat">
+      <div><b id="nX">0</b><span>ผ่านหน้าตัด X</span></div>
+      <div><b id="nY">0</b><span>ผ่านหน้าตัด Y</span></div>
+      <div><b id="nIn">0</b><span>อยู่ในลวดขณะนี้</span></div>
+    </div>
+    <p class="cap" id="t-cnt"></p>
+    <div class="ctl">
+      <div class="row"><label for="s-I"><span>กระแสในวงจร</span><output id="o-I"></output></label>
+        <input type="range" id="s-I" min="1" max="3" step="1"></div>
+      <div class="row"><label for="s-h"><span>หน้าตัดของลวดส่วนขวาเทียบกับส่วนซ้าย</span><output id="o-h"></output></label>
+        <input type="range" id="s-h" min="0.2" max="1" step="0.1"></div>
+      <div class="btns"><button class="btn" id="b-cnt">นับใหม่</button><button class="btn" id="b-pause" aria-pressed="false">หยุดชั่วคราว</button></div>
+    </div>
+    <div class="status" id="status-a" style="margin-top:12px"></div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-b">
+    <h2 id="h-b">ข. กระแสที่จุดแยก</h2>
+    <svg id="jn" viewBox="0 0 380 250" role="img" aria-label="จุดแยก P มีลวดสามเส้น"></svg>
+    <p class="cap">ลูกศรสีแดงบอกทิศกระแสจริงในแต่ละเส้น ความเร็วของลูกศรบอกขนาดกระแสเพื่อเปรียบเทียบเท่านั้น</p>
+    <div class="ctl">
+      <div class="row"><label for="s-1"><span>ลวดเส้นที่ 1: กระแสไหลเข้าจุด P</span><output id="o-1"></output></label>
+        <input type="range" id="s-1" min="0" max="6" step="0.5"></div>
+      <div class="row"><label for="s-2"><span>ลวดเส้นที่ 2: กระแสไหลออกจากจุด P</span><output id="o-2"></output></label>
+        <input type="range" id="s-2" min="0" max="6" step="0.5"></div>
+      <div class="btns"><button class="btn" id="b-ex">ใช้ค่าของ Ex. 1.4</button></div>
+    </div>
+    <div class="eq" id="eq" style="margin-top:12px"></div>
+    <div class="status" id="status-b" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. หลอดไฟใช้กระแสไปบางส่วนหรือไม่</summary>
+    <p class="q">ในช่อง ก. กด "นับใหม่" แล้วรอราว 20 วินาที เทียบจำนวนอิเล็กตรอนที่ผ่านหน้าตัด X (ก่อนถึงหลอดไฟตามทิศกระแส) กับหน้าตัด Y (หลังหลอดไฟ) แล้วลองลดหน้าตัดของลวดส่วนขวา ผลเปลี่ยนไหม</p>
+    <p class="q"><b>คำตอบ</b> ทั้งสองหน้าตัดนับได้เท่ากัน (ต่างกันได้ไม่เกิน 1 ตัว) ไม่ว่าหน้าตัดจะใหญ่หรือเล็ก และจำนวนอิเล็กตรอนในลวดคงตัว กระแสเท่ากันทุกหน้าตัด หลอดไฟไม่ได้ใช้กระแส สิ่งที่หลอดไฟรับไปคือพลังงาน (หัวข้อ 4.1) ส่วนที่หน้าตัดเล็ก อิเล็กตรอนต้องเลื่อนเร็วขึ้นเพื่อให้กระแสเท่าเดิม (หัวข้อ 1.6)</p>
+  </details>
+  <details>
+    <summary>2. ค่ากระแสติดลบหมายความว่าอะไร</summary>
+    <p class="q">ในช่อง ข. ตั้งลวดเส้นที่ 1 เป็น 2.0 A และลวดเส้นที่ 2 เป็น 3.5 A ทำนาย i<sub>3</sub> และทิศของกระแสจริงในลวดเส้นที่ 3 ก่อนดูผล</p>
+    <p class="q"><b>คำตอบ</b> 2.0 A + i<sub>3</sub> = 3.5 A จึงได้ i<sub>3</sub> = 1.5 A เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด 1.5 A ถ้า i<sub>3</sub> ติดลบ เช่นใน Ex. 1.4 กระแสจริงไหลออกจากจุด P</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่ากระแสคงตัว ช่อง ก. แสดงเฉพาะการลอยเลื่อนของอิเล็กตรอน ความหนาแน่นของอิเล็กตรอนเท่ากันทุกส่วนของลวด จำนวนและความเร็วไม่ได้เป็นไปตามสัดส่วนจริง</p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub}=DP;
+/* ---------- panel ก: one wire, wide part → bulb filament → narrow part ---------- */
+const W=520,H=250, YC=128, H1=80, HF=6, XB0=212, XB1=308, XX=100, XY=430, DENS=0.0042; // electrons per px²
+const FLUX=[0,26,52,78];  // electrons per second through every cross-section (relative "current")
+const st={I:2,h:0.5,paused:false, i1:4,i2:1.5};
+let seed=777; const rnd=()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
+const h2=()=>Math.max(HF+2,H1*st.h);
+function heightAt(x){ if(x<XB0) return H1; if(x<XB0+20) return H1+(HF-H1)*(x-XB0)/20; if(x<XB1-20) return HF; if(x<XB1) return HF+(h2()-HF)*(x-(XB1-20))/20; return h2(); }
+/* electrons drift from right to left (current flows left to right); local speed keeps the flux the same everywhere: n·h·v = FLUX */
+const speedAt=x=>FLUX[st.I]/(DENS*heightAt(x));
+let P=[], time=0, cX=0, cY=0, cStart=0;
+/* Each electron is tracked by u(x) = ∫ n·h dx from the left end (how many electrons fit in the wire to its left).
+   With a steady current every electron's u decreases at the same rate FLUX, so the spacing stays exact everywhere:
+   the counts at X and Y can differ by at most one, and the drift speed at any x is FLUX/(n·h(x)). */
+let UX=[], UT=0, UXX=0, UXY=0, lastU=0; const DX=0.25;
+function buildU(){ UX=[0]; let u=0; for(let x=DX;x<=W+1e-9;x+=DX){ u+=DENS*heightAt(x-DX/2)*DX; UX.push(u); } UT=u; UXX=uAt(XX); UXY=uAt(XY); }
+function uAt(x){ const i=Math.min(UX.length-2,Math.max(0,Math.floor(x/DX))), f=x/DX-i; return UX[i]+(UX[i+1]-UX[i])*f; }
+function xAt(u){ let lo=0, hi=UX.length-1; while(hi-lo>1){ const mid=(lo+hi)>>1; if(UX[mid]<=u) lo=mid; else hi=mid; } return (lo+(u-UX[lo])/(UX[hi]-UX[lo]))*DX; }
+function stepA(dt){
+  time+=dt; const du=FLUX[st.I]*dt;
+  for(const p of P){ const ou=p.u; p.u-=du; if(ou>=UXX && p.u<UXX) cX++; if(ou>=UXY && p.u<UXY) cY++; }
+  P=P.filter(p=>p.u>=0);
+  // new electrons enter at the right end, one for every unit of u that has moved in
+  lastU-=du; while(lastU+1<=UT){ lastU+=1; P.push({u:lastU,s:rnd()}); }
+}
+/* fill the whole wire with electrons at equal spacing in u */
+function fill(){ buildU(); P=[]; for(let u=0.5; u<UT; u+=1){ P.push({u,s:rnd()}); lastU=u; } cX=cY=0; cStart=time; }
+const cv=$("cv"), ctx=cv.getContext("2d"); let dpr=1;
+function size(){ dpr=Math.min(2,window.devicePixelRatio||1); cv.width=W*dpr; cv.height=H*dpr; } size(); window.addEventListener("resize",size);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let arrowPhase=0;
+function drawA(){
+  const C={bg:css("--card"),ink:css("--ink"),el:css("--elec"),helper:css("--helper"),cur:css("--current"),chip:css("--chip"),glow:css("--glow"),muted:css("--muted")};
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
+  // wire outline
+  ctx.beginPath(); for(let x=0;x<=W;x+=2) ctx.lineTo(x,YC-heightAt(x)/2); for(let x=W;x>=0;x-=2) ctx.lineTo(x,YC+heightAt(x)/2); ctx.closePath();
+  ctx.fillStyle=C.chip; ctx.fill(); ctx.strokeStyle=C.ink; ctx.lineWidth=1.5; ctx.stroke();
+  // bulb glass
+  ctx.beginPath(); ctx.arc((XB0+XB1)/2,YC,46,0,6.283); ctx.strokeStyle=C.ink; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle=C.glow; ctx.globalAlpha=0.18+0.08*st.I; ctx.fill(); ctx.globalAlpha=1;
+  ctx.fillStyle=C.muted; ctx.font="17px Sarabun, Tahoma, sans-serif"; ctx.textAlign="center"; ctx.fillText("หลอดไฟ",(XB0+XB1)/2,YC-54);
+  // electrons
+  ctx.fillStyle=C.el; for(const p of P){ const x=xAt(p.u), h=heightAt(x); ctx.beginPath(); ctx.arc(x,YC-h/2+1.5+p.s*(h-3),2.6,0,6.283); ctx.fill(); }
+  // cross-sections
+  ctx.setLineDash([5,4]); ctx.strokeStyle=C.helper; ctx.lineWidth=1.5;
+  for(const [x,lab] of [[XX,"X"],[XY,"Y"]]){ const h=heightAt(x); ctx.beginPath(); ctx.moveTo(x,YC-h/2-14); ctx.lineTo(x,YC+h/2+14); ctx.stroke();
+    ctx.fillStyle=C.ink; ctx.font="bold 19px sans-serif"; ctx.fillText(lab,x,YC+h/2+34); }
+  ctx.setLineDash([]);
+  // current arrows (red) above the wire, pointing right
+  for(const x0 of [20,372]){ const y=YC-H1/2-24; ctx.strokeStyle=C.cur; ctx.fillStyle=C.cur; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x0+60,y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x0+70,y); ctx.lineTo(x0+58,y-7); ctx.lineTo(x0+58,y+7); ctx.closePath(); ctx.fill();
+    ctx.font="italic 21px 'Times New Roman', serif"; ctx.fillText("I",x0+35,y-10); }
+}
+function panelA(){
+  $("nX").textContent=cX; $("nY").textContent=cY;
+  let inside=0; for(const p of P) if(p.u>=UXX && p.u<UXY) inside++; $("nIn").textContent=inside;
+  $("t-cnt").textContent=`นับมาแล้ว ${(time-cStart).toFixed(0)} s · "อยู่ในลวดขณะนี้" นับเฉพาะส่วนระหว่าง X กับ Y`;
+  $("o-I").textContent=["","น้อย","ปานกลาง","มาก"][st.I]; $("o-h").textContent=st.h.toFixed(1)+" เท่า";
+  const ratio=H1/h2();
+  $("status-a").innerHTML=`ทุกหน้าตัดมีอิเล็กตรอนผ่านในอัตราเดียวกัน กระแสจึงเท่ากันทั้งก่อนและหลังหลอดไฟ ในลวดส่วนขวาซึ่งมีหน้าตัดเป็น ${st.h.toFixed(1)} เท่าของส่วนซ้าย ${Math.abs(ratio-1)<0.01?"อิเล็กตรอนเลื่อนเร็วเท่ากับในส่วนซ้าย":"อิเล็กตรอนเลื่อนเร็วกว่าในส่วนซ้าย "+fmt(ratio,2)+" เท่า"} (${m("v")}${sub("d")} ∝ 1/${m("A")} หัวข้อ 1.6)`;
+}
+$("s-I").addEventListener("input",e=>{ st.I=+e.target.value; panelA(); });
+$("s-h").addEventListener("input",e=>{ st.h=+e.target.value; fill(); panelA(); });
+$("b-cnt").addEventListener("click",()=>{ cX=cY=0; cStart=time; panelA(); });
+$("b-pause").addEventListener("click",e=>{ st.paused=!st.paused; e.target.textContent=st.paused?"เล่นต่อ":"หยุดชั่วคราว"; e.target.setAttribute("aria-pressed",st.paused); });
+
+/* ---------- panel ข: junction P ---------- */
+const J=$("jn"), PX=170, PY=125;
+const WIRES=[{n:1,end:[20,125]},{n:2,end:[350,40]},{n:3,end:[350,210]}];
+const gW=el("g",{},J), gA=el("g",{},J), gT=el("g",{},J);
+for(const w of WIRES){ DP.wire(gW,[w.end,[PX,PY]]); }
+DP.dot(gT,PX,PY); txt(gT,PX-4,PY-14,"P",{"text-anchor":"middle","font-weight":700,"font-size":16});
+txt(gT,40,110,"ลวดเส้นที่ 1",{"font-size":13,fill:"var(--muted)"});
+txt(gT,262,44,"ลวดเส้นที่ 2",{"font-size":13,fill:"var(--muted)","text-anchor":"end"});
+txt(gT,262,226,"ลวดเส้นที่ 3",{"font-size":13,fill:"var(--muted)","text-anchor":"end"});
+const labs={1:txt(gT,90,150,"",{"font-size":15,"text-anchor":"middle"}),2:txt(gT,282,98,"",{"font-size":15}),3:txt(gT,282,162,"",{"font-size":15})};
+const arrows={}; for(const w of WIRES){ arrows[w.n]=[]; for(let k=0;k<4;k++) arrows[w.n].push(DP.arrowHead(gA,0,0,0)); }
+// signed flow out of P along each wire (positive = away from P)
+function flows(){ const i3=st.i2-st.i1; return {1:-st.i1, 2:st.i2, 3:-i3, i3}; }
+let jPhase=0;
+function placeJ(){
+  const f=flows();
+  for(const w of WIRES){ const out=f[w.n], I=Math.abs(out), [ex,ey]=w.end, L=Math.hypot(ex-PX,ey-PY), ang=Math.atan2(ey-PY,ex-PX)*180/Math.PI;
+    arrows[w.n].forEach((a,k)=>{ if(I<1e-9){ a.style.display="none"; return; } a.style.display="";
+      let u=((k/4 + (out>0?1:-1)*jPhase*I/6)%1+1)%1; u=0.12+0.8*u; const x=PX+(ex-PX)*u, y=PY+(ey-PY)*u;
+      a.setAttribute("transform",`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(ang+(out>0?0:180)).toFixed(1)})`); }); }
+}
+function panelB(){
+  const f=flows(), i3=f.i3;
+  $("o-1").textContent=fx(st.i1,1)+" A"; $("o-2").textContent=fx(st.i2,1)+" A";
+  labs[1].textContent=fx(st.i1,1)+" A เข้า"; labs[2].textContent=fx(st.i2,1)+" A ออก";
+  labs[3].textContent=Math.abs(i3)<1e-9?"0 A":fx(Math.abs(i3),1)+" A "+(i3>0?"เข้า":"ออก");
+  $("eq").innerHTML=DP.eqHTML([
+    `กำหนดให้ ${m("i")}${sub("3")} เป็นค่ากระแสในลวดเส้นที่ 3 ตามทิศที่ไหลเข้าจุด P`,
+    `กระแสเข้ารวม = กระแสออกรวม: ${fx(st.i1,1)} A + ${m("i")}${sub("3")} = ${fx(st.i2,1)} A`,
+    `${m("i")}${sub("3")} = ${fx(st.i2,1)} A - ${fx(st.i1,1)} A = ${fx(i3,1)} A`]);
+  const S=$("status-b"); S.classList.toggle("rev",i3<-1e-9);
+  S.innerHTML = Math.abs(i3)<1e-9 ? `${m("i")}${sub("3")} = 0 ไม่มีกระแสในลวดเส้นที่ 3 กระแสที่เข้าทางลวดเส้นที่ 1 ออกทางลวดเส้นที่ 2 ทั้งหมด`
+    : i3>0 ? `${m("i")}${sub("3")} เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด ${m("I")}${sub("3")} = ${fx(i3,1)} A`
+    : `${m("i")}${sub("3")} ติดลบ กระแสจริงในลวดเส้นที่ 3 ไหลออกจากจุด P ตรงข้ามกับทิศที่กำหนด ขนาด ${m("I")}${sub("3")} = |${m("i")}${sub("3")}| = ${fx(-i3,1)} A`;
+}
+function syncB(){ $("s-1").value=st.i1; $("s-2").value=st.i2; panelB(); }
+$("s-1").addEventListener("input",e=>{ st.i1=+e.target.value; panelB(); });
+$("s-2").addEventListener("input",e=>{ st.i2=+e.target.value; panelB(); });
+$("b-ex").addEventListener("click",()=>{ st.i1=4; st.i2=1.5; syncB(); });
+
+$("s-I").value=st.I; $("s-h").value=st.h; fill(); panelA(); syncB();
+let last=null, acc=0;
+function frame(ts){
+  if(last!==null && !st.paused && !DP.reduce){ const d=Math.min(0.1,(ts-last)/1000); acc+=d; const h=1/120; let n=0; while(acc>=h&&n<40){ stepA(h); acc-=h; n++; } jPhase+=d; }
+  last=ts; drawA(); panelA(); placeJ(); requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+window.__sim={st,stepA,counts:()=>({cX,cY,inside:P.filter(p=>p.u>=UXX&&p.u<UXY).length,total:P.length,time}),reset:()=>{cX=cY=0;cStart=time;},fill,flows,panelB,setI:(a,b)=>{st.i1=a;st.i2=b;syncB();}};
+})();
+</script>

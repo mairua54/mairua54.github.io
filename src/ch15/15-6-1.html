@@ -1,0 +1,169 @@
+<title>การต่อแบตเตอรี่หลายก้อน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 6.1 และ 6.2</div>
+  <h1>การต่อแบตเตอรี่แบบอนุกรมและแบบขนาน</h1>
+  <p class="lead">ต่อแบตเตอรี่ที่เหมือนกันหลายก้อนกับตัวต้านทาน R แบบอนุกรมหรือแบบขนาน ในแบบอนุกรมแตะก้อนใดก็ได้เพื่อกลับขั้ว แล้วดูอีเอ็มเอฟสมมูล กระแส และความต่างศักย์ระหว่างขั้วของแต่ละก้อน</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-c">
+    <h2 id="h-c">วงจร</h2>
+    <svg id="c" viewBox="0 0 380 290" role="img" aria-label="วงจรแบตเตอรี่หลายก้อนต่อกับตัวต้านทาน"></svg>
+    <p class="cap" id="cap-c"></p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="การต่อ">
+      <button id="m-ser" aria-pressed="true">อนุกรม</button>
+      <button id="m-par" aria-pressed="false">ขนาน</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="s-n"><span>จำนวนก้อน <i class="m">n</i></span><output id="o-n"></output></label>
+        <input type="range" id="s-n" min="1" max="6" step="1"></div>
+      <div class="row"><label for="s-e"><span>อีเอ็มเอฟของแต่ละก้อน <i class="m">ε</i><sub>ก้อน</sub></span><output id="o-e"></output></label>
+        <input type="range" id="s-e" min="1" max="2" step="0.1"></div>
+      <div class="row"><label for="s-r"><span>ความต้านทานภายในของแต่ละก้อน <i class="m">r</i><sub>ก้อน</sub></span><output id="o-r"></output></label>
+        <input type="range" id="s-r" min="0.05" max="1" step="0.05"></div>
+      <div class="row"><label for="s-R"><span>ความต้านทานภายนอก <i class="m">R</i></span><output id="o-R"></output></label>
+        <input type="range" id="s-R" min="0.5" max="20" step="0.1"></div>
+      <div class="btns"><button class="btn" id="p1">Ex. 6.1</button><button class="btn" id="p2">Ex. 6.2</button><button class="btn" id="p3">Ex. 6.3</button></div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณ</h2>
+    <div class="eq" id="eq"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+  <section class="card" aria-labelledby="h-t">
+    <h2 id="h-t">แต่ละก้อน</h2>
+    <div class="tblwrap"><table class="tbl" id="tbl"></table></div>
+    <p class="cap">ทิศของกระแสภายในก้อน: "ลบ → บวก" คือก้อนนั้นจ่ายพลังงาน ใช้ V₊ - V₋ = ε - Ir ส่วน "บวก → ลบ" เหมือนก้อนที่ถูกประจุ ใช้ V₊ - V₋ = ε + Ir (หัวข้อ 4.3)</p>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ใส่ถ่านกลับขั้วหนึ่งก้อน (Ex. 6.2)</summary>
+    <p class="q">กด "Ex. 6.2" ซึ่งมีถ่าน 4 ก้อน ก้อนละ 1.5 V และ 0.50 Ω ต่อกับหลอด 4.0 Ω โดยก้อนที่ 3 กลับขั้ว เทียบกระแสกับเมื่อใส่ถูกทุกก้อน (แตะก้อนที่ 3 อีกครั้ง) และดู V₊ - V₋ ของก้อนที่กลับขั้ว</p>
+    <p class="q"><b>คำตอบ</b> อีเอ็มเอฟสมมูลเหลือ 3.0 V แต่ความต้านทานภายในสมมูลยัง 2.0 Ω กระแสจึงเป็น 0.500 A ครึ่งหนึ่งของเมื่อใส่ถูก (1.00 A) ก้อนที่กลับขั้วมีกระแสภายในไหลจากขั้วบวกไปขั้วลบ ได้ V₊ - V₋ = ε + Ir = 1.75 V มากกว่าอีเอ็มเอฟ เหมือนก้อนที่กำลังถูกประจุ</p>
+  </details>
+  <details>
+    <summary>2. อนุกรมกับขนาน ใช้ถ่านชุดเดียวกัน</summary>
+    <p class="q">ตั้ง 3 ก้อน ก้อนละ 1.5 V และ 0.30 Ω กับ R = 1.4 Ω เทียบกระแสใน R และกระแสที่ผ่านแต่ละก้อน ระหว่างแบบอนุกรมกับแบบขนาน</p>
+    <p class="q"><b>คำตอบ</b> แบบอนุกรม ε = 4.5 V และ r = 0.90 Ω ได้กระแสใน R 1.96 A ซึ่งผ่านทุกก้อน แบบขนาน ε = 1.5 V และ r = 0.10 Ω ได้กระแสใน R 1.00 A แต่ละก้อนจ่ายเพียง 0.333 A แบบอนุกรมให้อีเอ็มเอฟมากกว่า ส่วนแบบขนานลดความต้านทานภายในและให้แต่ละก้อนจ่ายกระแสเพียงส่วนหนึ่ง</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าแบตเตอรี่ทุกก้อนเหมือนกันทุกประการ อีเอ็มเอฟและความต้านทานภายในคงตัว สายไฟไม่มีความต้านทาน ในแบบขนานไม่ให้กลับขั้ว เพราะจะเกิดกระแสไหลวนระหว่างก้อนซึ่งต้องวิเคราะห์ด้วยวิธีในความรู้เพิ่มเติมของหัวข้อ 6.3</p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const st={mode:"ser",n:4,e:1.5,r:0.2,R:5.2,rev:[false,false,false,false,false,false]};
+/* j > 0: current through the series row from left to right (the row's left end is the − end when no cell is reversed) */
+function solve(){
+  const n=st.n;
+  if(st.mode==="ser"){ const s=[...Array(n)].map((_,k)=>st.rev[k]?-1:1); const E=s.reduce((a,b)=>a+b,0)*st.e, r=n*st.r, j=E/(st.R+r), I=Math.abs(j);
+    const cells=s.map(sk=>{ const sup=sk*j>1e-12, chg=sk*j<-1e-12; return {rev:sk<0,I,dir:sup?"sup":chg?"chg":"none",V:sup?st.e-I*st.r:chg?st.e+I*st.r:st.e}; });
+    return {E,r,j,I,Vset:Math.abs(E)-I*r,cells}; }
+  const E=st.e, r=st.r/n, I=E/(st.R+r), Ik=I/n;
+  return {E,r,j:I,I,Vset:E-I*r,cells:[...Array(n)].map(()=>({rev:false,I:Ik,dir:"sup",V:st.e-Ik*st.r}))};
+}
+const C=$("c");
+/* one source drawn as in fig 4.4: cell + r inside a dashed frame; leftPlus: + terminal on the left */
+function sourceH(g,x0,y,w,leftPlus,k){
+  el("rect",{x:x0,y:y-15,width:w,height:30,fill:"none",stroke:"var(--ink)","stroke-width":1,"stroke-dasharray":"4 3"},g);
+  const cx=leftPlus? x0+w-14 : x0+14, rx0=leftPlus? x0+4 : x0+26, rx1=leftPlus? x0+w-24 : x0+w-4;
+  DP.wire(g,[[x0,y],[x0+w,y]]);
+  DP.cell(g,cx,y,"h",leftPlus?"left":"right",{nosign:true,long:11,short:6});
+  el("rect",{x:rx0,y:y-7,width:rx1-rx0,height:14,fill:"var(--card)"},g); DP.resistor(g,rx0,y,rx1,y,3,5);
+  // + and − above the frame corners (fig 6.2 style)
+  txt(g,x0+3,y-19,leftPlus?"+":"−",{"text-anchor":"middle","font-weight":700,"font-size":15});
+  txt(g,x0+w-3,y-19,leftPlus?"−":"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+  if(k!==undefined) txt(g,x0+w/2,y+30,"ก้อน "+(k+1),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+}
+function draw(){
+  C.textContent=""; C.setAttribute("viewBox","0 0 380 290"); const S=solve(), n=st.n;
+  if(st.mode==="ser"){
+    const w=Math.min(52,300/n-6), gap=(300-n*w)/(n+1), y=70;
+    DP.wire(C,[[40,y],[40,230],[340,230],[340,y]]);
+    let x=40+gap; DP.wire(C,[[40,y],[x,y]]);
+    for(let k=0;k<n;k++){ const g=el("g",{style:"cursor:pointer"},C); sourceH(g,x,y,w,st.rev[k],k);
+      if(st.rev[k]) txt(g,x+w/2,y+44,"กลับขั้ว",{"text-anchor":"middle","font-size":12,fill:"var(--heat)","font-weight":700});
+      el("rect",{x:x-2,y:y-34,width:w+4,height:84,fill:"transparent"},g);
+      g.addEventListener("click",()=>{ st.rev[k]=!st.rev[k]; update(); });
+      const nx=x+w+gap; DP.wire(C,[[x+w,y],[k<n-1?nx:340,y]]); x=nx; }
+    el("rect",{x:150,y:222,width:80,height:16,fill:"var(--card)"},C); DP.resistor(C,150,230,230,230,5,7);
+    txt(C,190,258,[["R",{it:1}]," = "+fx(st.R,1)+" Ω"],{"text-anchor":"middle","font-size":14});
+    if(S.I>1e-9){ const d=S.j>0?1:-1; DP.arrowHead(C,340,150,d>0?90:-90); DP.arrowHead(C,280,230,d>0?180:0); DP.arrowHead(C,40,150,d>0?-90:90); }
+  } else {
+    const top=56, dy=52, xl=110, xr=250, yb=top+dy*(n-1);
+    DP.wire(C,[[xl,top],[xl,yb]]); DP.wire(C,[[xr,top],[xr,yb]]);
+    for(let k=0;k<n;k++){ const y=top+dy*k; DP.wire(C,[[xl,y],[xl+20,y]]); DP.wire(C,[[xr-20,y],[xr,y]]); sourceH(C,xl+20,y,xr-xl-40,false,undefined);
+      if(n>1 && k<n-1){ DP.dot(C,xl,y); DP.dot(C,xr,y); } }
+    const yB=Math.max(yb+50,250), yT=top-36; C.setAttribute("viewBox",`0 0 380 ${yB+20}`);
+    DP.wire(C,[[xr,top],[xr,yT],[340,yT],[340,yB],[60,yB],[60,yT],[xl,yT],[xl,top]]);
+    const ym=(yT+yB)/2; el("rect",{x:332,y:ym-40,width:16,height:80,fill:"var(--card)"},C); DP.resistor(C,340,ym-40,340,ym+40,5,7);
+    txt(C,326,ym+5,[["R",{it:1}]],{"text-anchor":"end","font-size":15});
+    txt(C,200,yB-8,"R = "+fx(st.R,1)+" Ω",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"});
+    if(S.I>1e-9){ DP.arrowHead(C,300,yT,0); DP.arrowHead(C,340,ym+60,90); DP.arrowHead(C,200,yB,180); }
+  }
+}
+function update(){
+  const S=solve(), n=st.n; DP.setSeg(["m-ser","m-par"],st.mode==="ser"?"m-ser":"m-par");
+  $("o-n").textContent=n; $("o-e").textContent=fx(st.e,1)+" V"; $("o-r").textContent=fx(st.r,2)+" Ω"; $("o-R").textContent=fx(st.R,1)+" Ω";
+  $("cap-c").textContent= st.mode==="ser" ? "แตะแบตเตอรี่ก้อนใดก็ได้เพื่อกลับขั้ว แต่ละก้อนวาดเป็นเซลล์ต่อกับความต้านทานภายในในกรอบเส้นประ ลูกศรสีแดงบอกทิศกระแส" : "แบตเตอรี่ทุกก้อนหันขั้วบวกไปทางขวา ต่อเข้ากับจุดเดียวกัน ลูกศรสีแดงบอกทิศกระแสในวงจรภายนอก";
+  const nr=st.rev.slice(0,n).filter(x=>x).length, Id=Number(DP.sig(S.I,3));
+  const lines=[], EA=S.E<0?`(ขนาดของ ${m("ε")})`:m("ε");
+  if(st.mode==="ser"){
+    lines.push(nr? `${m("ε")} = (${n-nr} - ${nr})(${fx(st.e,1)} V) = ${fx(S.E,1)} V|ก้อนที่กลับขั้วคิดอีเอ็มเอฟเป็นลบ`: `${m("ε")} = ${n}(${fx(st.e,1)} V) = ${fx(S.E,1)} V`);
+    lines.push(`${m("r")} = ${n}(${fx(st.r,2)} Ω) = ${fmt(S.r,3)} Ω|ความต้านทานภายในบวกกันทุกก้อน`);
+    lines.push(`${m("I")} = ${EA}/(${m("R")} + ${m("r")}) = (${fx(Math.abs(S.E),1)} V)/(${fx(st.R,1)} Ω + ${fmt(S.r,3)} Ω) = ${fmt(Id,3)} A`+(S.E<0?"|อีเอ็มเอฟสมมูลติดลบ กระแสไหลในทิศตรงข้ามกับเมื่อใส่ถูกทุกก้อน":""));
+  } else {
+    lines.push(`${m("ε")} = ${m("ε")}${sub("ก้อน")} = ${fx(st.e,1)} V|ต่อขนาน อีเอ็มเอฟเท่ากันทุกก้อน`);
+    lines.push(`${m("r")} = ${m("r")}${sub("ก้อน")}/${m("n")} = (${fx(st.r,2)} Ω)/${n} = ${fmt(S.r,3)} Ω`);
+    lines.push(`${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,1)} Ω + ${fmt(S.r,3)} Ω) = ${fmt(Id,3)} A`, `แต่ละก้อนจ่าย ${m("I")}/${m("n")} = ${fmt(Id/n,3)} A`);
+  }
+  if(S.I>1e-9) lines.push(`ความต่างศักย์ระหว่างขั้วของทั้งชุด = ${EA} - ${m("Ir")} = ${fx(Math.abs(S.E),1)} V - (${fmt(Id,3)} A)(${fmt(S.r,3)} Ω) = ${fmt(Math.abs(S.E)-Id*S.r,3)} V`);
+  $("eq").innerHTML=eqHTML(lines);
+  const Sx=$("status"); Sx.classList.toggle("rev",st.mode==="ser"&&nr>0);
+  Sx.innerHTML= st.mode==="par" ? "ต่อขนานไม่ได้เพิ่มอีเอ็มเอฟ แต่ลดความต้านทานภายในสมมูล และแต่ละก้อนจ่ายกระแสเพียงส่วนหนึ่งของกระแสรวม ความต่างศักย์ระหว่างขั้วจึงลดลงน้อยกว่าใช้ก้อนเดียว"
+    : S.I<1e-9 ? "อีเอ็มเอฟสมมูลเป็นศูนย์ ก้อนที่กลับขั้วหักล้างก้อนอื่นพอดี จึงไม่มีกระแส"
+    : nr? `มีก้อนที่กลับขั้ว ${nr} ก้อน อีเอ็มเอฟสมมูลลดลง แต่ความต้านทานภายในยังเพิ่มทุกก้อน กระแสจึงลดลงมาก ก้อนที่ ${S.cells.map((c,k)=>c.dir==="chg"?k+1:0).filter(Boolean).join(", ")} มีกระแสภายในไหลจากขั้วบวกไปขั้วลบ เหมือนก้อนที่กำลังถูกประจุ`+(S.E<0?" (ก้อนที่กลับขั้วมีมากกว่า กระแสจึงไหลในทิศตรงข้ามกับเมื่อใส่ถูกทุกก้อน ก้อนที่ไม่ได้กลับขั้วจึงกลายเป็นฝ่ายที่ถูกประจุ)":"")
+    : n===1 ? "มีแบตเตอรี่ก้อนเดียว ลองเพิ่มจำนวนก้อนเพื่อดูผลของการต่ออนุกรม"
+    : "ต่ออนุกรมโดยหันขั้วไปทางเดียวกัน: อีเอ็มเอฟและความต้านทานภายในบวกกัน ทุกก้อนมีกระแสเท่ากัน";
+  $("tbl").innerHTML=`<tr><th>ก้อน</th><th>${m("I")}</th><th>ทิศภายใน</th><th>V₊ - V₋</th></tr>`+S.cells.map((c,k)=>{
+    const Ik=Number(DP.sig(c.I,3)), V=c.dir==="sup"?st.e-Ik*st.r:c.dir==="chg"?st.e+Ik*st.r:st.e;
+    return `<tr><td>${k+1}${c.rev?" (กลับขั้ว)":""}</td><td>${fmt(Ik,3)} A</td><td>${c.dir==="sup"?"ลบ → บวก":c.dir==="chg"?"บวก → ลบ":"-"}</td><td>${fmt(V,3)} V</td></tr>`; }).join("");
+  draw();
+}
+function sync(){ $("s-n").min=st.mode==="par"?2:1; if(st.mode==="par"&&st.n<2) st.n=2; $("s-n").value=st.n; $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }
+DP.seg(["m-ser","m-par"],id=>{ st.mode=id==="m-ser"?"ser":"par"; sync(); });
+$("s-n").addEventListener("input",e=>{ st.n=+e.target.value; update(); });
+$("s-e").addEventListener("input",e=>{ st.e=+e.target.value; update(); });
+$("s-r").addEventListener("input",e=>{ st.r=+e.target.value; update(); });
+$("s-R").addEventListener("input",e=>{ st.R=+e.target.value; update(); });
+$("p1").addEventListener("click",()=>{ Object.assign(st,{mode:"ser",n:4,e:1.5,r:0.2,R:5.2,rev:[false,false,false,false,false,false]}); sync(); });
+$("p2").addEventListener("click",()=>{ Object.assign(st,{mode:"ser",n:4,e:1.5,r:0.5,R:4.0,rev:[false,false,true,false,false,false]}); sync(); });
+$("p3").addEventListener("click",()=>{ Object.assign(st,{mode:"par",n:3,e:1.5,r:0.3,R:1.4,rev:[false,false,false,false,false,false]}); sync(); });
+sync();
+window.__sim={st,solve,sync};
+})();
+</script>

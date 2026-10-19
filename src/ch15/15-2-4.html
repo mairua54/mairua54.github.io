@@ -1,0 +1,149 @@
+<title>ความต้านทานของลวด</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+.bars{display:grid;gap:6px;margin-top:8px}
+.bar{display:grid;grid-template-columns:minmax(0,9.5em) 1fr;gap:8px;align-items:center;font-size:14px}
+.bar .t{height:18px;border-radius:4px;background:var(--graph);min-width:2px}
+.bar .t.k2{background:var(--graph2)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 2.4</div>
+  <h1>ความต้านทานของลวด <i class="m">R</i> = <i class="m">ρℓ</i>/<i class="m">A</i></h1>
+  <p class="lead">ปรับวัสดุ ความยาว และพื้นที่หน้าตัดของลวดสม่ำเสมอ แล้วดูว่าความต้านทานเปลี่ยนอย่างไร รวมถึงเมื่อดึงลวดเส้นเดิมให้ยาวขึ้น</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-w">
+    <h2 id="h-w">ลวด</h2>
+    <svg id="wire" viewBox="0 0 380 190" role="img" aria-label="ลวดทรงกระบอก"></svg>
+    <p class="cap" id="cap-w"></p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="โหมด">
+      <button id="m-new" aria-pressed="true">ลวดที่เลือกขนาดเอง</button>
+      <button id="m-pull" aria-pressed="false">ดึงลวดเส้นเดิมให้ยาว</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="mat"><span>วัสดุ (ที่ 20 °C)</span></label>
+        <select id="mat"></select></div>
+      <div class="row"><label for="s-l"><span id="l-l">ความยาว <i class="m">ℓ</i></span><output id="o-l"></output></label>
+        <input type="range" id="s-l" min="0.1" max="10" step="0.1"></div>
+      <div class="row"><label for="s-A"><span id="l-A">พื้นที่หน้าตัด <i class="m">A</i></span><output id="o-A"></output></label>
+        <input type="range" id="s-A" min="0.1" max="4" step="0.05"></div>
+      <div class="row" id="row-k" hidden><label for="s-k"><span>ดึงให้ยาวเป็น <i class="m">k</i> เท่า (ปริมาตรคงตัว)</span><output id="o-k"></output></label>
+        <input type="range" id="s-k" min="1" max="4" step="0.5"></div>
+      <div class="btns"><button class="btn" id="p-ex">Ex. 2.4 ลวดนิโครม</button><button class="btn" id="p-cu">สายทองแดง 10 m</button></div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณ</h2>
+    <div class="eq" id="eq"></div>
+    <div class="bars" id="bars"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ยาวขึ้น 2 เท่า กับ หน้าตัดใหญ่ขึ้น 2 เท่า</summary>
+    <p class="q">กด "Ex. 2.4 ลวดนิโครม" (ℓ = 2.0 m, A = 0.50 mm², R = 4.4 Ω) ทำนายความต้านทานเมื่อเปลี่ยนความยาวเป็น 4.0 m โดยหน้าตัดเท่าเดิม และเมื่อเปลี่ยนหน้าตัดเป็น 1.00 mm² โดยยาว 2.0 m เท่าเดิม แล้วตรวจ</p>
+    <p class="q"><b>คำตอบ</b> R ∝ ℓ/A ยาวขึ้น 2 เท่า ความต้านทานเพิ่มเป็น 2 เท่า ได้ 8.8 Ω ส่วนหน้าตัดใหญ่ขึ้น 2 เท่า ความต้านทานเหลือครึ่งหนึ่ง ได้ 2.2 Ω</p>
+  </details>
+  <details>
+    <summary>2. ดึงลวดเส้นเดิมให้ยาว 2 เท่า</summary>
+    <p class="q">กด "ดึงลวดเส้นเดิมให้ยาว" แล้วตั้ง k = 2 ความต้านทานเพิ่มเป็นกี่เท่า ต่างจากลวดเส้นใหม่ที่ยาว 2 เท่าแต่หน้าตัดเท่าเดิมอย่างไร</p>
+    <p class="q"><b>คำตอบ</b> เพิ่มเป็น 4 เท่า เพราะเมื่อดึงให้ยาวเป็น 2 เท่าโดยปริมาตรคงตัว หน้าตัดเหลือครึ่งหนึ่งด้วย R′ = ρ(2ℓ)/(A/2) = 4R ส่วนลวดเส้นใหม่ที่ยาว 2 เท่าแต่หน้าตัดเท่าเดิมมีความต้านทานเพียง 2 เท่า</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าลวดสม่ำเสมอ (วัสดุ หน้าตัด และอุณหภูมิเท่ากันตลอด) กระแสไหลตามแนวความยาวและกระจายทั่วหน้าตัด สภาพต้านทานของโลหะที่ 20 °C ตามตารางที่ 2.1 และของนิโครมตาม Ex. 2.4</p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const MAT=[["เงิน",1.59e-8,3],["ทองแดง",1.72e-8,3],["ทอง",2.44e-8,3],["อะลูมิเนียม",2.65e-8,3],["เหล็ก",9.71e-8,3],["ตะกั่ว",2.20e-7,3],["นิโครม",1.1e-6,2]];
+const st={mode:"new",mat:1,l:2.0,A:1.0,k:2};
+const sel=$("mat"); MAT.forEach(([n,r],i)=>{ const o=document.createElement("option"); o.value=i; o.textContent=`${n} (ρ = ${fmt(r,MAT[i][2],{plain:1})} Ω·m)`; sel.appendChild(o); });
+function calc(){ const [name,rho,n]=MAT[st.mat]; const l0=st.l, A0=st.A*1e-6, R0=rho*l0/A0;
+  if(st.mode==="new") return {name,rho,n,l:l0,A:A0,R:R0,R0};
+  const k=st.k, l=k*l0, A=A0/k; return {name,rho,n,l,A,R:rho*l/A,R0,k,l0,A0}; }
+const S=$("wire");
+/* one cylinder: left end face shaded (cross-section), length bracket underneath */
+function cyl(x0,y,len,d,dashed,labs){
+  len=Math.max(4,len); const st_=dashed?{"stroke-dasharray":"5 4"}:{};
+  el("rect",Object.assign({x:x0,y:y-d/2,width:len,height:d,fill:dashed?"none":"var(--chip)",stroke:"var(--ink)","stroke-width":1.5},st_),S);
+  el("ellipse",Object.assign({cx:x0,cy:y,rx:Math.max(2,d*0.18),ry:d/2,fill:dashed?"none":"var(--helper)","fill-opacity":0.45,stroke:"var(--ink)","stroke-width":1.5},st_),S);
+  el("ellipse",Object.assign({cx:x0+len,cy:y,rx:Math.max(2,d*0.18),ry:d/2,fill:dashed?"none":"var(--chip)",stroke:"var(--ink)","stroke-width":1.5},st_),S);
+  const yb=y+d/2+12; el("polyline",{points:DP.pl([[x0,yb-5],[x0,yb],[x0+len,yb],[x0+len,yb-5]]),fill:"none",stroke:"var(--ink)","stroke-width":1.2},S);
+  txt(S,x0+Math.max(len/2,30),yb+15,labs,{"text-anchor":"middle","font-size":13});
+}
+const dia=A=>Math.max(3,26*Math.sqrt(A*1e6));   // drawn diameter ∝ √A (exaggerated)
+function drawWire(c){
+  S.textContent=""; const x0=20; S.setAttribute("viewBox","0 0 380 190");
+  txt(S,370,18,c.name,{"text-anchor":"end","font-size":14,fill:"var(--muted)"});
+  if(st.mode==="new"){
+    const y=80, d=dia(c.A); cyl(x0,y,340*c.l/10,d,false,[["ℓ",{it:1}]," = "+fx(c.l,1)+" m"]);
+    txt(S,x0,y-d/2-10,[["A",{it:1}]," = "+fmt(c.A*1e6,3)+" mm²"],{"font-size":14});
+    $("cap-w").textContent="ความยาวในภาพเป็นไปตามสัดส่วน (ความยาวเต็มกรอบเท่ากับ 10 m) ส่วนความหนาวาดขยายมาก โดยเส้นผ่านศูนย์กลางในภาพแปรผันตรงกับ √A";
+  } else {
+    const sc=340/(4*c.l0);   // the longest stretched wire (k = 4) fills the width
+    const d0=dia(c.A0), d1=dia(c.A);
+    txt(S,x0,30,"ก่อนดึง: "+fmt(c.A0*1e6,3)+" mm²",{"font-size":13,fill:"var(--muted)"});
+    cyl(x0,30+d0/2+10,sc*c.l0,d0,true,[["ℓ",{it:1}]," = "+fx(c.l0,1)+" m"]);
+    const L=30+d0+62, y1=L+10+d1/2; txt(S,x0,L,"หลังดึง: "+fmt(c.A*1e6,3)+" mm²",{"font-size":13});
+    S.setAttribute("viewBox",`0 0 380 ${Math.max(190,Math.ceil(y1+d1/2+36))}`);
+    cyl(x0,y1,sc*c.l,d1,false,[["ℓ",{it:1}],"′ = "+fx(c.l,1)+" m"]);
+    $("cap-w").textContent="เส้นประคือลวดก่อนดึง เส้นทึบคือลวดหลังดึง ทั้งสองเส้นใช้มาตราส่วนความยาวเดียวกัน ส่วนความหนาวาดขยายมาก โดยเส้นผ่านศูนย์กลางในภาพแปรผันตรงกับ √A";
+  }
+}
+function update(){
+  const c=calc(), n=c.n;
+  $("o-l").textContent=fx(st.l,1)+" m"; $("o-A").textContent=fmt(st.A,3)+" mm²"; $("o-k").textContent=fx(st.k,1)+" เท่า";
+  $("row-k").hidden=st.mode!=="pull";
+  $("l-l").innerHTML=st.mode==="pull"?`ความยาวก่อนดึง ${m("ℓ")}`:`ความยาว ${m("ℓ")}`; $("l-A").innerHTML=st.mode==="pull"?`พื้นที่หน้าตัดก่อนดึง ${m("A")}`:`พื้นที่หน้าตัด ${m("A")}`;
+  const lines=[];
+  if(st.mode==="new"){
+    lines.push(`${m("A")} = ${fmt(st.A,3)} mm<sup>2</sup> = ${fmt(c.A,3)} m<sup>2</sup>|1 mm² = 10⁻⁶ m²`);
+    lines.push(`${m("R")} = ${m("ρℓ")}/${m("A")} = (${fmt(c.rho,n)} Ω·m)(${fx(c.l,1)} m)/(${fmt(c.A,3)} m<sup>2</sup>) = ${fmt(c.R,n)} Ω`);
+    lines.push(`สภาพนำไฟฟ้า ${m("σ")} = 1/${m("ρ")} = ${fmt(1/c.rho,n)} (Ω·m)<sup>-1</sup>`);
+    $("bars").innerHTML="";
+  } else {
+    lines.push(`ปริมาตร ${m("ℓA")} คงตัว: ยาวเป็น ${fx(c.k,1)} เท่า หน้าตัดจึงเหลือ 1/${fx(c.k,1)} เท่า`);
+    lines.push(`${m("ℓ")}′ = ${fx(c.k,1)}(${fx(c.l0,1)} m) = ${fx(c.l,1)} m,  ${m("A")}′ = (${fmt(c.A0,3)} m<sup>2</sup>)/${fx(c.k,1)} = ${fmt(c.A,3)} m<sup>2</sup>`);
+    lines.push(`${m("R")}′ = ${m("ρℓ")}′/${m("A")}′ = ${m("k")}<sup>2</sup>${m("R")} = ${String(c.k*c.k)}(${fmt(c.R0,n)} Ω) = ${fmt(c.R,n)} Ω`);
+    const mx=c.R; const bar=(lab,v,cls)=>`<div class="bar"><span>${lab}</span><div style="display:flex;align-items:center;gap:6px;min-width:0"><div class="t ${cls||""}" style="width:${(100*v/mx).toFixed(1)}%"></div><span class="nw">${fmt(v,n)} Ω</span></div></div>`;
+    $("bars").innerHTML=bar("ลวดเดิม",c.R0)+bar(`ลวดใหม่ยาว ${fx(c.k,1)} เท่า หน้าตัดเท่าเดิม`,c.k*c.R0)+bar(`ลวดเดิมที่ถูกดึง`,c.R,"k2");
+  }
+  $("eq").innerHTML=eqHTML(lines);
+  $("status").innerHTML= st.mode==="new"
+    ? `ความต้านทานแปรผันตรงกับความยาวและแปรผกผันกับพื้นที่หน้าตัด (${m("R")} ∝ ${m("ℓ")}/${m("A")}) ส่วน ${m("ρ")} ขึ้นกับชนิดวัสดุและอุณหภูมิเท่านั้น ลวดวัสดุเดียวกันที่อุณหภูมิเดียวกันมี ${m("ρ")} เท่ากันแม้ขนาดต่างกัน`
+    : `ลวดเส้นเดิมที่ถูกดึงให้ยาวเป็น ${fx(c.k,1)} เท่า มีความต้านทานเพิ่มเป็น ${String(c.k*c.k)} เท่า ไม่ใช่ ${fx(c.k,1)} เท่า เพราะความยาวเพิ่มและหน้าตัดลดลงพร้อมกัน`;
+  drawWire(c);
+}
+function sync(){ $("s-l").value=st.l; $("s-A").value=st.A; $("s-k").value=st.k; sel.value=st.mat; DP.setSeg(["m-new","m-pull"],st.mode==="new"?"m-new":"m-pull"); update(); }
+DP.seg(["m-new","m-pull"],id=>{ st.mode=id==="m-new"?"new":"pull"; update(); });
+sel.addEventListener("change",e=>{ st.mat=+e.target.value; update(); });
+$("s-l").addEventListener("input",e=>{ st.l=+e.target.value; update(); });
+$("s-A").addEventListener("input",e=>{ st.A=+e.target.value; update(); });
+$("s-k").addEventListener("input",e=>{ st.k=+e.target.value; update(); });
+$("p-ex").addEventListener("click",()=>{ Object.assign(st,{mode:"new",mat:6,l:2.0,A:0.5}); sync(); });
+$("p-cu").addEventListener("click",()=>{ Object.assign(st,{mode:"new",mat:1,l:10,A:1.5}); sync(); });
+sync();
+window.__sim={st,MAT,calc,sync};
+})();
+</script>

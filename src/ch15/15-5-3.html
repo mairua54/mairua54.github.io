@@ -1,0 +1,122 @@
+<title>กำลังที่ตัวต้านทานภายนอกได้รับ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 5.3 · ความรู้เพิ่มเติม (ต่อยอด)</div>
+  <h1>กำลังที่ตัวต้านทานภายนอกได้รับ</h1>
+  <p class="lead">ปรับความต้านทานภายนอก R โดย ε และ r คงตัว แล้วดูว่ากำลังที่ R ได้รับมากที่สุดเมื่อใด และพลังงานส่วนใดกลายเป็นความร้อนในแหล่งกำเนิด</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-g">
+    <h2 id="h-g">กำลังที่ R ได้รับ</h2>
+    <svg id="g" viewBox="0 0 380 290" role="img" aria-label="กราฟกำลังที่ตัวต้านทานภายนอกได้รับกับความต้านทานภายนอก"></svg>
+    <p class="cap">จุดสีน้ำเงินคือค่า R ที่เลือก แตะหรือลากบนกราฟเพื่อเปลี่ยน R เส้นประสีเทาบอกตำแหน่งที่กำลังมากที่สุด</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="ctl" style="margin-top:0">
+      <div class="row"><label for="s-e"><span>อีเอ็มเอฟ <i class="m">ε</i></span><output id="o-e"></output></label>
+        <input type="range" id="s-e" min="1.5" max="12" step="0.5"></div>
+      <div class="row"><label for="s-r"><span>ความต้านทานภายใน <i class="m">r</i></span><output id="o-r"></output></label>
+        <input type="range" id="s-r" min="0.1" max="4" step="0.05"></div>
+      <div class="row"><label for="s-R"><span>ความต้านทานภายนอก <i class="m">R</i></span><output id="o-R"></output></label>
+        <input type="range" id="s-R" min="0" max="20" step="0.05"></div>
+      <div class="btns"><button class="btn" id="b-eq">ตั้ง R = r</button><button class="btn" id="b-ex">ค่าของ Ex. 5.5</button></div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">แบ่งกำลัง</h2>
+    <div class="eq" id="eq"></div>
+    <div class="ebar" id="ebar"><span id="e1"></span><span id="e2"></span></div>
+    <div class="legend" id="leg"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ตรวจ Ex. 5.5</summary>
+    <p class="q">กด "ค่าของ Ex. 5.5" (ε = 12.0 V, r = 0.50 Ω, R = 5.5 Ω) แล้วตรวจว่ากำลังที่แบตเตอรี่เปลี่ยนพลังงานเคมีเป็นพลังงานไฟฟ้าเท่ากับผลรวมของกำลังที่ R ได้รับกับอัตราการเกิดความร้อนในแบตเตอรี่</p>
+    <p class="q"><b>คำตอบ</b> I = 2.00 A ได้ Iε = 24.0 W, I<sup>2</sup>R = 22.0 W และ I<sup>2</sup>r = 2.00 W ซึ่งรวมกันได้ 24.0 W พอดี ประสิทธิภาพ R/(R + r) = 91.7 %</p>
+  </details>
+  <details>
+    <summary>2. R เท่าใด ตัวต้านทานได้รับกำลังมากที่สุด</summary>
+    <p class="q">ใช้ค่าเดิม ลองเลื่อน R หาค่าที่ทำให้กำลังที่ R ได้รับมากที่สุด กำลังนั้นเท่าใด และประสิทธิภาพเป็นเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> มากที่สุดเมื่อ R = r = 0.50 Ω ได้ ε<sup>2</sup>/(4r) = (12.0 V)<sup>2</sup>/[4(0.50 Ω)] = 72.0 W แต่ประสิทธิภาพเหลือเพียง 50 % พลังงานอีกครึ่งหนึ่งกลายเป็นความร้อนในแบตเตอรี่ เครื่องใช้ไฟฟ้าจึงออกแบบให้ R มากกว่า r มาก ซึ่งได้รับกำลังน้อยกว่าค่ามากที่สุด แต่สูญเสียเป็นความร้อนในแหล่งกำเนิดน้อย</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่า ε และ r คงตัว และวงจรภายนอกเป็นตัวต้านทานล้วนที่ยุบรวมเป็น R ได้ กำลังที่ R ได้รับคือ <i class="m">P</i><sub>R</sub> = <i class="m">I</i><sup>2</sup><i class="m">R</i> = <i class="m">ε</i><sup>2</sup><i class="m">R</i>/(<i class="m">R</i> + <i class="m">r</i>)<sup>2</sup> (กรอบความรู้เพิ่มเติมในหัวข้อ 5.3)</p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const st={e:12,r:0.5,R:5.5};
+const PR=R=>st.e*st.e*R/((R+st.r)*(R+st.r));
+const niceStep=v=>{ const p=Math.pow(10,Math.floor(Math.log10(v))); for(const k of [1,2,2.5,5,10]) if(k*p>=v-1e-9) return k*p; return 10*p; };
+const G=$("g"), X0=58, X1=360, Y0=26, Y1=236; let RMAX=20, XT=4;
+function draw(){
+  G.textContent=""; const want=Math.max(6*st.r,st.R*1.15,2); XT=niceStep(want/5); RMAX=XT*Math.ceil(want/XT-1e-9);
+  const Pmax=st.e*st.e/(4*st.r), yt=niceStep(Pmax*1.12/4), ymax=yt*Math.ceil(Pmax*1.12/yt-1e-9);
+  const sx=R=>X0+(X1-X0)*R/RMAX, sy=P=>Y1-(Y1-Y0)*P/ymax;
+  for(let v=0;v<=RMAX+1e-9;v+=XT){ const x=sx(v); el("line",{x1:x,y1:Y0,x2:x,y2:Y1,stroke:"var(--line)"},G); txt(G,x,Y1+17,fmt(v,2,{intok:1}),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); }
+  for(let k=0;k<=Math.round(ymax/yt);k++){ const v=k*yt, y=sy(v); el("line",{x1:X0,y1:y,x2:X1,y2:y,stroke:"var(--line)"},G); txt(G,X0-6,y+4,fmt(v,2,{intok:1}),{"text-anchor":"end","font-size":12,fill:"var(--muted)"}); }
+  el("line",{x1:X0,y1:Y1,x2:X1,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G); el("line",{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G);
+  txt(G,(X0+X1)/2,Y1+38,"R (Ω)",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"}); txt(G,X0,Y0-9,"กำลังที่ R ได้รับ (W)",{"font-size":13,fill:"var(--muted)"});
+  const pts=[]; for(let k=0;k<=600;k++){ const R=RMAX*Math.pow(k/600,1.3); pts.push([sx(R),sy(PR(R))]); }
+  el("polyline",{points:DP.pl(pts),fill:"none",stroke:"var(--graph)","stroke-width":3},G);
+  // maximum at R = r
+  const xm=sx(st.r), ym=sy(Pmax);
+  el("polyline",{points:DP.pl([[X0,ym],[xm,ym],[xm,Y1]]),fill:"none",stroke:"var(--helper)","stroke-width":1.3,"stroke-dasharray":"4 4"},G);
+  txt(G,xm+4,Y1-6,[["R",{it:1}]," = ",["r",{it:1}]],{"font-size":13,fill:"var(--muted)"});
+  txt(G,xm+8,ym-6,"สูงสุด "+fmt(Pmax,3)+" W",{"font-size":13,fill:"var(--muted)"});
+  const x=sx(st.R), y=sy(PR(st.R)); el("circle",{cx:x,cy:y,r:6,fill:"var(--graph)",stroke:"var(--card)","stroke-width":2},G);
+}
+function pointer(ev){ const r=G.getBoundingClientRect(); const xx=(ev.clientX-r.left)*380/r.width; let R=(xx-X0)/(X1-X0)*RMAX; R=Math.max(0,Math.min(Math.min(20,RMAX),Math.round(R/0.05)*0.05)); st.R=Number(R.toFixed(2)); $("s-R").value=st.R; update(); }
+G.addEventListener("pointerdown",e=>{ G.setPointerCapture(e.pointerId); pointer(e); });
+G.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") pointer(e); });
+function update(){
+  $("o-e").textContent=fx(st.e,1)+" V"; $("o-r").textContent=fx(st.r,2)+" Ω"; $("o-R").textContent=fx(st.R,2)+" Ω";
+  const I=st.e/(st.R+st.r), Id=Number(DP.sig(I,3));
+  const Pe=Id*st.e, PRd=Id*Id*st.R, Pr=Id*Id*st.r, eta=st.R/(st.R+st.r);
+  $("eq").innerHTML=eqHTML([
+    `${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,2)} Ω + ${fx(st.r,2)} Ω) = ${fmt(Id,3)} A`,
+    `${m("I")}${m("ε")} = (${fmt(Id,3)} A)(${fx(st.e,1)} V) = ${fmt(Pe,3)} W|กำลังที่แบตเตอรี่เปลี่ยนพลังงานเคมีเป็นพลังงานไฟฟ้า`,
+    `${m("I")}<sup>2</sup>${m("R")} = (${fmt(Id,3)} A)<sup>2</sup>(${fx(st.R,2)} Ω) = ${fmt(PRd,3)} W|กำลังที่ R ได้รับ`,
+    `${m("I")}<sup>2</sup>${m("r")} = (${fmt(Id,3)} A)<sup>2</sup>(${fx(st.r,2)} Ω) = ${fmt(Pr,3)} W|อัตราการเกิดความร้อนในแบตเตอรี่`,
+    `ประสิทธิภาพ ${m("η")} = ${m("R")}/(${m("R")} + ${m("r")}) = ${fmt(100*eta,3,{intok:1})} %`]);
+  $("e1").style.width=(100*eta)+"%"; $("e1").style.background="var(--chem)"; $("e2").style.width=(100*(1-eta))+"%"; $("e2").style.background="var(--heat)";
+  $("leg").innerHTML=`<div><span class="sw" style="background:var(--chem)"></span>ส่งให้ R ${fmt(100*eta,3,{intok:1})} %</div><div><span class="sw" style="background:var(--heat)"></span>กลายเป็นความร้อนใน r ${fmt(100*(1-eta),3,{intok:1})} %</div>`;
+  const d=st.R-st.r;
+  $("status").innerHTML= Math.abs(d)<1e-9 ? `${m("R")} = ${m("r")}: ${m("R")} ได้รับกำลังมากที่สุด ${m("ε")}<sup>2</sup>/(4${m("r")}) = ${fmt(st.e*st.e/(4*st.r),3)} W แต่ประสิทธิภาพเพียง 50 % พลังงานอีกครึ่งหนึ่งกลายเป็นความร้อนในแบตเตอรี่`
+    : st.R===0 ? "R = 0 (ลัดวงจร): กระแสมากที่สุด แต่ R ไม่ได้รับกำลังเลย กำลังทั้งหมดกลายเป็นความร้อนในแบตเตอรี่"
+    : d<0 ? `${m("R")} น้อยกว่า ${m("r")}: กระแสมาก แต่ ${m("R")} ได้รับกำลังน้อยกว่าเมื่อ ${m("R")} = ${m("r")} และประสิทธิภาพต่ำกว่า 50 %`
+    : `${m("R")} มากกว่า ${m("r")}: ${m("R")} ได้รับกำลังน้อยกว่าค่ามากที่สุด แต่ประสิทธิภาพสูงกว่า 50 % พลังงานส่วนใหญ่ไปถึง ${m("R")}`;
+  draw();
+}
+function sync(){ $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }
+$("s-e").addEventListener("input",e=>{ st.e=+e.target.value; update(); });
+$("s-r").addEventListener("input",e=>{ st.r=+e.target.value; update(); });
+$("s-R").addEventListener("input",e=>{ st.R=+e.target.value; update(); });
+$("b-eq").addEventListener("click",()=>{ st.R=st.r; sync(); });
+$("b-ex").addEventListener("click",()=>{ Object.assign(st,{e:12,r:0.5,R:5.5}); sync(); });
+sync();
+window.__sim={st,PR,sync};
+})();
+</script>

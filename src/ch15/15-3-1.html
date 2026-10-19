@@ -1,0 +1,215 @@
+<title>หลอดไฟอนุกรมและขนาน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+.bsel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bsel label{display:grid;gap:2px;font-size:14px;color:var(--muted)}
+.meter{display:inline-block;height:10px;border-radius:3px;background:var(--glow);vertical-align:middle;min-width:1px}
+.rank{font-size:15px;margin-top:8px;font-weight:600}
+#tbl th,#tbl td{padding:5px 4px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 3.1–3.3</div>
+  <h1>หลอดไฟต่ออนุกรม ขนาน และวงจรผสม</h1>
+  <p class="lead">ต่อหลอดไฟ 3 หลอดกับแบตเตอรี่ 12 V แบบต่าง ๆ เลือกความต้านทานของแต่ละหลอดได้ แตะหลอดเพื่อถอดหรือใส่คืน แล้วดูว่าหลอดใดสว่างมาก สว่างน้อย หรือดับ</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-c">
+    <h2 id="h-c">วงจร</h2>
+    <svg id="c" viewBox="0 0 380 336" role="img" aria-label="วงจรหลอดไฟ"></svg>
+    <div class="rank" id="rank"></div>
+    <p class="cap">แตะหลอดเพื่อถอดหรือใส่คืน แตะสวิตช์ S เพื่อเปิดหรือปิด ลูกศรสีแดงบอกทิศกระแส ตัวเลขตัวหนาใต้หลอดคือความสว่างเทียบกับหลอด 12 Ω ที่ต่อกับแบตเตอรี่ 12 V โดยตรงเพียงหลอดเดียว (ได้รับ 12.0 W คิดเป็น 100 %)</p>
+    <svg id="scale" viewBox="0 0 380 130" role="img" aria-label="มาตราความสว่าง" style="margin-top:6px"></svg>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="รูปแบบการต่อ">
+      <button id="m-ser" aria-pressed="true">อนุกรม</button>
+      <button id="m-par" aria-pressed="false">ขนาน</button>
+      <button id="m-mix" aria-pressed="false">ผสม</button>
+    </div>
+    <div class="ctl">
+      <div class="bsel">
+        <label for="r0">หลอด 1<select id="r0"></select></label>
+        <label for="r1">หลอด 2<select id="r1"></select></label>
+        <label for="r2">หลอด 3<select id="r2"></select></label>
+      </div>
+      <div class="btns">
+        <button class="btn" id="b-same">หลอดเหมือนกันทั้ง 3 หลอด (12 Ω)</button>
+        <button class="btn" id="b-diff">หลอดต่างกัน (6, 12, 24 Ω)</button>
+        <button class="btn" id="b-swap">สลับตำแหน่งหลอด (เลื่อนวน)</button>
+        <button class="btn" id="b-all">ใส่หลอดครบและปิดสวิตช์</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-t">
+    <h2 id="h-t">กระแส ความต่างศักย์ และกำลังของแต่ละหลอด</h2>
+    <div class="tblwrap"><table class="tbl" id="tbl"></table></div>
+    <p class="cap">ความสว่าง = กำลังที่หลอดได้รับเทียบกับ 12.0 W ของหลอด 12 Ω ที่ต่อกับ 12 V โดยตรง</p>
+    <div class="eq" id="eq" style="margin-top:10px"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: หลอดไหนสว่างที่สุด</summary>
+    <p class="q">ก่อนกดอะไร ลองตอบในใจก่อน: หลอดเหมือนกัน 3 หลอดต่ออนุกรมกับแบตเตอรี่ หลอดที่อยู่ใกล้ขั้วบวก (หลอด 1) ได้กระแสก่อนจึงสว่างที่สุด แล้วหลอดถัดไปหรี่ลงตามลำดับ ใช่หรือไม่ จากนั้นกด "หลอดเหมือนกันทั้ง 3 หลอด" แล้วดูผล</p>
+    <p class="q"><b>คำตอบ</b> ไม่ใช่ หลอดทั้งสามสว่างเท่ากัน (11 %) วงจรอนุกรมมีทางเดินเดียว เมื่อกระแสคงตัว ประจุไม่สะสมที่ใด กระแสจึงเท่ากันทุกหลอด หลอดไม่ได้ใช้กระแสไป (หัวข้อ 1.5) สิ่งที่ลดลงตามทางคือศักย์ไฟฟ้า ซึ่งลดลงหลอดละ 4 V จาก 12 V เป็น 8 V, 4 V และ 0 V แต่ทุกหลอดได้ความต่างศักย์คร่อม 4 V และกระแสเท่ากัน จึงได้กำลังเท่ากัน และเมื่อสับสวิตช์ อิเล็กตรอนทั่ววงจรเริ่มลอยเลื่อนเกือบพร้อมกัน ไม่มีหลอดใดได้กระแสก่อน (หัวข้อ 1.7) ทุกหลอดหรี่ลงเท่ากันเมื่อเทียบกับต่อหลอดเดียว</p>
+  </details>
+  <details>
+    <summary>2. ถอดหลอดหนึ่งออก</summary>
+    <p class="q">กด "หลอดเหมือนกันทั้ง 3 หลอด" ต่อแบบอนุกรมแล้วถอดหลอด 2 จากนั้นต่อแบบขนานแล้วถอดหลอด 2 อีกครั้ง หลอดที่เหลือเป็นอย่างไรในแต่ละแบบ</p>
+    <p class="q"><b>คำตอบ</b> แบบอนุกรม หลอดทุกหลอดดับ เพราะทางเดินของกระแสมีทางเดียวและถูกตัดขาด แบบขนาน หลอด 1 และ 3 สว่างเท่าเดิม เพราะแต่ละสาขายังได้รับความต่างศักย์ 12 V เท่าเดิม ส่วนกระแสจากแบตเตอรี่ลดจาก 3.00 A เป็น 2.00 A</p>
+  </details>
+  <details>
+    <summary>3. หลอดต่างกัน: อนุกรมกับขนาน หลอดไหนสว่างกว่า</summary>
+    <p class="q">กด "หลอดต่างกัน" (6, 12 และ 24 Ω) ทำนายก่อนว่าเมื่อต่อแบบอนุกรม หลอดใดสว่างที่สุด และเมื่อต่อแบบขนาน หลอดใดสว่างที่สุด แล้วตรวจ จากนั้นกด "สลับตำแหน่งหลอด" หลายครั้ง หลอดที่สว่างที่สุดเปลี่ยนไปตามตำแหน่งหรือไม่</p>
+    <p class="q"><b>คำตอบ</b> แบบอนุกรม ทุกหลอดมีกระแสเท่ากัน (0.286 A) กำลัง <i class="m">P</i> = <i class="m">I</i><sup>2</sup><i class="m">R</i> จึงมากที่สุดในหลอดที่มีความต้านทานมากที่สุด หลอด 24 Ω สว่างที่สุด (1.96 W) แบบขนาน ทุกหลอดได้ความต่างศักย์ 12 V เท่ากัน กำลัง <i class="m">P</i> = Δ<i class="m">V</i><sup>2</sup>/<i class="m">R</i> จึงมากที่สุดในหลอดที่มีความต้านทานน้อยที่สุด หลอด 6 Ω สว่างที่สุด (24.0 W) ลำดับความสว่างจึงกลับกัน และไม่ว่าจะสลับตำแหน่งกี่ครั้ง หลอดเดิมยังสว่างที่สุด ความสว่างขึ้นกับความต้านทานของหลอด ไม่ใช่ตำแหน่ง</p>
+  </details>
+  <details>
+    <summary>4. วงจรผสม: ถอดหลอด 3 แล้วหลอด 2 สว่างขึ้นหรือหรี่ลง</summary>
+    <p class="q">กด "หลอดเหมือนกันทั้ง 3 หลอด" ต่อแบบผสม (ตำแหน่งเริ่มต้น หลอด 1 อยู่ส่วนอนุกรม) ทำนายก่อนว่าเมื่อถอดหลอด 3 หลอด 1 และหลอด 2 จะสว่างขึ้นหรือหรี่ลง แล้วตรวจ</p>
+    <p class="q"><b>คำตอบ</b> หลอด 2 สว่างขึ้น หลอด 1 หรี่ลง เมื่อถอดหลอด 3 ความต้านทานของส่วนขนานเพิ่มจาก 6.00 Ω เป็น 12.0 Ω ความต้านทานสมมูลเพิ่มจาก 18.0 Ω เป็น 24.0 Ω กระแสจากแบตเตอรี่ลดจาก 0.667 A เป็น 0.500 A หลอด 1 จึงได้ความต่างศักย์ลดลงจาก 8.00 V เป็น 6.00 V ความต่างศักย์ที่เหลือให้หลอด 2 จึงเพิ่มจาก 4.00 V เป็น 6.00 V</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าแบตเตอรี่ไม่มีความต้านทานภายใน สายไฟและสวิตช์ที่ปิดอยู่ไม่มีความต้านทาน และความต้านทานของหลอดแต่ละหลอดคงตัว (หลอดจริงมีความต้านทานเพิ่มขึ้นเมื่อร้อน หัวข้อ 2.5) ความสว่างแทนด้วยกำลังที่หลอดได้รับ <i class="m">P</i> = <i class="m">I</i><sup>2</sup><i class="m">R</i> (หัวข้อ 5.2) ซึ่งเป็นการประมาณ หลอดต่างชนิดกันเปลี่ยนพลังงานไฟฟ้าเป็นแสงได้ต่างกัน</p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,fmt,m,sub,eqHTML}=DP;
+const EMF=12, RCH=[6,12,24], PREF=EMF*EMF/12;   // 100 % = a single 12 Ω bulb connected straight to 12 V (12.0 W)
+const st={mode:"ser",on:[true,true,true],sw:true,R:[12,12,12],order:[0,1,2]};   // R and on belong to each bulb; order[k] = bulb at position k
+const par=(a,b)=>a*b/(a+b);
+/* currents and voltages: solved by POSITION in the circuit, then reported per bulb */
+function solvePos(R,on){
+  const z={I:[0,0,0],V:[0,0,0],Itot:0,Req:Infinity};
+  if(!st.sw) return z;
+  if(st.mode==="ser"){ if(on.every(x=>x)){ const Rs=R[0]+R[1]+R[2], I=EMF/Rs; return {I:[I,I,I],V:R.map(r=>I*r),Itot:I,Req:Rs}; } return z; }
+  if(st.mode==="par"){ const I=R.map((r,k)=>on[k]?EMF/r:0), Itot=I.reduce((a,b)=>a+b,0); return {I,V:on.map(x=>x?EMF:0),Itot,Req:Itot?EMF/Itot:Infinity}; }
+  // mixed: position 0 in series with (position 1 ∥ position 2)
+  if(!on[0]||(!on[1]&&!on[2])) return z;
+  const Rp= on[1]&&on[2]? par(R[1],R[2]) : on[1]? R[1] : R[2], Rs=R[0]+Rp, I=EMF/Rs, Vp=I*Rp;
+  return {I:[I,on[1]?Vp/R[1]:0,on[2]?Vp/R[2]:0],V:[I*R[0],on[1]?Vp:0,on[2]?Vp:0],Itot:I,Req:Rs,Rp};
+}
+function solve(){
+  const o=st.order, R=o.map(i=>st.R[i]), on=o.map(i=>st.on[i]), q=solvePos(R,on), I=[0,0,0], V=[0,0,0];
+  o.forEach((id,k)=>{ I[id]=q.I[k]; V[id]=q.V[k]; });
+  return Object.assign({},q,{I,V,Ipos:q.I,Vpos:q.V,Rpos:R,onPos:on});
+}
+const P=S=>S.I.map((I,i)=>I*I*st.R[i]);
+/* layouts: battery on the left (+ at top) */
+const C=$("c");
+const LAY={
+  ser:{wires:[[[40,50],[340,50],[340,260],[40,260],[40,50]]],bulbs:[[110,50],[190,50],[270,50]],sw:[190,260],dots:[],
+       arrows:[[75,50,0,"t"],[340,155,90,"t"],[150,50,0,"t"],[230,50,0,"t"]]},
+  par:{wires:[[[40,50],[320,50]],[[40,260],[320,260]],[[40,50],[40,260]],[[160,50],[160,260]],[[240,50],[240,260]],[[320,50],[320,260]]],bulbs:[[160,150],[240,150],[320,150]],sw:[100,50],dots:[[160,50],[240,50],[160,260],[240,260]],
+       arrows:[[70,50,0,"t"],[160,100,90,0],[240,100,90,1],[320,100,90,2]]},
+  mix:{wires:[[[40,50],[330,50]],[[40,260],[330,260]],[[40,50],[40,260]],[[250,50],[250,260]],[[330,50],[330,260]]],bulbs:[[150,50],[250,150],[330,150]],sw:[150,260],dots:[[250,50],[250,260]],
+       arrows:[[85,50,0,"t"],[250,100,90,1],[330,100,90,2],[205,50,0,"t"]]}
+};
+/* bulb drawn by brightness b = P/PREF: body brightness is linear in b (full at b = 1), glow AREA is proportional to P */
+let gHalo=null;
+function bulbIcon(g,halo,x,y,b){
+  const r=15;
+  if(b>0) el("circle",{cx:x,cy:y,r:r+24*Math.sqrt(b),fill:"var(--glow)",opacity:(0.2+0.35*Math.min(1,b)).toFixed(3)},halo);
+  el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"none"},g);
+  if(b>0) el("circle",{cx:x,cy:y,r,fill:"var(--glow)","fill-opacity":Math.min(1,b).toFixed(3)},g);
+  if(b>1) el("circle",{cx:x,cy:y,r,fill:"#fffbe8","fill-opacity":(0.65*Math.min(1,b-1)).toFixed(3)},g);
+  const ink=b>=0.3?"#1a1d22":"var(--ink)";   // keep the symbol readable on a bright bulb in both themes
+  el("circle",{cx:x,cy:y,r,fill:"none",stroke:ink,"stroke-width":2},g);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:ink,"stroke-width":1.6},g);
+}
+function bulbG(x,y,Pw,removed){
+  const g=el("g",{},C), r=15;
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},g); txt(g,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return g; }
+  bulbIcon(g,gHalo,x,y,Math.max(0,Pw/PREF));
+  return g;
+}
+const pct=Pw=>Pw<1e-9?"ดับ":fmt(100*Pw/PREF,2,{intok:1})+" %";
+function draw(){
+  C.textContent=""; const L=LAY[st.mode], S=solve(), Pw=P(S);
+  gHalo=el("g",{},C);
+  for(const w of L.wires) DP.wire(C,w);
+  DP.cell(C,40,155,"v","up"); txt(C,62,160,"12 V",{"font-size":14});
+  const [sx,sy]=L.sw; el("rect",{x:sx-16,y:sy-6,width:32,height:12,fill:"var(--card)"},C);
+  DP.dot(C,sx-14,sy); DP.dot(C,sx+14,sy);
+  DP.wire(C,st.sw?[[sx-14,sy],[sx+14,sy]]:[[sx-14,sy],[sx+10,sy-16]],{"stroke-width":2.5});
+  txt(C,sx,sy+(sy>100?24:-14),"S",{"text-anchor":"middle","font-weight":700,"font-size":15});
+  const hit=el("rect",{x:sx-24,y:sy-26,width:48,height:46,fill:"transparent",style:"cursor:pointer"},C); hit.addEventListener("click",()=>{ st.sw=!st.sw; update(); });
+  for(const d of L.dots) DP.dot(C,d[0],d[1]);
+  L.bulbs.forEach(([x,y],k)=>{ const i=st.order[k]; bulbG(x,y,Pw[i],!st.on[i]);
+    const top = st.mode==="ser"||(st.mode==="mix"&&k===0);
+    // series / top-wire bulbs: name above, values below inside the loop; branch bulbs: everything under the bottom rail
+    const y1=top?y-22:282, y2=top?y+34:296, y2b=top?y+48:310, y3=top?y+65:327;
+    txt(C,x,y1,"หลอด "+(i+1),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+    if(st.on[i]){ txt(C,x,y2,`${st.R[i]} Ω`,{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); txt(C,x,y2b,`${fmt(Pw[i],3)} W`,{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); txt(C,x,y3,pct(Pw[i]),{"text-anchor":"middle","font-size":14,"font-weight":700}); }
+    const h=el("circle",{cx:x,cy:y,r:24,fill:"transparent",style:"cursor:pointer"},C); h.addEventListener("click",()=>{ st.on[i]=!st.on[i]; update(); }); });
+  for(const [x,y,deg,idx] of L.arrows){ const I= idx==="t"?S.Itot:S.Ipos[idx]; if(I>1e-9) DP.arrowHead(C,x,y,deg); }
+}
+function update(){
+  const S=solve(), Pw=P(S); DP.setSeg(["m-ser","m-par","m-mix"],{ser:"m-ser",par:"m-par",mix:"m-mix"}[st.mode]);
+  [0,1,2].forEach(i=>{ $("r"+i).value=st.R[i]; });
+  const rows=[0,1,2].map(i=>`<tr><td>${i+1} (${st.R[i]} Ω)${st.on[i]?"":" ถอด"}</td><td>${fmt(S.I[i],3)} A</td><td>${fmt(S.V[i],3)} V</td><td>${fmt(Pw[i],3)} W</td><td>${pct(Pw[i])}</td></tr>`).join("");
+  $("tbl").innerHTML=`<tr><th>หลอด</th><th>${m("I")}</th><th>Δ${m("V")}</th><th>${m("P")}</th><th>สว่าง</th></tr>${rows}<tr><td>แบตเตอรี่</td><td>${fmt(S.Itot,3)} A</td><td>12.0 V</td><td>${fmt(S.Itot*EMF,3)} W</td><td></td></tr>`;
+  // brightness ranking
+  const lit=[0,1,2].filter(i=>Pw[i]>1e-9).sort((a,b)=>Pw[b]-Pw[a]);
+  let rank="";
+  if(!lit.length) rank="ไม่มีหลอดใดสว่าง";
+  else { const parts=[]; let k=0; while(k<lit.length){ const grp=[lit[k]]; while(k+1<lit.length && Math.abs(Pw[lit[k+1]]-Pw[lit[k]])<1e-9*Pw[lit[k]]+1e-12){ k++; grp.push(lit[k]); } parts.push(grp.map(i=>"หลอด "+(i+1)).join(" = ")); k++; }
+    const off=[0,1,2].filter(i=>Pw[i]<=1e-9).map(i=>"หลอด "+(i+1));
+    rank=(parts.length===1&&lit.length>1? "สว่างเท่ากัน: "+parts[0] : "สว่างมากไปน้อย: "+parts.join(" > "))+(off.length?" · ดับ: "+off.join(", "):""); }
+  $("rank").textContent=rank;
+  const R=S.Rpos, o=st.order, nm=k=>"หลอด "+(o[k]+1), lines=[];
+  if(S.Itot===0) lines.push("ไม่มีกระแสในวงจร");
+  else if(st.mode==="ser") lines.push(`${m("R")} = ${m("R")}${sub(o[0]+1)} + ${m("R")}${sub(o[1]+1)} + ${m("R")}${sub(o[2]+1)} = ${R[0]} Ω + ${R[1]} Ω + ${R[2]} Ω = ${fmt(S.Req,3)} Ω`,
+      `${m("I")} = Δ${m("V")}/${m("R")} = (12.0 V)/(${fmt(S.Req,3)} Ω) = ${fmt(S.Itot,3)} A ทุกหลอด`,
+      `แต่ละหลอด: Δ${m("V")} = ${m("IR")} และ ${m("P")} = ${m("I")}<sup>2</sup>${m("R")}|กระแสเท่ากัน หลอดที่ R มากกว่าได้ Δ${m("V")} และ ${m("P")} มากกว่า`);
+  else if(st.mode==="par") lines.push(`ทุกสาขาได้รับ Δ${m("V")} = 12.0 V แต่ละหลอดจึงมี ${m("I")} = (12.0 V)/${m("R")} และ ${m("P")} = (12.0 V)<sup>2</sup>/${m("R")}`,
+      `กระแสจากแบตเตอรี่ = ผลรวมกระแสทุกสาขา = ${fmt(S.Itot,3)} A`, `${m("R")}${sub("สมมูล")} = (12.0 V)/(${fmt(S.Itot,3)} A) = ${fmt(S.Req,3)} Ω`);
+  else { const both=S.onPos[1]&&S.onPos[2];
+    lines.push(both?`ส่วนขนาน: (${R[1]} Ω)(${R[2]} Ω)/(${R[1]} Ω + ${R[2]} Ω) = ${fmt(S.Rp,3)} Ω`:`ส่วนขนานเหลือหลอดเดียว: ${fmt(S.Rp,3)} Ω`,
+      `${m("R")} = ${R[0]} Ω + ${fmt(S.Rp,3)} Ω = ${fmt(S.Req,3)} Ω,  ${m("I")} = (12.0 V)/(${fmt(S.Req,3)} Ω) = ${fmt(S.Itot,3)} A`,
+      `Δ${m("V")} ของ${nm(0)} = (${fmt(S.Itot,3)} A)(${R[0]} Ω) = ${fmt(S.Vpos[0],3)} V,  ส่วนขนานได้ 12.0 V - ${fmt(S.Vpos[0],3)} V = ${fmt(12-S.Vpos[0],3)} V`); }
+  $("eq").innerHTML=eqHTML(lines);
+  const same=R[0]===R[1]&&R[1]===R[2]; let msg;
+  if(!st.sw) msg="สวิตช์เปิด วงจรขาด ไม่มีกระแส หลอดทุกหลอดดับ";
+  else if(st.mode==="ser") msg= !S.Itot ? "ต่ออนุกรม: ทางเดินของกระแสมีทางเดียว เมื่อถอดหลอดหนึ่ง วงจรขาด หลอดทุกหลอดดับ"
+      : same ? "ต่ออนุกรม: กระแสเท่ากันทุกหลอด หลอดเหมือนกันจึงสว่างเท่ากัน ไม่ว่าอยู่ใกล้ขั้วใด แต่ละหลอดได้ความต่างศักย์เพียง 1/3 ของ 12 V และกระแสก็เหลือ 1/3 กำลัง (ΔV × I) จึงเหลือเพียง 1/9 หรือราว 11 % ของเมื่อต่อหลอดเดียว"
+      : "ต่ออนุกรม: กระแสเท่ากันทุกหลอด หลอดที่มีความต้านทานมากกว่าได้ความต่างศักย์และกำลังมากกว่า จึงสว่างกว่า ความสว่างไม่ได้ขึ้นกับว่าหลอดอยู่ใกล้ขั้วใด ลองกด \"สลับตำแหน่งหลอด\" ดู";
+  else if(st.mode==="par") msg= same ? "ต่อขนาน: ทุกหลอดได้รับความต่างศักย์ 12 V เท่ากัน การถอดหลอดหนึ่งไม่ทำให้หลอดอื่นเปลี่ยน แต่กระแสจากแบตเตอรี่เปลี่ยนตามจำนวนหลอด"
+      : "ต่อขนาน: ทุกหลอดได้รับความต่างศักย์ 12 V เท่ากัน หลอดที่มีความต้านทานน้อยกว่ามีกระแสและกำลังมากกว่า จึงสว่างกว่า ลำดับความสว่างจึงกลับกันกับแบบอนุกรม";
+  else msg= S.Itot ? `วงจรผสม: กระแสทั้งหมดผ่าน${nm(0)} แล้วแบ่งไป${nm(1)} และ${nm(2)} ส่วนขนานมีความต้านทานน้อยกว่าหลอดแต่ละหลอด การถอดหลอดในส่วนขนานทำให้กระแสรวมลดลง ${nm(0)} จึงหรี่ลง แต่หลอดที่เหลือในส่วนขนานได้ความต่างศักย์มากขึ้น การสลับตำแหน่งในวงจรผสมเปลี่ยนว่าหลอดใดอยู่ส่วนอนุกรมหรือส่วนขนาน ความสว่างจึงเปลี่ยนได้`
+      : (S.onPos[0]?"ถอดหลอดในส่วนขนานออกทั้งสองหลอด วงจรขาด":`${nm(0)} อยู่บนทางเดินที่กระแสทั้งหมดต้องผ่าน เมื่อถอดออก วงจรขาด หลอดทุกหลอดดับ`);
+  $("status").innerHTML=msg;
+  draw();
+}
+[0,1,2].forEach(i=>{ const s=$("r"+i); RCH.forEach(v=>{ const o=document.createElement("option"); o.value=v; o.textContent=v+" Ω"; s.appendChild(o); }); s.addEventListener("change",e=>{ st.R[i]=+e.target.value; update(); }); });
+/* brightness scale under the circuit */
+(function(){ const S=$("scale"); const g=el("g",{},S), h=el("g",{},S); S.insertBefore(h,g);
+  txt(g,4,14,"มาตราความสว่าง",{"font-size":12,fill:"var(--muted)"});
+  [[0,"0 % (ดับ)"],[0.25,"25 %"],[1,"100 %"],[2,"200 %"]].forEach(([b,l],k)=>{ const x=42+k*96; bulbIcon(g,h,x,56,b); txt(g,x,124,l,{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); }); })();
+DP.seg(["m-ser","m-par","m-mix"],id=>{ st.mode={"m-ser":"ser","m-par":"par","m-mix":"mix"}[id]; update(); });
+$("b-same").addEventListener("click",()=>{ st.R=[12,12,12]; st.on=[true,true,true]; st.sw=true; st.order=[0,1,2]; update(); });
+$("b-diff").addEventListener("click",()=>{ st.R=[6,12,24]; st.on=[true,true,true]; st.sw=true; st.order=[0,1,2]; update(); });
+$("b-all").addEventListener("click",()=>{ st.on=[true,true,true]; st.sw=true; update(); });
+$("b-swap").addEventListener("click",()=>{ const o=st.order; st.order=[o[2],o[0],o[1]]; update(); });
+update();
+window.__sim={st,solve,solvePos,update,P};
+})();
+</script>

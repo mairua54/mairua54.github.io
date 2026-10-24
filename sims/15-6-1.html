@@ -14,18 +14,18 @@
 :root{
   --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
   --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
-  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
   --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
   --math:"Times New Roman","Noto Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 .nw{white-space:nowrap}
@@ -63,8 +63,8 @@ select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px soli
 button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
 .eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
 .eq div{min-width:0}
-.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
-.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.status{font-size:15px;border-left:4px solid var(--helper);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
 .ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
 .tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
 .tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -81,13 +81,16 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 .note{font-size:14px;color:var(--muted);margin:0}
 .big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+.eyebrow a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
+summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 6.1 และ 6.2</div>
+  <div class="eyebrow">Daisy Physics · <a href="../15/">บท 15 ไฟฟ้ากระแส</a> · หัวข้อ 6.1 และ 6.2</div>
   <h1>การต่อแบตเตอรี่แบบอนุกรมและแบบขนาน</h1>
   <p class="lead">ต่อแบตเตอรี่ที่เหมือนกันหลายก้อนกับตัวต้านทาน R แบบอนุกรมหรือแบบขนาน ในแบบอนุกรมแตะก้อนใดก็ได้เพื่อกลับขั้ว แล้วดูอีเอ็มเอฟสมมูล กระแส และความต่างศักย์ระหว่างขั้วของแต่ละก้อน</p>
 </header>
@@ -146,7 +149,8 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   </details>
 </section>
 
-<p class="note">แบบจำลองนี้ถือว่าแบตเตอรี่ทุกก้อนเหมือนกันทุกประการ อีเอ็มเอฟและความต้านทานภายในคงตัว สายไฟไม่มีความต้านทาน ในแบบขนานไม่ให้กลับขั้ว เพราะจะเกิดกระแสไหลวนระหว่างก้อนซึ่งต้องวิเคราะห์ด้วยวิธีในความรู้เพิ่มเติมของหัวข้อ 6.3</p>
+<p class="note">แบบจำลองนี้ถือว่าแบตเตอรี่ทุกก้อนเหมือนกันทุกประการ อีเอ็มเอฟและความต้านทานภายในคงตัว สายไฟไม่มีความต้านทาน ในแบบขนานไม่ให้กลับขั้ว เพราะจะเกิดกระแสไหลวนระหว่างก้อนซึ่งต้องวิเคราะห์ด้วยวิธีในความรู้เพิ่มเติมของหัวข้อ 6.3 ตัวเลขที่คำนวณได้บนหน้านี้แสดง 3 ตัว จึงอาจเขียนต่างจาก Ex. ในชีทหรือคำตอบในลองทำ เช่น 4.00 V กับ 4.0 V ซึ่งเป็นค่าเดียวกันที่ปัดต่างกัน</p>
+<p class="back"><a href="../15/">← แบบจำลองอื่นของบท 15 ไฟฟ้ากระแส</a></p>
 </div>
 
 <script>
@@ -251,9 +255,11 @@ function sourceH(g,x0,y,w,leftPlus,k){
   DP.wire(g,[[x0,y],[x0+w,y]]);
   DP.cell(g,cx,y,"h",leftPlus?"left":"right",{nosign:true,long:11,short:6});
   el("rect",{x:rx0,y:y-7,width:rx1-rx0,height:14,fill:"var(--card)"},g); DP.resistor(g,rx0,y,rx1,y,3,5);
-  // + and − above the frame corners (fig 6.2 style)
-  txt(g,x0+3,y-19,leftPlus?"+":"−",{"text-anchor":"middle","font-weight":700,"font-size":15});
-  txt(g,x0+w-3,y-19,leftPlus?"−":"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+  if(st.mode!=="ser"||st.n<4){ // + and − above the frame corners (fig 6.2 style)
+    txt(g,x0+3,y-19,leftPlus?"+":"−",{"text-anchor":"middle","font-weight":700,"font-size":15});
+    txt(g,x0+w-3,y-19,leftPlus?"−":"+",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  else { // narrow frames (many cells): signs right above this cell's own plates, so neighbouring cells' signs never touch
+    const sx=leftPlus?-1:1; txt(g,cx+sx*9,y-19,"+",{"text-anchor":"middle","font-weight":700,"font-size":15}); txt(g,cx-sx*9,y-19,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
   if(k!==undefined) txt(g,x0+w/2,y+30,"ก้อน "+(k+1),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
 }
 function draw(){
@@ -263,7 +269,7 @@ function draw(){
     DP.wire(C,[[40,y],[40,230],[340,230],[340,y]]);
     let x=40+gap; DP.wire(C,[[40,y],[x,y]]);
     for(let k=0;k<n;k++){ const g=el("g",{style:"cursor:pointer"},C); sourceH(g,x,y,w,st.rev[k],k);
-      if(st.rev[k]) txt(g,x+w/2,y+44,"กลับขั้ว",{"text-anchor":"middle","font-size":12,fill:"var(--heat)","font-weight":700});
+      if(st.rev[k]) txt(g,x+w/2,y+44,"กลับขั้ว",{"text-anchor":"middle","font-size":12,fill:"var(--ink)","font-weight":700});
       el("rect",{x:x-2,y:y-34,width:w+4,height:84,fill:"transparent"},g);
       g.addEventListener("click",()=>{ st.rev[k]=!st.rev[k]; update(); });
       const nx=x+w+gap; DP.wire(C,[[x+w,y],[k<n-1?nx:340,y]]); x=nx; }
@@ -303,12 +309,14 @@ function update(){
   const Sx=$("status"); Sx.classList.toggle("rev",st.mode==="ser"&&nr>0);
   Sx.innerHTML= st.mode==="par" ? "ต่อขนานไม่ได้เพิ่มอีเอ็มเอฟ แต่ลดความต้านทานภายในสมมูล และแต่ละก้อนจ่ายกระแสเพียงส่วนหนึ่งของกระแสรวม ความต่างศักย์ระหว่างขั้วจึงลดลงน้อยกว่าใช้ก้อนเดียว"
     : S.I<1e-9 ? "อีเอ็มเอฟสมมูลเป็นศูนย์ ก้อนที่กลับขั้วหักล้างก้อนอื่นพอดี จึงไม่มีกระแส"
-    : nr? `มีก้อนที่กลับขั้ว ${nr} ก้อน อีเอ็มเอฟสมมูลลดลง แต่ความต้านทานภายในยังเพิ่มทุกก้อน กระแสจึงลดลงมาก ก้อนที่ ${S.cells.map((c,k)=>c.dir==="chg"?k+1:0).filter(Boolean).join(", ")} มีกระแสภายในไหลจากขั้วบวกไปขั้วลบ เหมือนก้อนที่กำลังถูกประจุ`+(S.E<0?" (ก้อนที่กลับขั้วมีมากกว่า กระแสจึงไหลในทิศตรงข้ามกับเมื่อใส่ถูกทุกก้อน ก้อนที่ไม่ได้กลับขั้วจึงกลายเป็นฝ่ายที่ถูกประจุ)":"")
+    : nr===n ? (n===1 ? "กลับขั้วแบตเตอรี่ก้อนเดียว อีเอ็มเอฟมีขนาดเท่าเดิม กระแสมีขนาดเท่าเดิมแต่ไหลในวงจรภายนอกกลับทิศ แบตเตอรี่ยังจ่ายพลังงานตามปกติ"
+                : "ทุกก้อนกลับขั้ว เท่ากับกลับทั้งชุด อีเอ็มเอฟสมมูลมีขนาดเท่าเดิม กระแสมีขนาดเท่าเดิมแต่ไหลในวงจรภายนอกกลับทิศ ทุกก้อนยังมีกระแสภายในไหลจากขั้วลบไปขั้วบวกและจ่ายพลังงานตามปกติ")
+    : nr? `มีก้อนที่กลับขั้ว ${nr} ก้อน อีเอ็มเอฟสมมูลลดลง แต่ความต้านทานภายในยังเพิ่มทุกก้อน กระแสจึงลดลงมาก`+((l=>l?` ก้อนที่ ${l} มีกระแสภายในไหลจากขั้วบวกไปขั้วลบ เหมือนก้อนที่กำลังถูกประจุ`:"")(S.cells.map((c,k)=>c.dir==="chg"?k+1:0).filter(Boolean).join(", ")))+(S.E<0?" (ก้อนที่กลับขั้วมีมากกว่า กระแสจึงไหลในทิศตรงข้ามกับเมื่อใส่ถูกทุกก้อน ก้อนที่ไม่ได้กลับขั้วจึงกลายเป็นฝ่ายที่ถูกประจุ)":"")
     : n===1 ? "มีแบตเตอรี่ก้อนเดียว ลองเพิ่มจำนวนก้อนเพื่อดูผลของการต่ออนุกรม"
     : "ต่ออนุกรมโดยหันขั้วไปทางเดียวกัน: อีเอ็มเอฟและความต้านทานภายในบวกกัน ทุกก้อนมีกระแสเท่ากัน";
   $("tbl").innerHTML=`<tr><th>ก้อน</th><th>${m("I")}</th><th>ทิศภายใน</th><th>V₊ - V₋</th></tr>`+S.cells.map((c,k)=>{
     const Ik=Number(DP.sig(c.I,3)), V=c.dir==="sup"?st.e-Ik*st.r:c.dir==="chg"?st.e+Ik*st.r:st.e;
-    return `<tr><td>${k+1}${c.rev?" (กลับขั้ว)":""}</td><td>${fmt(Ik,3)} A</td><td>${c.dir==="sup"?"ลบ → บวก":c.dir==="chg"?"บวก → ลบ":"-"}</td><td>${fmt(V,3)} V</td></tr>`; }).join("");
+    return `<tr><td>${k+1}${c.rev?" (กลับขั้ว)":""}</td><td>${fmt(Ik,3)} A</td><td>${c.dir==="sup"?"ลบ → บวก":c.dir==="chg"?"บวก → ลบ":"ไม่มีกระแส"}</td><td>${fmt(V,3)} V</td></tr>`; }).join("");
   draw();
 }
 function sync(){ $("s-n").min=st.mode==="par"?2:1; if(st.mode==="par"&&st.n<2) st.n=2; $("s-n").value=st.n; $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }

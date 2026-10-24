@@ -14,18 +14,18 @@
 :root{
   --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
   --current:#d1262b; --graph:#1f5fbf; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
-  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5;
+  --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5;
   --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
   --math:"Times New Roman","Noto Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --graph:#6aa5ff; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; color-scheme:dark}}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --graph:#6aa5ff; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; color-scheme:dark}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 .nw{white-space:nowrap}
@@ -58,8 +58,8 @@ input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
 button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
 .eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
 .eq div{min-width:0}
-.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
-.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.status{font-size:15px;border-left:4px solid var(--helper);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
 .ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
 .ebar span{display:block;height:100%;transition:width .25s}
 .legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
@@ -67,6 +67,9 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
 details{border-top:1px solid var(--line);padding:10px 0}
 details:first-of-type{border-top:0}
 summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.eyebrow a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
+summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 .q{margin:0 0 6px}
 .note{font-size:14px;color:var(--muted);margin:0}
 .ylab{font-size:12px}
@@ -76,7 +79,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 <body>
 <div class="wrap">
 <header>
-  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 4.3</div>
+  <div class="eyebrow">Daisy Physics · <a href="../15/">บท 15 ไฟฟ้ากระแส</a> · หัวข้อ 4.3</div>
   <h1>ศักย์ไฟฟ้ารอบวงจรที่แหล่งกำเนิดมีความต้านทานภายใน</h1>
   <p class="lead">ปรับค่าแล้วดูว่าศักย์ไฟฟ้าเปลี่ยนอย่างไรเมื่อไล่ไปรอบวงจรตามรูปที่ 4.5 กำหนดให้ขั้วลบของแบตเตอรี่ (จุด D) มีศักย์ 0</p>
 </header>
@@ -140,7 +143,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   <details>
     <summary>1. ลด R จนกระแสเป็น 4.00 A</summary>
     <p class="q">เริ่มจากค่าตั้งต้น (<i class="m">ε</i> = 12.0 V, <i class="m">r</i> = 0.50 Ω, <i class="m">R</i> = 5.5 Ω) ทำนายก่อนว่าต้องตั้ง <i class="m">R</i> เท่าใดกระแสจึงเป็น 4.00 A และตอนนั้นโวลต์มิเตอร์อ่านได้เท่าใด แล้วเลื่อนตรวจ</p>
-    <p class="q"><b>คำตอบ</b> <i class="m">R</i> = <i class="m">ε</i>/<i class="m">I</i> - <i class="m">r</i> = 12.0 V/4.00 A - 0.50 Ω = 2.5 Ω และ V<sub>+</sub> - V<sub>-</sub> = 12.0 V - (4.00 A)(0.50 Ω) = 10.0 V กระแสมากขึ้น ประจุเสียพลังงานในความต้านทานภายในมากขึ้น ความต่างศักย์ระหว่างขั้วจึงลดลงจาก 11.0 V</p>
+    <p class="q"><b>คำตอบ</b> <i class="m">R</i> = <i class="m">ε</i>/<i class="m">I</i> - <i class="m">r</i> = 12.0 V/4.00 A - 0.50 Ω = 2.5 Ω และ V<sub>+</sub> - V<sub>−</sub> = 12.0 V - (4.00 A)(0.50 Ω) = 10.0 V กระแสมากขึ้น ประจุเสียพลังงานในความต้านทานภายในมากขึ้น ความต่างศักย์ระหว่างขั้วจึงลดลงจาก 11.0 V</p>
   </details>
   <details>
     <summary>2. จ่ายกระแสกับถูกประจุ ด้วยกระแสเท่ากัน</summary>
@@ -149,7 +152,8 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   </details>
 </section>
 
-<p class="note">แบบจำลองนี้ถือว่าสายไฟไม่มีความต้านทาน โวลต์มิเตอร์เป็นอุดมคติ <i class="m">ε</i> และ <i class="m">r</i> คงตัว และเครื่องประจุไม่มีความต้านทานภายใน ค่าตั้งต้นของโหมดจ่ายกระแสตรงกับ Ex. 4.4</p>
+<p class="note">แบบจำลองนี้ถือว่าสายไฟไม่มีความต้านทาน โวลต์มิเตอร์เป็นอุดมคติ <i class="m">ε</i> และ <i class="m">r</i> คงตัว และเครื่องประจุไม่มีความต้านทานภายใน ค่าตั้งต้นของโหมดจ่ายกระแสตรงกับ Ex. 4.4 ตัวเลขที่คำนวณได้บนหน้านี้แสดง 3 ตัว จึงอาจเขียนต่างจาก Ex. ในชีทหรือคำตอบในลองทำ เช่น 4.00 V กับ 4.0 V ซึ่งเป็นค่าเดียวกันที่ปัดต่างกัน</p>
+<p class="back"><a href="../15/">← แบบจำลองอื่นของบท 15 ไฟฟ้ากระแส</a></p>
 </div>
 
 <script>
@@ -305,7 +309,8 @@ function drawGraph(p){
   const ym=yMax(), step=st.mode==="sup"?2:4;
   gAxes=el("g",{},G); gHelp=el("g",{},G); gLine=el("g",{},G); gCur=el("g",{},G);
   for(let v=0;v<=ym;v+=step){ const y=sy(v);
-    el("line",{x1:PX0,y1:y,x2:PX1,y2:y,stroke:"var(--line)","stroke-width":1},gAxes); }
+    el("line",{x1:PX0,y1:y,x2:PX1,y2:y,stroke:"var(--line)","stroke-width":1},gAxes);
+    if(v>0) txt(gAxes,PX1-2,y-3,String(v),{"text-anchor":"end","font-size":11,fill:"var(--muted)"}); }
   // region shading for the source (D -> A)
   el("rect",{x:sx(0),y:PY0,width:sx(SEG[4].g1)-sx(0),height:PY1-PY0,fill:"var(--chip)",opacity:.8},gAxes);
   txt(gAxes,sx(SEG[4].g1)-3,PY1-24,"ในแบตเตอรี่",{"text-anchor":"end","font-size":11,fill:"var(--muted)"});
@@ -319,13 +324,14 @@ function drawGraph(p){
   txt(gAxes,mid(SEG[3]),PY1-6,"r",{"text-anchor":"middle","font-family":"var(--math)","font-style":"italic","font-size":14,fill:"var(--muted)"});
   txt(gAxes,mid(SEG[6]),PY1-6,"R",{"text-anchor":"middle","font-family":"var(--math)","font-style":"italic","font-size":14,fill:"var(--muted)"});
   txt(gAxes,(PX0+PX1)/2,PY1+40,"ตำแหน่งรอบวงจร",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"});
-  txt(gAxes,PX0,14,"ศักย์ไฟฟ้า (ขั้วลบมีศักย์ 0)",{"font-size":13,fill:"var(--muted)"});
+  txt(gAxes,PX0,14,"ศักย์ไฟฟ้า (V) โดยขั้วลบมีศักย์ 0",{"font-size":13,fill:"var(--muted)"});
   // helper lines: dashed, labelled with symbols in the left margin (like fig 4.5 ข.); values go in the legend under the graph
   const vpmSym=p.I<1e-9?"ε":(p.j>0?"ε - Ir":"ε + Ir");
   const H=[{v:0,lab:"0"},{v:p.e,lab:"ε"}];
   if(p.I>1e-9) H.push({v:p.VA,lab:vpmSym});
   if(st.mode==="chg") H.push({v:p.VC,lab:"ε",sub:"เครื่องประจุ"});
   H.sort((a,b)=>a.v-b.v);   /* bottom label (0) stays on its line; crowded labels move up */
+  for(let k=H.length-1;k>0;k--) if(Math.abs(H[k].v-H[k-1].v)<1e-9 && !H[k].sub && !H[k-1].sub){ H[k-1].lab=H[k-1].lab+" = "+H[k].lab; H.splice(k,1); }   // e.g. r = 0: ε and ε - Ir are the same level
   let prevY=1e9;
   for(const h of H){ const y=sy(h.v);
     if(h.v>0) el("line",{x1:PX0,y1:y,x2:PX1,y2:y,stroke:"var(--helper)","stroke-width":1.2,"stroke-dasharray":"4 4"},gHelp);
@@ -334,7 +340,7 @@ function drawGraph(p){
     const t=txt(gHelp,PX0-7,ly,"",{"text-anchor":"end","font-size":13,fill:"var(--ink)"});
     const parts=h.lab.split(/(ε|I|r)/).filter(Boolean);
     for(const q of parts){ const ts=el("tspan",/^(ε|I|r)$/.test(q)?{"font-family":"var(--math)","font-style":"italic","font-size":15}:{},t); ts.textContent=q; }
-    if(h.sub){ const ts=el("tspan",{"font-size":9,dy:3},t); ts.textContent=h.sub; }
+    if(h.sub){ const ts=el("tspan",{"font-size":11,dy:3},t); ts.textContent=h.sub; }
   }
   const leg=[`ε = ${f1(p.e)} V`]; if(p.I>1e-9) leg.push(`${vpmSym} = ${st.vtStr} V`); if(st.mode==="chg") leg.push(`ε เครื่องประจุ = ${f1(p.VC)} V`);
   $("glegend").textContent=leg.join("   ·   ");
@@ -365,7 +371,7 @@ G.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") poi
 
 /* ---------- text panels ---------- */
 const sup=s=>`<sub>${s}</sub>`;
-const VPM="V"+sup("+")+" - V"+sup("-");
+const VPM="V"+sup("+")+" - V"+sup("−");
 const m=s=>`<i class="m">${s}</i>`;
 function update(){
   const p=solve();
@@ -403,9 +409,9 @@ function update(){
     const tot=st.emf;
     $("en-head").innerHTML=`ได้รับพลังงาน (1 C)${m("ε")} = ${f1(tot)} J จากพลังงานเคมี แล้วแบ่งเป็นสองส่วน`;
     const out=Math.max(0,tot-Ir);
-    e1.style.width=(100*out/tot)+"%"; e1.style.background="var(--chem)";
+    e1.style.width=(100*out/tot)+"%"; e1.style.background="var(--graph)";
     e2.style.width=(100*Math.min(Ir,tot)/tot)+"%"; e2.style.background="var(--heat)";
-    $("en-leg").innerHTML=`<div><span class="sw" style="background:var(--chem)"></span>ให้วงจรภายนอก (1 C)(${m("ε")} - ${m("Ir")}) = ${sig3(Vt)} J</div><div><span class="sw" style="background:var(--heat)"></span>กลายเป็นความร้อนใน ${m("r")}: (1 C)(${m("Ir")}) = ${sig3(Ir)} J</div>`;
+    $("en-leg").innerHTML=`<div><span class="sw" style="background:var(--graph)"></span>ให้วงจรภายนอก (1 C)(${m("ε")} - ${m("Ir")}) = ${sig3(Vt)} J</div><div><span class="sw" style="background:var(--heat)"></span>กลายเป็นความร้อนใน ${m("r")}: (1 C)(${m("Ir")}) = ${sig3(Ir)} J</div>`;
   } else {
     const tot=Vt;
     $("en-head").innerHTML=`ได้รับพลังงานไฟฟ้า (1 C)(${VPM}) = ${sig3(tot)} J ซึ่งเครื่องประจุส่งมาผ่านวงจร แล้วแบ่งเป็นสองส่วน`;

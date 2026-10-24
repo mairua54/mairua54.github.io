@@ -36,7 +36,7 @@ p{color:var(--muted);margin:0 0 16px}a{color:var(--link);text-decoration:none}a:
 .card:hover{text-decoration:none;border-color:var(--link)}.card b{display:block;font-size:1.05rem}.card span{color:var(--muted);font-size:15px}
 .jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}.jump a{background:var(--chip);border-radius:999px;padding:2px 12px;font-size:15px}
 ul{list-style:none;padding:0;margin:0}li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 12px;padding:10px 0;border-top:1px solid var(--line)}
-li a{font-weight:700}li span{color:var(--muted);font-size:15px}
+li a{font-weight:700;display:inline-block;padding:10px 0}li span{color:var(--muted);font-size:15px}
 </style>
 '''
 def write(path, text):

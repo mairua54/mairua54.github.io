@@ -13,7 +13,7 @@
 
 <div class="wrap">
 <header>
-  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 1.1 และ 1.6</div>
+  <div class="eyebrow">Daisy Physics · <a href="../15/">บท 15 ไฟฟ้ากระแส</a> · หัวข้อ 1.1 และ 1.6</div>
   <h1>อิเล็กตรอนอิสระในลวดโลหะ</h1>
   <p class="lead">ดูการเคลื่อนที่แบบสุ่มของอิเล็กตรอนอิสระที่ชนกับไอออนบวก แล้วต่อแหล่งกำเนิดเพื่อดูการลอยเลื่อนที่ซ้อนเข้ามา</p>
 </header>
@@ -23,7 +23,7 @@
   <section class="card" aria-labelledby="h-wire">
     <h2 id="h-wire">ในเนื้อลวด</h2>
     <canvas id="cv" width="720" height="280" aria-label="อิเล็กตรอนอิสระ (จุดสีน้ำเงิน) เคลื่อนที่ระหว่างไอออนบวก (วงกลมสีแดง)"></canvas>
-    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนอิสระ วงกลมสีแดงคือไอออนบวกที่สั่นอยู่กับที่ วงจางรอบไอออนคือบริเวณที่ไอออนสั่น (อิเล็กตรอนชนเมื่อถึงขอบวงนี้) เส้นทึบคือเส้นทางของอิเล็กตรอน 1 ตัวที่วาดมีขอบ (○ จุดเริ่ม) เส้นประสีเทาคือหน้าตัดที่ใช้นับ ภาพนี้วาดการลอยเลื่อนให้มากเกินจริงมากเพื่อให้เห็นชัด</p>
+    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนอิสระ วงกลมสีแดงคือไอออนบวกที่สั่นอยู่กับที่ วงจางรอบไอออนคือบริเวณที่ไอออนสั่น (อิเล็กตรอนชนเมื่อถึงขอบวงนี้) เส้นทึบคือเส้นทางของอิเล็กตรอน 1 ตัวที่วาดมีขอบ (○ จุดเริ่ม) เส้นประสีเทาคือหน้าตัดที่ใช้นับ เมื่อต่อแหล่งกำเนิด ลูกศรสีแดง I ด้านบนบอกทิศกระแส ภาพนี้วาดการลอยเลื่อนให้มากเกินจริงมากเพื่อให้เห็นชัด</p>
   </section>
   <section class="card" aria-labelledby="h-ctl">
     <h2 id="h-ctl">ปรับค่า</h2>
@@ -79,6 +79,7 @@
 </section>
 
 <p class="note">แบบจำลองนี้เป็นแบบจำลองอิเล็กตรอนอิสระอย่างง่ายในสองมิติ: อิเล็กตรอนเปลี่ยนทิศเมื่อชนไอออนเท่านั้น หลังชนทิศเป็นสุ่มและอัตราเร็วกลับเป็นค่าเดิม ระหว่างการชนถูกแรงไฟฟ้าคงตัวเร่งไปทางปลาย + ส่วนผลของอุณหภูมิแทนด้วยการที่ไอออนสั่นแรงขึ้นและชนได้ง่ายขึ้น จำนวนอนุภาค ขนาด และความเร็วไม่ได้เป็นไปตามสัดส่วนจริง ภาพแสดงเพียงส่วนหนึ่งของลวดที่ยาวต่อออกไปทั้งสองข้าง อิเล็กตรอนที่ออกทางขอบหนึ่งจึงกลับเข้ามาทางขอบอีกข้าง เมื่อต่อแหล่งกำเนิด ขอบซ้ายคือด้านที่ต่อไปยังขั้วบวก และขอบขวาคือด้านที่ต่อไปยังขั้วลบ</p>
+<p class="back"><a href="../15/">← แบบจำลองอื่นของบท 15 ไฟฟ้ากระแส</a></p>
 </div>
 
 <script>
@@ -123,7 +124,7 @@ function step(dt){
     if(k===0){ if(wrapped) trail.push(null); trail.push([e.x,e.y]); if(trail.length>2600) trail.splice(0,trail.length-2600); }
     sumVx+=e.vx;
   }
-  const mvx=sumVx/NE, tau=5; if(!emaInit){ emaVx=mvx; emaInit=true; } else emaVx+=(mvx-emaVx)*dt/tau;
+  const mvx=sumVx/NE, tau=8; if(!emaInit){ emaVx=mvx; emaInit=true; } else emaVx+=(mvx-emaVx)*dt/tau;
 }
 /* drawing */
 const cv=$("cv"), ctx=cv.getContext("2d"); let dpr=1;
@@ -131,20 +132,26 @@ function size(){ dpr=Math.min(2,window.devicePixelRatio||1); cv.width=W*dpr; cv.
 size(); window.addEventListener("resize",size);
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function draw(){
-  const C={bg:css("--chip"),ink:css("--ink"),pos:css("--pos"),el:css("--elec"),helper:css("--helper"),card:css("--card")};
+  const C={bg:css("--chip"),ink:css("--ink"),pos:css("--pos"),el:css("--elec"),helper:css("--helper"),card:css("--card"),cur:css("--current")};
+  const k=Math.min(1.7,Math.max(1,0.75*W/(cv.clientWidth||W)));   // on a narrow screen the canvas is shrunk: draw dots larger so they stay visible
   ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
   ctx.setLineDash([5,5]); ctx.strokeStyle=C.helper; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke(); ctx.setLineDash([]);
-  for(const o of ions){ ctx.beginPath(); ctx.arc(o.bx,o.by,R_ION+T_AMP[st.T],0,6.283); ctx.fillStyle=C.pos; ctx.globalAlpha=0.12; ctx.fill(); ctx.globalAlpha=1; }
+  for(const o of ions){ ctx.beginPath(); ctx.arc(o.bx,o.by,R_ION+T_AMP[st.T],0,6.283); ctx.fillStyle=C.pos; ctx.globalAlpha=k>1?0.2:0.12; ctx.fill(); ctx.globalAlpha=1; }
   for(const o of ions){ ctx.beginPath(); ctx.arc(o.x,o.y,R_ION,0,6.283); ctx.fillStyle=C.card; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle=C.pos; ctx.stroke();
     ctx.fillStyle=C.pos; ctx.font="bold 14px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("+",o.x,o.y+1); }
   // trail of electron 0
   ctx.strokeStyle=C.ink; ctx.lineWidth=1.6; ctx.beginPath(); let pen=false;
   for(const p of trail){ if(!p){ pen=false; continue; } if(!pen){ ctx.moveTo(p[0],p[1]); pen=true; } else ctx.lineTo(p[0],p[1]); } ctx.stroke();
   if(trail[0]){ ctx.beginPath(); ctx.arc(trail[0][0],trail[0][1],5,0,6.283); ctx.fillStyle=C.card; ctx.fill(); ctx.strokeStyle=C.ink; ctx.lineWidth=2; ctx.stroke(); }
-  for(let k=0;k<NE;k++){ const e=els[k]; ctx.beginPath(); ctx.arc(e.x,e.y,k===0?5.5:RE,0,6.283); ctx.fillStyle=C.el; ctx.fill(); if(k===0){ ctx.lineWidth=2; ctx.strokeStyle=C.ink; ctx.stroke(); } }
+  for(let n=0;n<NE;n++){ const e=els[n]; ctx.beginPath(); ctx.arc(e.x,e.y,(n===0?5.5:RE)*k,0,6.283); ctx.fillStyle=C.el; ctx.fill(); if(n===0){ ctx.lineWidth=2; ctx.strokeStyle=C.ink; ctx.stroke(); } }
   if(st.on){ ctx.fillStyle=C.ink; ctx.font="bold 22px sans-serif"; ctx.textBaseline="middle";
     ctx.fillStyle=C.card; ctx.fillRect(0,H/2-16,22,32); ctx.fillRect(W-22,H/2-16,22,32);
-    ctx.fillStyle=C.ink; ctx.textAlign="center"; ctx.fillText("+",11,H/2); ctx.fillText("−",W-11,H/2); }
+    ctx.fillStyle=C.ink; ctx.textAlign="center"; ctx.fillText("+",11,H/2); ctx.fillText("−",W-11,H/2);
+    // conventional current: from the + end to the − end (opposite to the electrons' drift)
+    const ay=16, ax0=W/2-70, ax1=W/2+70; ctx.fillStyle=C.card; ctx.globalAlpha=0.95; ctx.fillRect(ax0-36,ay-14,ax1-ax0+50,28); ctx.globalAlpha=1;
+    ctx.strokeStyle=C.cur; ctx.fillStyle=C.cur; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(ax0,ay); ctx.lineTo(ax1-12,ay); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ax1,ay); ctx.lineTo(ax1-14,ay-8); ctx.lineTo(ax1-14,ay+8); ctx.closePath(); ctx.fill();
+    ctx.font="italic bold 20px serif"; ctx.textAlign="center"; ctx.fillText("I",ax0-18,ay+1); }
 }
 const vel=$("vel");
 function drawVel(){
@@ -154,19 +161,21 @@ function drawVel(){
   el("line",{x1:cx,y1:y-12,x2:cx,y2:y+12,stroke:"var(--helper)","stroke-width":1.5},vel);
   txt(vel,cx,y+28,"0",{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
   txt(vel,40,y+28,"ไปทางซ้าย",{"font-size":12,fill:"var(--muted)"}); txt(vel,340,y+28,"ไปทางขวา",{"text-anchor":"end","font-size":12,fill:"var(--muted)"});
-  const L=emaVx*scale;
-  if(Math.abs(L)>3){ const x2=cx+L, dir=L<0?-1:1;
+  const pct=100*emaVx/V0, show= st.on ? emaVx<0 && Math.abs(pct)>=1 : Math.abs(pct)>=4, L=emaVx*scale;
+  if(show){ const x2=cx+L, dir=L<0?-1:1;
     el("line",{x1:cx,y1:y,x2:x2-dir*8,y2:y,stroke:"var(--ink)","stroke-width":4},vel);
     el("path",{d:`M${x2},${y} L${x2-dir*12},${y-8} L${x2-dir*12},${y+8} Z`,fill:"var(--ink)"},vel); }
   else el("circle",{cx,cy:y,r:4,fill:"var(--ink)"},vel);
-  const pct=100*emaVx/V0;
-  $("t-vel").textContent=`ความเร็วเฉลี่ยในภาพ ≈ ${Math.abs(pct).toFixed(0)} % ของอัตราเร็วสุ่ม ${Math.abs(pct)<4?"(ใกล้ศูนย์ ขึ้นลงแบบสุ่ม)":(emaVx<0?"ไปทางซ้าย":"ไปทางขวา")} (ค่าเฉลี่ยของอิเล็กตรอนทุกตัวในช่วงไม่กี่วินาทีล่าสุด)`;
+  const how = st.on
+      ? (emaVx<0 && Math.abs(pct)>=1 ? `≈ ${Math.abs(pct).toFixed(0)} % ของอัตราเร็วสุ่ม ไปทางซ้าย (ทางปลาย +)` : "น้อยมากจนค่าเฉลี่ยช่วงสั้น ๆ ขึ้นลงแบบสุ่ม ลองรอสักครู่ ค่าเฉลี่ยระยะยาวไปทางซ้าย (ทางปลาย +)")
+      : `≈ ${Math.abs(pct).toFixed(0)} % ของอัตราเร็วสุ่ม ขึ้นลงแบบสุ่มรอบศูนย์ ไม่มีทิศที่แน่นอน`;
+  $("t-vel").textContent=`ความเร็วเฉลี่ยในภาพ ${how} (ค่าเฉลี่ยของอิเล็กตรอนทุกตัวในช่วงไม่กี่วินาทีล่าสุด)`;
 }
 function updatePanel(){
   $("n-left").textContent=crossL; $("n-right").textContent=crossR; $("n-net").textContent=crossL-crossR;
   $("t-count").textContent=`นับมาแล้ว ${(time-countStart).toFixed(0)} s (เวลาในแบบจำลอง)`;
   $("status").innerHTML=st.on
-    ? "สนามไฟฟ้าในลวดชี้จากปลาย + ไปปลาย - อิเล็กตรอนถูกแรงไฟฟ้าในทิศตรงข้ามกับสนาม จึงเลื่อนไปทางปลาย + (ทางซ้าย) มีประจุลบสุทธิผ่านหน้าตัดไปทางซ้าย กระแสไฟฟ้าจึงมีทิศไปทางขวา จากปลาย + ไปปลาย - (หัวข้อ 1.3)"
+    ? "สนามไฟฟ้าในลวดชี้จากปลาย + ไปปลาย − อิเล็กตรอนถูกแรงไฟฟ้าในทิศตรงข้ามกับสนาม จึงเลื่อนไปทางปลาย + (ทางซ้าย) มีประจุลบสุทธิผ่านหน้าตัดไปทางซ้าย กระแสไฟฟ้าจึงมีทิศไปทางขวา จากปลาย + ไปปลาย − ตามลูกศรสีแดง I (หัวข้อ 1.3)"
     : "ไม่มีสนามไฟฟ้าในลวด อิเล็กตรอนเคลื่อนที่แบบสุ่ม จำนวนที่ผ่านหน้าตัดไปทางซ้ายกับทางขวาเท่ากันโดยเฉลี่ย ไม่มีประจุสุทธิผ่านหน้าตัด จึงไม่มีกระแสไฟฟ้า";
 }
 const ELAB=["","น้อย","ปานกลาง","มาก"], TLAB=["","ต่ำ","ปานกลาง","สูง"];

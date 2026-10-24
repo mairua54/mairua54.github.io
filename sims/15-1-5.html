@@ -14,18 +14,18 @@
 :root{
   --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
   --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
-  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
   --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
   --math:"Times New Roman","Noto Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 .nw{white-space:nowrap}
@@ -63,8 +63,8 @@ select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px soli
 button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
 .eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
 .eq div{min-width:0}
-.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
-.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.status{font-size:15px;border-left:4px solid var(--helper);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
 .ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
 .tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
 .tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -81,6 +81,9 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 .note{font-size:14px;color:var(--muted);margin:0}
 .big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+.eyebrow a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
+summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 
 .stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .stat div{background:var(--chip);border-radius:8px;padding:8px;text-align:center}
@@ -91,7 +94,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 <body>
 <div class="wrap">
 <header>
-  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 1.5</div>
+  <div class="eyebrow">Daisy Physics · <a href="../15/">บท 15 ไฟฟ้ากระแส</a> · หัวข้อ 1.5</div>
   <h1>กระแสไฟฟ้าไม่ถูกใช้หมด</h1>
   <p class="lead">นับอิเล็กตรอนที่ผ่านหน้าตัดก่อนและหลังหลอดไฟ แล้วลองหากระแสที่จุดแยกแบบ Ex. 1.4</p>
 </header>
@@ -101,7 +104,7 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   <section class="card" aria-labelledby="h-a">
     <h2 id="h-a">ก. ลวดเส้นเดียวที่มีหลอดไฟ</h2>
     <canvas id="cv" width="520" height="250" aria-label="อิเล็กตรอนเคลื่อนที่ผ่านลวดส่วนกว้าง ไส้หลอด และลวดส่วนแคบ"></canvas>
-    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนที่กำลังลอยเลื่อน (ไม่แสดงการเคลื่อนที่แบบสุ่ม) ลูกศรสีแดงบอกทิศกระแส ซึ่งตรงข้ามกับทิศที่อิเล็กตรอนเลื่อน เส้นประสีเทา X และ Y คือหน้าตัดที่ใช้นับ ความเร็วในภาพขยายเกินจริงมาก</p>
+    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนที่กำลังลอยเลื่อน (ไม่แสดงการเคลื่อนที่แบบสุ่ม) ลูกศรสีแดงบอกทิศกระแส ซึ่งตรงข้ามกับทิศที่อิเล็กตรอนเลื่อน เส้นประสีเทา X และ Y คือหน้าตัดที่ใช้นับ อิเล็กตรอนที่เลื่อนเร็ว เช่น ในไส้หลอด วาดมีริ้วจางด้านหลังบอกทิศที่เลื่อน ความเร็วในภาพขยายเกินจริงมาก</p>
     <div class="stat">
       <div><b id="nX">0</b><span>ผ่านหน้าตัด X</span></div>
       <div><b id="nY">0</b><span>ผ่านหน้าตัด Y</span></div>
@@ -144,13 +147,14 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
     <p class="q"><b>คำตอบ</b> ทั้งสองหน้าตัดนับได้เท่ากัน (ต่างกันได้ไม่เกิน 1 ตัว) ไม่ว่าหน้าตัดจะใหญ่หรือเล็ก และจำนวนอิเล็กตรอนในลวดคงตัว กระแสเท่ากันทุกหน้าตัด หลอดไฟไม่ได้ใช้กระแส สิ่งที่หลอดไฟรับไปคือพลังงาน (หัวข้อ 4.1) ส่วนที่หน้าตัดเล็ก อิเล็กตรอนต้องเลื่อนเร็วขึ้นเพื่อให้กระแสเท่าเดิม (หัวข้อ 1.6)</p>
   </details>
   <details>
-    <summary>2. ค่ากระแสติดลบหมายความว่าอะไร</summary>
-    <p class="q">ในช่อง ข. ตั้งลวดเส้นที่ 1 เป็น 2.0 A และลวดเส้นที่ 2 เป็น 3.5 A ทำนาย i<sub>3</sub> และทิศของกระแสจริงในลวดเส้นที่ 3 ก่อนดูผล</p>
-    <p class="q"><b>คำตอบ</b> 2.0 A + i<sub>3</sub> = 3.5 A จึงได้ i<sub>3</sub> = 1.5 A เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด 1.5 A ถ้า i<sub>3</sub> ติดลบ เช่นใน Ex. 1.4 กระแสจริงไหลออกจากจุด P</p>
+    <summary>2. ค่ากระแสบวกและลบหมายความว่าอะไร</summary>
+    <p class="q">ในช่อง ข. ขั้นที่ 1: ตั้งลวดเส้นที่ 1 เป็น 2.0 A และลวดเส้นที่ 2 เป็น 3.5 A ทำนาย i<sub>3</sub> และทิศของกระแสจริงในลวดเส้นที่ 3 ก่อนดูผล ขั้นที่ 2: ตั้งลวดเส้นที่ 1 เป็น 4.0 A และลวดเส้นที่ 2 เป็น 1.5 A (ค่าของ Ex. 1.4) ทำนายอีกครั้ง ลูกศรในลวดเส้นที่ 3 เปลี่ยนไปอย่างไร</p>
+    <p class="q"><b>คำตอบ</b> ขั้นที่ 1: 2.0 A + i<sub>3</sub> = 3.5 A จึงได้ i<sub>3</sub> = 1.5 A เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด 1.5 A ขั้นที่ 2: 4.0 A + i<sub>3</sub> = 1.5 A จึงได้ i<sub>3</sub> = -2.5 A ติดลบ ลูกศรในลวดเส้นที่ 3 กลับทิศ กระแสจริงไหลออกจากจุด P ขนาด 2.5 A เครื่องหมายของ i<sub>3</sub> บอกเพียงว่ากระแสจริงไปทางเดียวกับหรือตรงข้ามกับทิศที่เรากำหนดไว้</p>
   </details>
 </section>
 
 <p class="note">แบบจำลองนี้ถือว่ากระแสคงตัว ช่อง ก. แสดงเฉพาะการลอยเลื่อนของอิเล็กตรอน ความหนาแน่นของอิเล็กตรอนเท่ากันทุกส่วนของลวด จำนวนและความเร็วไม่ได้เป็นไปตามสัดส่วนจริง</p>
+<p class="back"><a href="../15/">← แบบจำลองอื่นของบท 15 ไฟฟ้ากระแส</a></p>
 </div>
 
 <script>
@@ -278,7 +282,12 @@ function drawA(){
   ctx.fillStyle=C.glow; ctx.globalAlpha=0.18+0.08*st.I; ctx.fill(); ctx.globalAlpha=1;
   ctx.fillStyle=C.muted; ctx.font="17px Sarabun, Tahoma, sans-serif"; ctx.textAlign="center"; ctx.fillText("หลอดไฟ",(XB0+XB1)/2,YC-54);
   // electrons
-  ctx.fillStyle=C.el; for(const p of P){ const x=xAt(p.u), h=heightAt(x); ctx.beginPath(); ctx.arc(x,YC-h/2+1.5+p.s*(h-3),2.6,0,6.283); ctx.fill(); }
+  // each electron: a dot at its position and, where it moves fast, a faint streak behind it (to the right) as long as
+  // its displacement in one screen frame (capped below the spacing), so fast motion is never seen as a backward jump
+  ctx.fillStyle=C.el; ctx.strokeStyle=C.el; ctx.lineCap="round";
+  for(const p of P){ const x=xAt(p.u), h=heightAt(x), y=YC-h/2+1.5+p.s*(h-3), len=Math.min(0.75/(DENS*h), speedAt(x)/60);
+    if(len>4){ ctx.globalAlpha=0.45; ctx.lineWidth=2.6; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+len,y); ctx.stroke(); ctx.globalAlpha=1; }
+    ctx.beginPath(); ctx.arc(x,y,2.6,0,6.283); ctx.fill(); }
   // cross-sections
   ctx.setLineDash([5,4]); ctx.strokeStyle=C.helper; ctx.lineWidth=1.5;
   for(const [x,lab] of [[XX,"X"],[XY,"Y"]]){ const h=heightAt(x); ctx.beginPath(); ctx.moveTo(x,YC-h/2-14); ctx.lineTo(x,YC+h/2+14); ctx.stroke();
@@ -327,13 +336,14 @@ function panelB(){
   const f=flows(), i3=f.i3;
   $("o-1").textContent=fx(st.i1,1)+" A"; $("o-2").textContent=fx(st.i2,1)+" A";
   labs[1].textContent=fx(st.i1,1)+" A เข้า"; labs[2].textContent=fx(st.i2,1)+" A ออก";
-  labs[3].textContent=Math.abs(i3)<1e-9?"0 A":fx(Math.abs(i3),1)+" A "+(i3>0?"เข้า":"ออก");
+  labs[3].textContent=Math.abs(i3)<1e-9?fx(0,1)+" A":fx(Math.abs(i3),1)+" A "+(i3>0?"เข้า":"ออก");
   $("eq").innerHTML=DP.eqHTML([
     `กำหนดให้ ${m("i")}${sub("3")} เป็นค่ากระแสในลวดเส้นที่ 3 ตามทิศที่ไหลเข้าจุด P`,
     `กระแสเข้ารวม = กระแสออกรวม: ${fx(st.i1,1)} A + ${m("i")}${sub("3")} = ${fx(st.i2,1)} A`,
     `${m("i")}${sub("3")} = ${fx(st.i2,1)} A - ${fx(st.i1,1)} A = ${fx(i3,1)} A`]);
   const S=$("status-b"); S.classList.toggle("rev",i3<-1e-9);
-  S.innerHTML = Math.abs(i3)<1e-9 ? `${m("i")}${sub("3")} = 0 ไม่มีกระแสในลวดเส้นที่ 3 กระแสที่เข้าทางลวดเส้นที่ 1 ออกทางลวดเส้นที่ 2 ทั้งหมด`
+  S.innerHTML = Math.abs(i3)<1e-9 && Math.abs(st.i1)<1e-9 ? `ไม่มีกระแสในลวดเส้นใดเลย`
+    : Math.abs(i3)<1e-9 ? `${m("i")}${sub("3")} = 0 ไม่มีกระแสในลวดเส้นที่ 3 กระแสที่เข้าทางลวดเส้นที่ 1 ออกทางลวดเส้นที่ 2 ทั้งหมด`
     : i3>0 ? `${m("i")}${sub("3")} เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด ${m("I")}${sub("3")} = ${fx(i3,1)} A`
     : `${m("i")}${sub("3")} ติดลบ กระแสจริงในลวดเส้นที่ 3 ไหลออกจากจุด P ตรงข้ามกับทิศที่กำหนด ขนาด ${m("I")}${sub("3")} = |${m("i")}${sub("3")}| = ${fx(-i3,1)} A`;
 }

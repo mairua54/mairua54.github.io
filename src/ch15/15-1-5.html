@@ -13,7 +13,7 @@
 
 <div class="wrap">
 <header>
-  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 1.5</div>
+  <div class="eyebrow">Daisy Physics · <a href="../15/">บท 15 ไฟฟ้ากระแส</a> · หัวข้อ 1.5</div>
   <h1>กระแสไฟฟ้าไม่ถูกใช้หมด</h1>
   <p class="lead">นับอิเล็กตรอนที่ผ่านหน้าตัดก่อนและหลังหลอดไฟ แล้วลองหากระแสที่จุดแยกแบบ Ex. 1.4</p>
 </header>
@@ -23,7 +23,7 @@
   <section class="card" aria-labelledby="h-a">
     <h2 id="h-a">ก. ลวดเส้นเดียวที่มีหลอดไฟ</h2>
     <canvas id="cv" width="520" height="250" aria-label="อิเล็กตรอนเคลื่อนที่ผ่านลวดส่วนกว้าง ไส้หลอด และลวดส่วนแคบ"></canvas>
-    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนที่กำลังลอยเลื่อน (ไม่แสดงการเคลื่อนที่แบบสุ่ม) ลูกศรสีแดงบอกทิศกระแส ซึ่งตรงข้ามกับทิศที่อิเล็กตรอนเลื่อน เส้นประสีเทา X และ Y คือหน้าตัดที่ใช้นับ ความเร็วในภาพขยายเกินจริงมาก</p>
+    <p class="cap">จุดสีน้ำเงินคืออิเล็กตรอนที่กำลังลอยเลื่อน (ไม่แสดงการเคลื่อนที่แบบสุ่ม) ลูกศรสีแดงบอกทิศกระแส ซึ่งตรงข้ามกับทิศที่อิเล็กตรอนเลื่อน เส้นประสีเทา X และ Y คือหน้าตัดที่ใช้นับ อิเล็กตรอนที่เลื่อนเร็ว เช่น ในไส้หลอด วาดมีริ้วจางด้านหลังบอกทิศที่เลื่อน ความเร็วในภาพขยายเกินจริงมาก</p>
     <div class="stat">
       <div><b id="nX">0</b><span>ผ่านหน้าตัด X</span></div>
       <div><b id="nY">0</b><span>ผ่านหน้าตัด Y</span></div>
@@ -66,13 +66,14 @@
     <p class="q"><b>คำตอบ</b> ทั้งสองหน้าตัดนับได้เท่ากัน (ต่างกันได้ไม่เกิน 1 ตัว) ไม่ว่าหน้าตัดจะใหญ่หรือเล็ก และจำนวนอิเล็กตรอนในลวดคงตัว กระแสเท่ากันทุกหน้าตัด หลอดไฟไม่ได้ใช้กระแส สิ่งที่หลอดไฟรับไปคือพลังงาน (หัวข้อ 4.1) ส่วนที่หน้าตัดเล็ก อิเล็กตรอนต้องเลื่อนเร็วขึ้นเพื่อให้กระแสเท่าเดิม (หัวข้อ 1.6)</p>
   </details>
   <details>
-    <summary>2. ค่ากระแสติดลบหมายความว่าอะไร</summary>
-    <p class="q">ในช่อง ข. ตั้งลวดเส้นที่ 1 เป็น 2.0 A และลวดเส้นที่ 2 เป็น 3.5 A ทำนาย i<sub>3</sub> และทิศของกระแสจริงในลวดเส้นที่ 3 ก่อนดูผล</p>
-    <p class="q"><b>คำตอบ</b> 2.0 A + i<sub>3</sub> = 3.5 A จึงได้ i<sub>3</sub> = 1.5 A เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด 1.5 A ถ้า i<sub>3</sub> ติดลบ เช่นใน Ex. 1.4 กระแสจริงไหลออกจากจุด P</p>
+    <summary>2. ค่ากระแสบวกและลบหมายความว่าอะไร</summary>
+    <p class="q">ในช่อง ข. ขั้นที่ 1: ตั้งลวดเส้นที่ 1 เป็น 2.0 A และลวดเส้นที่ 2 เป็น 3.5 A ทำนาย i<sub>3</sub> และทิศของกระแสจริงในลวดเส้นที่ 3 ก่อนดูผล ขั้นที่ 2: ตั้งลวดเส้นที่ 1 เป็น 4.0 A และลวดเส้นที่ 2 เป็น 1.5 A (ค่าของ Ex. 1.4) ทำนายอีกครั้ง ลูกศรในลวดเส้นที่ 3 เปลี่ยนไปอย่างไร</p>
+    <p class="q"><b>คำตอบ</b> ขั้นที่ 1: 2.0 A + i<sub>3</sub> = 3.5 A จึงได้ i<sub>3</sub> = 1.5 A เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด 1.5 A ขั้นที่ 2: 4.0 A + i<sub>3</sub> = 1.5 A จึงได้ i<sub>3</sub> = -2.5 A ติดลบ ลูกศรในลวดเส้นที่ 3 กลับทิศ กระแสจริงไหลออกจากจุด P ขนาด 2.5 A เครื่องหมายของ i<sub>3</sub> บอกเพียงว่ากระแสจริงไปทางเดียวกับหรือตรงข้ามกับทิศที่เรากำหนดไว้</p>
   </details>
 </section>
 
 <p class="note">แบบจำลองนี้ถือว่ากระแสคงตัว ช่อง ก. แสดงเฉพาะการลอยเลื่อนของอิเล็กตรอน ความหนาแน่นของอิเล็กตรอนเท่ากันทุกส่วนของลวด จำนวนและความเร็วไม่ได้เป็นไปตามสัดส่วนจริง</p>
+<p class="back"><a href="../15/">← แบบจำลองอื่นของบท 15 ไฟฟ้ากระแส</a></p>
 </div>
 
 <script>
@@ -121,7 +122,12 @@ function drawA(){
   ctx.fillStyle=C.glow; ctx.globalAlpha=0.18+0.08*st.I; ctx.fill(); ctx.globalAlpha=1;
   ctx.fillStyle=C.muted; ctx.font="17px Sarabun, Tahoma, sans-serif"; ctx.textAlign="center"; ctx.fillText("หลอดไฟ",(XB0+XB1)/2,YC-54);
   // electrons
-  ctx.fillStyle=C.el; for(const p of P){ const x=xAt(p.u), h=heightAt(x); ctx.beginPath(); ctx.arc(x,YC-h/2+1.5+p.s*(h-3),2.6,0,6.283); ctx.fill(); }
+  // each electron: a dot at its position and, where it moves fast, a faint streak behind it (to the right) as long as
+  // its displacement in one screen frame (capped below the spacing), so fast motion is never seen as a backward jump
+  ctx.fillStyle=C.el; ctx.strokeStyle=C.el; ctx.lineCap="round";
+  for(const p of P){ const x=xAt(p.u), h=heightAt(x), y=YC-h/2+1.5+p.s*(h-3), len=Math.min(0.75/(DENS*h), speedAt(x)/60);
+    if(len>4){ ctx.globalAlpha=0.45; ctx.lineWidth=2.6; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+len,y); ctx.stroke(); ctx.globalAlpha=1; }
+    ctx.beginPath(); ctx.arc(x,y,2.6,0,6.283); ctx.fill(); }
   // cross-sections
   ctx.setLineDash([5,4]); ctx.strokeStyle=C.helper; ctx.lineWidth=1.5;
   for(const [x,lab] of [[XX,"X"],[XY,"Y"]]){ const h=heightAt(x); ctx.beginPath(); ctx.moveTo(x,YC-h/2-14); ctx.lineTo(x,YC+h/2+14); ctx.stroke();
@@ -170,13 +176,14 @@ function panelB(){
   const f=flows(), i3=f.i3;
   $("o-1").textContent=fx(st.i1,1)+" A"; $("o-2").textContent=fx(st.i2,1)+" A";
   labs[1].textContent=fx(st.i1,1)+" A เข้า"; labs[2].textContent=fx(st.i2,1)+" A ออก";
-  labs[3].textContent=Math.abs(i3)<1e-9?"0 A":fx(Math.abs(i3),1)+" A "+(i3>0?"เข้า":"ออก");
+  labs[3].textContent=Math.abs(i3)<1e-9?fx(0,1)+" A":fx(Math.abs(i3),1)+" A "+(i3>0?"เข้า":"ออก");
   $("eq").innerHTML=DP.eqHTML([
     `กำหนดให้ ${m("i")}${sub("3")} เป็นค่ากระแสในลวดเส้นที่ 3 ตามทิศที่ไหลเข้าจุด P`,
     `กระแสเข้ารวม = กระแสออกรวม: ${fx(st.i1,1)} A + ${m("i")}${sub("3")} = ${fx(st.i2,1)} A`,
     `${m("i")}${sub("3")} = ${fx(st.i2,1)} A - ${fx(st.i1,1)} A = ${fx(i3,1)} A`]);
   const S=$("status-b"); S.classList.toggle("rev",i3<-1e-9);
-  S.innerHTML = Math.abs(i3)<1e-9 ? `${m("i")}${sub("3")} = 0 ไม่มีกระแสในลวดเส้นที่ 3 กระแสที่เข้าทางลวดเส้นที่ 1 ออกทางลวดเส้นที่ 2 ทั้งหมด`
+  S.innerHTML = Math.abs(i3)<1e-9 && Math.abs(st.i1)<1e-9 ? `ไม่มีกระแสในลวดเส้นใดเลย`
+    : Math.abs(i3)<1e-9 ? `${m("i")}${sub("3")} = 0 ไม่มีกระแสในลวดเส้นที่ 3 กระแสที่เข้าทางลวดเส้นที่ 1 ออกทางลวดเส้นที่ 2 ทั้งหมด`
     : i3>0 ? `${m("i")}${sub("3")} เป็นบวก กระแสจริงในลวดเส้นที่ 3 ไหลเข้าจุด P ตามทิศที่กำหนด ขนาด ${m("I")}${sub("3")} = ${fx(i3,1)} A`
     : `${m("i")}${sub("3")} ติดลบ กระแสจริงในลวดเส้นที่ 3 ไหลออกจากจุด P ตรงข้ามกับทิศที่กำหนด ขนาด ${m("I")}${sub("3")} = |${m("i")}${sub("3")}| = ${fx(-i3,1)} A`;
 }

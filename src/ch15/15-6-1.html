@@ -9,7 +9,7 @@
 
 <div class="wrap">
 <header>
-  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 6.1 และ 6.2</div>
+  <div class="eyebrow">Daisy Physics · <a href="../15/">บท 15 ไฟฟ้ากระแส</a> · หัวข้อ 6.1 และ 6.2</div>
   <h1>การต่อแบตเตอรี่แบบอนุกรมและแบบขนาน</h1>
   <p class="lead">ต่อแบตเตอรี่ที่เหมือนกันหลายก้อนกับตัวต้านทาน R แบบอนุกรมหรือแบบขนาน ในแบบอนุกรมแตะก้อนใดก็ได้เพื่อกลับขั้ว แล้วดูอีเอ็มเอฟสมมูล กระแส และความต่างศักย์ระหว่างขั้วของแต่ละก้อน</p>
 </header>
@@ -68,7 +68,8 @@
   </details>
 </section>
 
-<p class="note">แบบจำลองนี้ถือว่าแบตเตอรี่ทุกก้อนเหมือนกันทุกประการ อีเอ็มเอฟและความต้านทานภายในคงตัว สายไฟไม่มีความต้านทาน ในแบบขนานไม่ให้กลับขั้ว เพราะจะเกิดกระแสไหลวนระหว่างก้อนซึ่งต้องวิเคราะห์ด้วยวิธีในความรู้เพิ่มเติมของหัวข้อ 6.3</p>
+<p class="note">แบบจำลองนี้ถือว่าแบตเตอรี่ทุกก้อนเหมือนกันทุกประการ อีเอ็มเอฟและความต้านทานภายในคงตัว สายไฟไม่มีความต้านทาน ในแบบขนานไม่ให้กลับขั้ว เพราะจะเกิดกระแสไหลวนระหว่างก้อนซึ่งต้องวิเคราะห์ด้วยวิธีในความรู้เพิ่มเติมของหัวข้อ 6.3 ตัวเลขที่คำนวณได้บนหน้านี้แสดง 3 ตัว จึงอาจเขียนต่างจาก Ex. ในชีทหรือคำตอบในลองทำ เช่น 4.00 V กับ 4.0 V ซึ่งเป็นค่าเดียวกันที่ปัดต่างกัน</p>
+<p class="back"><a href="../15/">← แบบจำลองอื่นของบท 15 ไฟฟ้ากระแส</a></p>
 </div>
 
 <script>
@@ -94,9 +95,11 @@ function sourceH(g,x0,y,w,leftPlus,k){
   DP.wire(g,[[x0,y],[x0+w,y]]);
   DP.cell(g,cx,y,"h",leftPlus?"left":"right",{nosign:true,long:11,short:6});
   el("rect",{x:rx0,y:y-7,width:rx1-rx0,height:14,fill:"var(--card)"},g); DP.resistor(g,rx0,y,rx1,y,3,5);
-  // + and − above the frame corners (fig 6.2 style)
-  txt(g,x0+3,y-19,leftPlus?"+":"−",{"text-anchor":"middle","font-weight":700,"font-size":15});
-  txt(g,x0+w-3,y-19,leftPlus?"−":"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+  if(st.mode!=="ser"||st.n<4){ // + and − above the frame corners (fig 6.2 style)
+    txt(g,x0+3,y-19,leftPlus?"+":"−",{"text-anchor":"middle","font-weight":700,"font-size":15});
+    txt(g,x0+w-3,y-19,leftPlus?"−":"+",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  else { // narrow frames (many cells): signs right above this cell's own plates, so neighbouring cells' signs never touch
+    const sx=leftPlus?-1:1; txt(g,cx+sx*9,y-19,"+",{"text-anchor":"middle","font-weight":700,"font-size":15}); txt(g,cx-sx*9,y-19,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
   if(k!==undefined) txt(g,x0+w/2,y+30,"ก้อน "+(k+1),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
 }
 function draw(){
@@ -106,7 +109,7 @@ function draw(){
     DP.wire(C,[[40,y],[40,230],[340,230],[340,y]]);
     let x=40+gap; DP.wire(C,[[40,y],[x,y]]);
     for(let k=0;k<n;k++){ const g=el("g",{style:"cursor:pointer"},C); sourceH(g,x,y,w,st.rev[k],k);
-      if(st.rev[k]) txt(g,x+w/2,y+44,"กลับขั้ว",{"text-anchor":"middle","font-size":12,fill:"var(--heat)","font-weight":700});
+      if(st.rev[k]) txt(g,x+w/2,y+44,"กลับขั้ว",{"text-anchor":"middle","font-size":12,fill:"var(--ink)","font-weight":700});
       el("rect",{x:x-2,y:y-34,width:w+4,height:84,fill:"transparent"},g);
       g.addEventListener("click",()=>{ st.rev[k]=!st.rev[k]; update(); });
       const nx=x+w+gap; DP.wire(C,[[x+w,y],[k<n-1?nx:340,y]]); x=nx; }
@@ -146,12 +149,14 @@ function update(){
   const Sx=$("status"); Sx.classList.toggle("rev",st.mode==="ser"&&nr>0);
   Sx.innerHTML= st.mode==="par" ? "ต่อขนานไม่ได้เพิ่มอีเอ็มเอฟ แต่ลดความต้านทานภายในสมมูล และแต่ละก้อนจ่ายกระแสเพียงส่วนหนึ่งของกระแสรวม ความต่างศักย์ระหว่างขั้วจึงลดลงน้อยกว่าใช้ก้อนเดียว"
     : S.I<1e-9 ? "อีเอ็มเอฟสมมูลเป็นศูนย์ ก้อนที่กลับขั้วหักล้างก้อนอื่นพอดี จึงไม่มีกระแส"
-    : nr? `มีก้อนที่กลับขั้ว ${nr} ก้อน อีเอ็มเอฟสมมูลลดลง แต่ความต้านทานภายในยังเพิ่มทุกก้อน กระแสจึงลดลงมาก ก้อนที่ ${S.cells.map((c,k)=>c.dir==="chg"?k+1:0).filter(Boolean).join(", ")} มีกระแสภายในไหลจากขั้วบวกไปขั้วลบ เหมือนก้อนที่กำลังถูกประจุ`+(S.E<0?" (ก้อนที่กลับขั้วมีมากกว่า กระแสจึงไหลในทิศตรงข้ามกับเมื่อใส่ถูกทุกก้อน ก้อนที่ไม่ได้กลับขั้วจึงกลายเป็นฝ่ายที่ถูกประจุ)":"")
+    : nr===n ? (n===1 ? "กลับขั้วแบตเตอรี่ก้อนเดียว อีเอ็มเอฟมีขนาดเท่าเดิม กระแสมีขนาดเท่าเดิมแต่ไหลในวงจรภายนอกกลับทิศ แบตเตอรี่ยังจ่ายพลังงานตามปกติ"
+                : "ทุกก้อนกลับขั้ว เท่ากับกลับทั้งชุด อีเอ็มเอฟสมมูลมีขนาดเท่าเดิม กระแสมีขนาดเท่าเดิมแต่ไหลในวงจรภายนอกกลับทิศ ทุกก้อนยังมีกระแสภายในไหลจากขั้วลบไปขั้วบวกและจ่ายพลังงานตามปกติ")
+    : nr? `มีก้อนที่กลับขั้ว ${nr} ก้อน อีเอ็มเอฟสมมูลลดลง แต่ความต้านทานภายในยังเพิ่มทุกก้อน กระแสจึงลดลงมาก`+((l=>l?` ก้อนที่ ${l} มีกระแสภายในไหลจากขั้วบวกไปขั้วลบ เหมือนก้อนที่กำลังถูกประจุ`:"")(S.cells.map((c,k)=>c.dir==="chg"?k+1:0).filter(Boolean).join(", ")))+(S.E<0?" (ก้อนที่กลับขั้วมีมากกว่า กระแสจึงไหลในทิศตรงข้ามกับเมื่อใส่ถูกทุกก้อน ก้อนที่ไม่ได้กลับขั้วจึงกลายเป็นฝ่ายที่ถูกประจุ)":"")
     : n===1 ? "มีแบตเตอรี่ก้อนเดียว ลองเพิ่มจำนวนก้อนเพื่อดูผลของการต่ออนุกรม"
     : "ต่ออนุกรมโดยหันขั้วไปทางเดียวกัน: อีเอ็มเอฟและความต้านทานภายในบวกกัน ทุกก้อนมีกระแสเท่ากัน";
   $("tbl").innerHTML=`<tr><th>ก้อน</th><th>${m("I")}</th><th>ทิศภายใน</th><th>V₊ - V₋</th></tr>`+S.cells.map((c,k)=>{
     const Ik=Number(DP.sig(c.I,3)), V=c.dir==="sup"?st.e-Ik*st.r:c.dir==="chg"?st.e+Ik*st.r:st.e;
-    return `<tr><td>${k+1}${c.rev?" (กลับขั้ว)":""}</td><td>${fmt(Ik,3)} A</td><td>${c.dir==="sup"?"ลบ → บวก":c.dir==="chg"?"บวก → ลบ":"-"}</td><td>${fmt(V,3)} V</td></tr>`; }).join("");
+    return `<tr><td>${k+1}${c.rev?" (กลับขั้ว)":""}</td><td>${fmt(Ik,3)} A</td><td>${c.dir==="sup"?"ลบ → บวก":c.dir==="chg"?"บวก → ลบ":"ไม่มีกระแส"}</td><td>${fmt(V,3)} V</td></tr>`; }).join("");
   draw();
 }
 function sync(){ $("s-n").min=st.mode==="par"?2:1; if(st.mode==="par"&&st.n<2) st.n=2; $("s-n").value=st.n; $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }

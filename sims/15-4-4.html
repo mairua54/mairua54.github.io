@@ -14,18 +14,18 @@
 :root{
   --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
   --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
-  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
   --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
   --math:"Times New Roman","Noto Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 .nw{white-space:nowrap}
@@ -63,8 +63,8 @@ select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px soli
 button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
 .eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
 .eq div{min-width:0}
-.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
-.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.status{font-size:15px;border-left:4px solid var(--helper);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
 .ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
 .tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
 .tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -81,13 +81,16 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 .note{font-size:14px;color:var(--muted);margin:0}
 .big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+.eyebrow a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
+summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 4.4</div>
+  <div class="eyebrow">Daisy Physics · <a href="../15/">บท 15 ไฟฟ้ากระแส</a> · หัวข้อ 4.4</div>
   <h1>กราฟความต่างศักย์ระหว่างขั้วกับกระแสของเซลล์</h1>
   <p class="lead">ปรับความต้านทานภายนอก R แล้วดูจุดเลื่อนไปบนเส้นตรง ΔV = ε - Ir บันทึกหลายจุดเหมือนการทดลอง แล้วอ่าน ε และ r จากกราฟ</p>
 </header>
@@ -115,11 +118,13 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
         <button class="btn" id="b-act">วัดชุดตัวต้านทานในกิจกรรม</button>
         <button class="btn" id="b-clr">ล้างจุดที่บันทึก</button>
         <button class="btn" id="b-ex">ค่าของ Ex. 4.6</button>
+        <button class="btn" id="b-hide" aria-pressed="false">ซ่อน ε และ r</button>
       </div>
     </div>
   </section>
   <section class="card" aria-labelledby="h-eq">
     <h2 id="h-eq">ค่าที่มิเตอร์อ่านได้</h2>
+    <p class="cap" style="margin-top:0">วงจร: เซลล์ต่อกับตัวต้านทาน <i class="m">R</i> แอมมิเตอร์ต่ออนุกรมในวงจรเพื่อวัดกระแส และโวลต์มิเตอร์ต่อคร่อมขั้วของเซลล์เพื่อวัดความต่างศักย์ระหว่างขั้ว</p>
     <div class="eq" id="eq"></div>
     <div class="status" id="status" style="margin-top:10px"></div>
   </section>
@@ -135,12 +140,13 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   </details>
   <details>
     <summary>2. หา ε และ r จากสองจุด (Ex. 4.7)</summary>
-    <p class="q">ให้เพื่อนตั้ง ε = 3.0 V และ r = 0.50 Ω โดยไม่บอก (หรือตั้งเองแล้วสมมติว่าไม่รู้ค่า) บันทึกจุดที่ R = 1.0 Ω และ R = 2.5 Ω แล้วใช้เฉพาะค่าที่มิเตอร์อ่านได้ของสองจุดนั้นหา ε และ r</p>
-    <p class="q"><b>คำตอบ</b> สองจุดคือ (2.00 A, 2.00 V) และ (1.00 A, 2.50 V) ความชัน = (2.00 V - 2.50 V)/(2.00 A - 1.00 A) = -0.50 Ω จึงได้ r = 0.50 Ω และ ε = 2.50 V + (1.00 A)(0.50 Ω) = 3.0 V</p>
+    <p class="q">ตั้ง ε = 3.0 V และ r = 0.50 Ω (หรือให้เพื่อนตั้งโดยไม่บอก) แล้วกด "ซ่อน ε และ r" บันทึกจุดที่ R = 1.0 Ω และ R = 2.5 Ω แล้วใช้เฉพาะค่าที่มิเตอร์อ่านได้ของสองจุดนั้นหา ε และ r</p>
+    <p class="q"><b>คำตอบ</b> สองจุดคือ (2.00 A, 2.00 V) และ (1.00 A, 2.50 V) ความชัน = (2.00 V - 2.50 V)/(2.00 A - 1.00 A) = -0.50 Ω จึงได้ r = 0.50 Ω และ ε = 2.50 V + (1.00 A)(0.50 Ω) = 3.00 V กด "แสดง ε และ r" เพื่อตรวจ</p>
   </details>
 </section>
 
-<p class="note">แบบจำลองนี้ถือว่า ε และ r คงตัว เซลล์จ่ายกระแสให้ตัวต้านทานเท่านั้น และมิเตอร์เป็นอุดมคติ เส้นประคือแนวของเส้นตรงที่ต่อออกไปจนตัดแกนนอน ส่วนเส้นทึบคือช่วงที่วัดจริง ซึ่งเริ่มจาก I = 0</p>
+<p class="note">แบบจำลองนี้ถือว่า ε และ r คงตัว เซลล์จ่ายกระแสให้ตัวต้านทานเท่านั้น และมิเตอร์เป็นอุดมคติ เส้นประคือแนวของเส้นตรงที่ต่อออกไปจนตัดแกนนอน ส่วนเส้นทึบคือช่วงที่วัดจริง ซึ่งเริ่มจาก I = 0 ตัวเลขที่คำนวณได้บนหน้านี้แสดง 3 ตัว จึงอาจเขียนต่างจาก Ex. ในชีทหรือคำตอบในลองทำ เช่น 4.00 V กับ 4.0 V ซึ่งเป็นค่าเดียวกันที่ปัดต่างกัน</p>
+<p class="back"><a href="../15/">← แบบจำลองอื่นของบท 15 ไฟฟ้ากระแส</a></p>
 </div>
 
 <script>
@@ -227,55 +233,63 @@ return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,
 (function(){
 "use strict";
 const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
-const st={e:6.0,r:1.0,R:2.0,pts:[]};
+const st={e:6.0,r:1.0,R:2.0,pts:[],hide:false}; let cleared=false;
 const ACT=[1000,100,10,3.3,1];
 const niceStep=v=>{ const p=Math.pow(10,Math.floor(Math.log10(v))); for(const k of [1,2,2.5,5,10]) if(k*p>=v-1e-9) return k*p; return 10*p; };
 function point(R){ const I=st.e/(R+st.r); return {R,I,V:st.e-I*st.r}; }
 /* displayed values: I to 3 s.f., later steps use the displayed I */
 function shown(R){ const p=point(R), Id=Number(DP.sig(p.I,3)), Vd=R===0?0:Number(DP.sig(st.e-Id*st.r,3)); return {Id,Vd,Itxt:fmt(Id,3),Vtxt:R===0?"0":fmt(Vd,3)}; }
 const G=$("g"), X0=58, X1=360, Y0=26, Y1=246;
+const tick=(v,stp)=>{ if(Math.abs(v)<1e-9) return "0"; const dec=Math.max(0,-Math.floor(Math.log10(stp)+1e-9)); return v.toFixed(dec); };   // same decimals on the whole axis
 function draw(){
   G.textContent=""; const Isc=st.e/st.r, xt=niceStep(Isc*1.05/5), xmax=xt*Math.ceil(Isc*1.05/xt-1e-9), yt=niceStep(st.e*1.1/4), ymax=yt*Math.ceil(st.e*1.1/yt-1e-9);
   const sx=I=>X0+(X1-X0)*I/xmax, sy=V=>Y1-(Y1-Y0)*V/ymax;
-  const nx=Math.round(xmax/xt); for(let k=0;k<=nx;k++){ const v=k*xt, x=sx(v); el("line",{x1:x,y1:Y0,x2:x,y2:Y1,stroke:"var(--line)"},G); txt(G,x,Y1+17,fmt(v,2,{intok:1}),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); }
-  const ny=Math.round(ymax/yt); for(let k=0;k<=ny;k++){ const v=k*yt, y=sy(v); el("line",{x1:X0,y1:y,x2:X1,y2:y,stroke:"var(--line)"},G); txt(G,X0-6,y+4,fmt(v,2,{intok:1}),{"text-anchor":"end","font-size":12,fill:"var(--muted)"}); }
+  const nx=Math.round(xmax/xt); for(let k=0;k<=nx;k++){ const v=k*xt, x=sx(v); el("line",{x1:x,y1:Y0,x2:x,y2:Y1,stroke:"var(--line)"},G); txt(G,x,Y1+17,tick(v,xt),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); }
+  const ny=Math.round(ymax/yt); for(let k=0;k<=ny;k++){ const v=k*yt, y=sy(v); el("line",{x1:X0,y1:y,x2:X1,y2:y,stroke:"var(--line)"},G); txt(G,X0-6,y+4,tick(v,yt),{"text-anchor":"end","font-size":12,fill:"var(--muted)"}); }
   el("line",{x1:X0,y1:Y1,x2:X1,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G); el("line",{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:"var(--ink)","stroke-width":1.5},G);
   txt(G,(X0+X1)/2,Y1+38,"I (A)",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"}); txt(G,X0,Y0-9,"ΔV (V)",{"font-size":13,fill:"var(--muted)"});
   // line ΔV = ε - rI : solid over the measured range (0 .. largest current measured or shown), dashed beyond to ε/r
   const Imeas=Math.max(point(st.R).I,...st.pts.map(q=>point(q).I));
-  el("line",{x1:sx(0),y1:sy(st.e),x2:sx(Imeas),y2:sy(st.e-st.r*Imeas),stroke:"var(--graph)","stroke-width":3},G);
+  if(!st.hide){ el("line",{x1:sx(0),y1:sy(st.e),x2:sx(Imeas),y2:sy(st.e-st.r*Imeas),stroke:"var(--graph)","stroke-width":3},G);
   if(Imeas<Isc-1e-9) el("line",{x1:sx(Imeas),y1:sy(st.e-st.r*Imeas),x2:sx(Isc),y2:sy(0),stroke:"var(--graph)","stroke-width":2,"stroke-dasharray":"6 5"},G);
-  // intercept labels
-  txt(G,X0+6,sy(st.e)-8,[["ε",{it:1}]],{"font-size":15});
-  txt(G,sx(Isc),Y1-8,[["ε",{it:1}],"/",["r",{it:1}]],{"text-anchor":"middle","font-size":15});
+  // intercept labels: ε left of the axis (clear of the points near I = 0), ε/r above the I axis
+  txt(G,X0-28,sy(st.e)+5,[["ε",{it:1}]],{"text-anchor":"end","font-size":15});
+  el("line",{x1:X0-24,y1:sy(st.e),x2:X0,y2:sy(st.e),stroke:"var(--helper)","stroke-width":1,"stroke-dasharray":"2 2"},G);
+  txt(G,sx(Isc),Y1-8,[["ε",{it:1}],"/",["r",{it:1}]],{"text-anchor":"middle","font-size":15}); }
   // recorded points
   for(const R of st.pts){ const q=point(R); el("circle",{cx:sx(q.I),cy:sy(q.V),r:4.5,fill:"var(--card)",stroke:"var(--graph)","stroke-width":2},G); }
   // current point and the line from the origin (slope = R external)
   const p=point(st.R), x=sx(p.I), y=sy(p.V);
-  if(st.R>0) el("line",{x1:X0,y1:Y1,x2:x,y2:y,stroke:"var(--graph2)","stroke-width":2.2,"stroke-dasharray":"2 4","stroke-linecap":"round"},G);
+  if(st.R>0) el("line",{x1:X0,y1:Y1,x2:x,y2:y,stroke:"var(--muted)","stroke-width":2.4,"stroke-dasharray":"2 4","stroke-linecap":"round"},G);
   el("polyline",{points:DP.pl([[X0,y],[x,y],[x,Y1]]),fill:"none",stroke:"var(--helper)","stroke-width":1.2,"stroke-dasharray":"4 4"},G);
   el("circle",{cx:x,cy:y,r:6,fill:"var(--graph)",stroke:"var(--card)","stroke-width":2},G);
-  $("leg").innerHTML=`<div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--graph)" stroke-width="3"/></svg> เส้นของเซลล์ ความชัน = -${m("r")}</div>`+
-    `<div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--graph2)" stroke-width="2.2" stroke-dasharray="2 4" stroke-linecap="round"/></svg> เส้นจากจุดกำเนิดมายังจุดปัจจุบัน ความชัน = ${m("R")} ของวงจรภายนอก</div>`+
+  $("leg").innerHTML=(st.hide?`<div>ซ่อนเส้นของเซลล์อยู่ ลองหา ${m("ε")} และ ${m("r")} จากจุดที่บันทึก</div>`:`<div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--graph)" stroke-width="3"/></svg> เส้นของเซลล์ ความชัน = -${m("r")}</div>`)+
+    `<div><svg width="26" height="10" style="display:inline;width:26px;vertical-align:middle"><line x1="1" y1="5" x2="25" y2="5" stroke="var(--muted)" stroke-width="2.4" stroke-dasharray="2 4" stroke-linecap="round"/></svg> เส้นจุดจากจุดกำเนิดมายังจุดปัจจุบัน ความชัน = ${m("R")} ของวงจรภายนอก</div>`+
     `<div><svg width="26" height="12" style="display:inline;width:26px;vertical-align:middle"><circle cx="13" cy="6" r="4.5" fill="var(--card)" stroke="var(--graph)" stroke-width="2"/></svg> จุดที่บันทึกไว้ ${st.pts.length} จุด</div>`;
 }
 function update(){
-  $("o-e").textContent=fx(st.e,1)+" V"; $("o-r").textContent=fx(st.r,2)+" Ω"; $("o-R").textContent=st.R===0?"0 (ลัดวงจร)":fx(st.R,1)+" Ω";
+  $("o-e").textContent=st.hide?"ซ่อนอยู่":fx(st.e,1)+" V"; $("o-r").textContent=st.hide?"ซ่อนอยู่":fx(st.r,2)+" Ω"; $("o-R").textContent=st.R===0?"0 (ลัดวงจร)":fx(st.R,1)+" Ω";
   const S=shown(st.R);
-  const lines=[`แอมมิเตอร์: ${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,1)} Ω + ${fx(st.r,2)} Ω) = ${S.Itxt} A`];
-  if(st.R>0){ lines.push(`โวลต์มิเตอร์: Δ${m("V")} = ${m("ε")} - ${m("Ir")} = ${fx(st.e,1)} V - (${S.Itxt} A)(${fx(st.r,2)} Ω) = ${S.Vtxt} V`);
-    lines.push(`Δ${m("V")}/${m("I")} = (${S.Vtxt} V)/(${S.Itxt} A) = ${fmt(S.Vd/S.Id,3)} Ω|เท่ากับ R ของวงจรภายนอก ไม่ใช่ r`); }
+  const ratio=S.Vd/S.Id, eqR=Math.abs(ratio-st.R)<=5e-4*st.R;
+  const lines= st.hide ? [`แอมมิเตอร์อ่านได้ ${m("I")} = ${S.Itxt} A`]
+    : [`แอมมิเตอร์: ${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,1)} Ω + ${fx(st.r,2)} Ω) = ${S.Itxt} A`];
+  if(st.R>0){ lines.push(st.hide?`โวลต์มิเตอร์อ่านได้ Δ${m("V")} = ${S.Vtxt} V`:`โวลต์มิเตอร์: Δ${m("V")} = ${m("ε")} - ${m("Ir")} = ${fx(st.e,1)} V - (${S.Itxt} A)(${fx(st.r,2)} Ω) = ${S.Vtxt} V`);
+    lines.push(`Δ${m("V")}/${m("I")} = (${S.Vtxt} V)/(${S.Itxt} A) = ${fmt(ratio,3)} Ω|${eqR?"เท่ากับ":"≈"} R ของวงจรภายนอก${eqR?"":" (ต่างเล็กน้อยเพราะปัดเศษ)"} ไม่ใช่ r`); }
   else lines.push(`โวลต์มิเตอร์: Δ${m("V")} = 0 เพราะขั้วทั้งสองต่อถึงกันด้วยลวด`);
-  lines.push(`กระแสลัดวงจร = ${m("ε")}/${m("r")} = (${fx(st.e,1)} V)/(${fx(st.r,2)} Ω) = ${fmt(st.e/st.r,3)} A`);
+  if(!st.hide) lines.push(`กระแสลัดวงจร = ${m("ε")}/${m("r")} = (${fx(st.e,1)} V)/(${fx(st.r,2)} Ω) = ${fmt(st.e/st.r,3)} A`);
   $("eq").innerHTML=eqHTML(lines);
   const Sx=$("status"); Sx.classList.toggle("rev",st.R===0);
   Sx.innerHTML= st.R===0 ? `R = 0 คือการต่อขั้วทั้งสองด้วยลวดโดยตรง กระแสเท่ากับกระแสลัดวงจร ${m("ε")}/${m("r")} ซึ่งเป็นกระแสมากที่สุดที่เซลล์จ่ายได้ และพลังงานทั้งหมดกลายเป็นความร้อนในเซลล์ เซลล์จริงจะร้อนมาก ห้ามทำ`
-    : `ยิ่ง R น้อย กระแสยิ่งมาก จุดจึงเลื่อนลงไปทางขวาตามเส้นตรง จุดตัดแกนตั้งคือ ${m("ε")} ขนาดของความชันคือ ${m("r")}`;
+    : (cleared?"เปลี่ยน ε หรือ r คือเปลี่ยนเซลล์ จึงล้างจุดที่บันทึกของเซลล์เดิมแล้ว ":"")+(st.hide?`บันทึกอย่างน้อยสองจุด แล้วหา ${m("ε")} จากจุดตัดแกนตั้ง และ ${m("r")} จากขนาดของความชันของเส้นที่ผ่านจุดเหล่านั้น กด "แสดง ε และ r" เพื่อตรวจ`
+      :`ยิ่ง R น้อย กระแสยิ่งมาก จุดจึงเลื่อนลงไปทางขวาตามเส้นตรง จุดตัดแกนตั้งคือ ${m("ε")} ขนาดของความชันคือ ${m("r")}`);
+  cleared=false;
   draw();
 }
 function sync(){ $("s-e").value=st.e; $("s-r").value=st.r; $("s-R").value=st.R; update(); }
-$("s-e").addEventListener("input",e=>{ st.e=+e.target.value; update(); });
-$("s-r").addEventListener("input",e=>{ st.r=+e.target.value; update(); });
+const newCell=()=>{ if(st.pts.length){ st.pts=[]; cleared=true; } };   // recorded points belong to the cell they were measured with
+$("s-e").addEventListener("input",e=>{ st.e=+e.target.value; newCell(); update(); });
+$("s-r").addEventListener("input",e=>{ st.r=+e.target.value; newCell(); update(); });
+$("b-hide").addEventListener("click",e=>{ st.hide=!st.hide; e.target.textContent=st.hide?"แสดง ε และ r":"ซ่อน ε และ r"; e.target.setAttribute("aria-pressed",st.hide); update(); });
 $("s-R").addEventListener("input",e=>{ st.R=+e.target.value; update(); });
 $("b-rec").addEventListener("click",()=>{ if(!st.pts.includes(st.R)) st.pts.push(st.R); update(); });
 $("b-act").addEventListener("click",()=>{ for(const R of ACT) if(!st.pts.includes(R)) st.pts.push(R); update(); });

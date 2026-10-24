@@ -14,18 +14,18 @@
 :root{
   --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
   --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
-  --cursor:#1f5fbf; --warn-bg:#fff4e5; --warn-ink:#7a4100; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
   --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
   --math:"Times New Roman","Noto Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a2a12; --warn-ink:#ffd29a; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 .nw{white-space:nowrap}
@@ -63,8 +63,8 @@ select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px soli
 button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
 .eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
 .eq div{min-width:0}
-.status{font-size:15px;border-left:4px solid var(--current);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
-.status.rev{border-color:var(--heat);background:var(--warn-bg);color:var(--warn-ink)}
+.status{font-size:15px;border-left:4px solid var(--helper);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
 .ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
 .tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
 .tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -81,13 +81,16 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 .note{font-size:14px;color:var(--muted);margin:0}
 .big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+.eyebrow a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
+summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <div class="eyebrow">Daisy Physics · บท 15 ไฟฟ้ากระแส · หัวข้อ 6.4</div>
+  <div class="eyebrow">Daisy Physics · <a href="../15/">บท 15 ไฟฟ้ากระแส</a> · หัวข้อ 6.4 · ความรู้เพิ่มเติม (ต่อยอด)</div>
   <h1>ผลของมิเตอร์ที่ไม่เป็นอุดมคติ</h1>
   <p class="lead">แทนมิเตอร์ด้วยตัวต้านทานที่มีความต้านทานเท่ากับความต้านทานของมิเตอร์ แล้วดูว่าค่าที่อ่านได้ต่างจากค่าก่อนต่อมิเตอร์เท่าใด</p>
 </header>
@@ -133,7 +136,8 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
   </details>
 </section>
 
-<p class="note">แบบจำลองนี้ถือว่าแหล่งกำเนิดไม่มีความต้านทานภายใน สายไฟไม่มีความต้านทาน และแทนมิเตอร์แต่ละตัวด้วยตัวต้านทานเท่ากับความต้านทานของมิเตอร์ ตัวอย่างค่าเริ่มต้นตรงกับตัวอย่างในหัวข้อ 6.4</p>
+<p class="note">แบบจำลองนี้ถือว่าแหล่งกำเนิดไม่มีความต้านทานภายใน สายไฟไม่มีความต้านทาน และแทนมิเตอร์แต่ละตัวด้วยตัวต้านทานเท่ากับความต้านทานของมิเตอร์ ตัวอย่างค่าเริ่มต้นตรงกับตัวอย่างในหัวข้อ 6.4 ตัวเลขที่คำนวณได้บนหน้านี้แสดง 3 ตัว จึงอาจเขียนต่างจาก Ex. ในชีทหรือคำตอบในลองทำ เช่น 4.00 V กับ 4.0 V ซึ่งเป็นค่าเดียวกันที่ปัดต่างกัน</p>
+<p class="back"><a href="../15/">← แบบจำลองอื่นของบท 15 ไฟฟ้ากระแส</a></p>
 </div>
 
 <script>
@@ -226,6 +230,8 @@ const st={tab:"a", a:{e:1.5,R:10,RA:0.5}, v:{e:12,R:1e4,RV:1e4}, r:{e:6,R:100,RA
 /* resistance with unit prefix */
 function fR(x,n){ n=n||3; if(x>=1e6) return fmt(x/1e6,n,{intok:1})+" MΩ"; if(x>=1e3) return fmt(x/1e3,n,{intok:1})+" kΩ"; return fmt(x,n,{intok:1})+" Ω"; }
 const par=(a,b)=>a*b/(a+b);
+/* "less/more than X by N %", or "equal to X" when there is no error at all */
+const errTxt=(err,what)=> Math.abs(err)<5e-5 ? `เท่ากับ${what}พอดี` : `${err<0?"น้อยกว่า":"มากกว่า"}${what}อยู่ ${fmt(Math.abs(err),2,{intok:1})} %`;
 function results(){
   if(st.tab==="a"){ const c=st.a; const I0=c.e/c.R, I=c.e/(c.R+c.RA); return {I0,I,err:100*(I-I0)/I0}; }
   if(st.tab==="v"){ const c=st.v; const V0=c.e*c.R/(2*c.R), Rp=par(c.R,c.RV), V=c.e*Rp/(c.R+Rp); return {V0,Rp,V,err:100*(V-V0)/V0}; }
@@ -295,21 +301,24 @@ function update(){
   if(st.tab==="a"){ const c=st.a; $("o-x1").textContent=fR(c.R,2); $("o-x2").textContent=fx(c.RA,2)+" Ω";
     lines=[`ก่อนต่อแอมมิเตอร์: ${m("I")} = ${m("ε")}/${m("R")} = (${fx(c.e,1)} V)/(${fR(c.R,2)}) = ${fmt(R.I0,3)} A`,
       `ค่าที่อ่านได้: ${m("I")} = ${m("ε")}/(${m("R")} + ${m("R")}${sub("A")}) = (${fx(c.e,1)} V)/(${fR(c.R,2)} + ${fx(c.RA,2)} Ω) = ${fmt(R.I,3)} A`,
-      `อ่านได้${R.err<-1e-9?"น้อยกว่า":"เท่ากับ"}ค่าเดิม ${fmt(Math.abs(R.err),2,{intok:1})} %`];
+      `อ่านได้${errTxt(R.err,"ค่าเดิม")}`];
     msg= c.RA===0? "แอมมิเตอร์อุดมคติไม่มีความต้านทาน ค่าที่อ่านได้จึงเท่ากับกระแสก่อนต่อ" : "แอมมิเตอร์ทำให้ความต้านทานของสาขาเพิ่มขึ้น ค่าที่อ่านได้จึงน้อยกว่ากระแสก่อนต่อแอมมิเตอร์ ผลนี้น้อยเมื่อ R_A น้อยกว่าความต้านทานอื่นในสาขามาก";
   } else if(st.tab==="v"){ const c=st.v; $("o-x1").textContent=fR(c.R,2); $("o-x2").textContent=fR(c.RV,2);
     lines=[`ก่อนต่อโวลต์มิเตอร์: Δ${m("V")}${sub("2")} = (12 V)/2 = ${fmt(R.V0,3)} V|ตัวต้านทานเท่ากัน แบ่งความต่างศักย์ได้เท่ากัน`,
       `ส่วนที่วัด: ${m("R")}${sub("2")} ขนาน ${m("R")}${sub("V")} = (${fR(c.R,2)})(${fR(c.RV,2)})/(${fR(c.R,2)} + ${fR(c.RV,2)}) = ${fR(R.Rp,3)}`,
       `ค่าที่อ่านได้: (12 V)(${fR(R.Rp,3)})/(${fR(c.R,2)} + ${fR(R.Rp,3)}) = ${fmt(R.V,3)} V`,
-      `อ่านได้น้อยกว่าค่าเดิม ${fmt(Math.abs(R.err),2,{intok:1})} %`];
+      `อ่านได้${errTxt(R.err,"ค่าเดิม")}`];
     msg="โวลต์มิเตอร์เป็นสาขาขนานที่เพิ่มขึ้น ความต้านทานของส่วนที่วัดลดลง ความต่างศักย์คร่อมส่วนนั้นจึงลดลง ผลนี้น้อยเมื่อ R_V มากกว่าความต้านทานของส่วนที่วัดมาก";
   } else { const c=st.r; $("o-x1").textContent=fR(c.R,2); $("o-x2").textContent=fx(c.RA,2)+" Ω"; $("o-x3").textContent=fR(c.RV,2);
+    const Ia=DP.sig(c.cfg===1?R.I1:R.I2,3), Va=DP.sig(c.cfg===1?R.V1:R.V2,3), Rm=c.cfg===1?R.R1:R.R2, ratio=Va/Ia, same=Math.abs(DP.sig(ratio,3)-DP.sig(Rm,3))<1e-9*Rm;
+    const meters=[`แอมมิเตอร์อ่านได้ ${m("I")} = ${fmt(Ia,3)} A และโวลต์มิเตอร์อ่านได้ Δ${m("V")} = ${fmt(Va,3)} V`,
+        `Δ${m("V")}/${m("I")} = (${fmt(Va,3)} V)/(${fmt(Ia,3)} A) ${same?"=":"≈"} ${fR(Rm,3)}`+(same?"":"|ต่างจากบรรทัดก่อนเล็กน้อยเพราะปัดเศษ")];
     lines= c.cfg===1 ? [`แอมมิเตอร์อ่านกระแสรวมของ ${m("R")} กับโวลต์มิเตอร์ ค่าที่คำนวณได้จึงเป็นความต้านทานของ ${m("R")} ขนาน ${m("R")}${sub("V")}`,
-        `Δ${m("V")}/${m("I")} = ${m("R")}${m("R")}${sub("V")}/(${m("R")} + ${m("R")}${sub("V")}) = ${fR(R.R1,3)}`, `น้อยกว่า R อยู่ ${fmt(Math.abs(R.err1),2,{intok:1})} %`,
-        `เทียบ: แบบที่ 2 ได้ ${fR(R.R2,3)} (มากกว่า R อยู่ ${fmt(Math.abs(R.err2),2,{intok:1})} %)`]
+        `${m("R")}${m("R")}${sub("V")}/(${m("R")} + ${m("R")}${sub("V")}) = (${fR(c.R,2)})(${fR(c.RV,2)})/(${fR(c.R,2)} + ${fR(c.RV,2)}) = ${fR(R.R1,3)}`, ...meters,
+        `${errTxt(R.err1," R ")}`, `เทียบ: แบบที่ 2 ได้ ${fR(R.R2,3)} (${errTxt(R.err2," R ")})`]
       : [`โวลต์มิเตอร์อ่านความต่างศักย์รวมของ ${m("R")} กับแอมมิเตอร์ ค่าที่คำนวณได้จึงเป็น ${m("R")} + ${m("R")}${sub("A")}`,
-        `Δ${m("V")}/${m("I")} = ${m("R")} + ${m("R")}${sub("A")} = ${fR(c.R,2)} + ${fx(c.RA,2)} Ω = ${fR(R.R2,3)}`, `มากกว่า R อยู่ ${fmt(Math.abs(R.err2),2,{intok:1})} %`,
-        `เทียบ: แบบที่ 1 ได้ ${fR(R.R1,3)} (น้อยกว่า R อยู่ ${fmt(Math.abs(R.err1),2,{intok:1})} %)`];
+        `${m("R")} + ${m("R")}${sub("A")} = ${fR(c.R,2)} + ${fx(c.RA,2)} Ω = ${fR(R.R2,3)}`, ...meters,
+        `${errTxt(R.err2," R ")}`, `เทียบ: แบบที่ 1 ได้ ${fR(R.R1,3)} (${errTxt(R.err1," R ")})`];
     msg = "แบบที่ 1 คลาดเคลื่อนเป็นสัดส่วน R/(R + R_V) ส่วนแบบที่ 2 คลาดเคลื่อนเป็นสัดส่วน R_A/R " + (Math.abs(R.err1)<Math.abs(R.err2) ? "ที่ค่าเหล่านี้ ค่าแรกน้อยกว่า แบบที่ 1 จึงคลาดเคลื่อนน้อยกว่า" : Math.abs(R.err1)>Math.abs(R.err2) ? "ที่ค่าเหล่านี้ ค่าหลังน้อยกว่า แบบที่ 2 จึงคลาดเคลื่อนน้อยกว่า" : "ที่ค่าเหล่านี้ ทั้งสองแบบคลาดเคลื่อนเท่ากัน");
   }
   $("eq").innerHTML=eqHTML(lines); $("status").innerHTML=msg.replace(/R_A/g,`${m("R")}${sub("A")}`).replace(/R_V/g,`${m("R")}${sub("V")}`);

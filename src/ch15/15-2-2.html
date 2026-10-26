@@ -95,7 +95,11 @@ const D=()=>DEV[st.dev];
 function shown(){ const d=D(), I=st.I[st.dev];
   if(st.dev==="dio"){ const Ims=Number((I*1000).toPrecision(2)), Isi=Ims/1000, Vs=Number(d.V(Isi).toFixed(2));
     return {Itxt:fmt(Ims,2,{intok:1})+" mA",Iset:Isi,Vs,Vtxt:fx(Vs,2)+" V",Isi,R:Vs/Isi}; }
-  const Is_=Number(I.toFixed(2)), Vs=Number(d.V(Is_).toPrecision(2)); return {Itxt:fmt(Is_,2)+" A",Iset:Is_,Vs,Vtxt:fmt(Vs,2)+" V",Isi:Is_,R:Vs/Is_}; }
+  const Is_=Number(I.toFixed(2));
+  if(st.dev==="res"){ // ohmic: ΔV = RI is exact here (R a whole number of ohms, I to 0.01 A), so show it with the digits it really has and ΔV/I gives back R
+    const Vx=st.R*Is_, Vs=Number(Vx.toPrecision(2))===Number(Vx.toFixed(4)) ? Number(Vx.toPrecision(2)) : Number(Vx.toPrecision(3)), sf=Number(Vx.toPrecision(2))===Number(Vx.toFixed(4))?2:3;
+    return {Itxt:fmt(Is_,2)+" A",Iset:Is_,Vs,Vtxt:fmt(Vs,sf)+" V",Isi:Is_,R:st.R}; }
+  const Vs=Number(d.V(Is_).toPrecision(2)); return {Itxt:fmt(Is_,2)+" A",Iset:Is_,Vs,Vtxt:fmt(Vs,2)+" V",Isi:Is_,R:Vs/Is_}; }
 /* graph */
 const G=$("g"), X0=62, X1=362, Y0=24, Y1=246;
 let clipId="clp";
@@ -152,8 +156,9 @@ function update(){
   const R = S.R, nR = 2;
   const lines=[`ที่จุดนี้ ${m("I")} = ${S.Itxt} และ Δ${m("V")} = ${S.Vtxt}`,
     `${m("R")} = Δ${m("V")}/${m("I")} = (${S.Vtxt})/(${Isi}) = ${fmt(R,nR)} Ω`];
-  if(!st.swap) lines.push(`ความชันของเส้นสัมผัส = ${fmt(s,nR)} Ω|${Math.abs(s-R)/R<0.005?"เท่ากับ ΔV/I":"ไม่เท่ากับ ΔV/I"}`);
-  else lines.push(`ความชันของเส้นจุดจากจุดกำเนิด = ${m("I")}/Δ${m("V")} = 1/${m("R")} = ${fmt(1/R,nR)} A/V`, `ความชันของเส้นสัมผัส = ${fmt(1/s,nR)} A/V|${Math.abs(s-R)/R<0.005?"เท่ากับ 1/R":"ไม่ใช่ 1/R"}`);
+  const same = st.dev==="res";   // only the ohmic resistor has tangent slope = ΔV/I at every point
+  if(!st.swap) lines.push(`ความชันของเส้นสัมผัส = ${fmt(s,nR)} Ω|${same?"เท่ากับ ΔV/I":"ไม่เท่ากับ ΔV/I"}`);
+  else lines.push(`ความชันของเส้นจุดจากจุดกำเนิด = ${m("I")}/Δ${m("V")} = 1/${m("R")} = ${fmt(1/R,nR)} A/V`, `ความชันของเส้นสัมผัส = ${fmt(1/s,nR)} A/V|${same?"เท่ากับ 1/R":"ไม่ใช่ 1/R"}`);
   $("eq").innerHTML=eqHTML(lines);
   const sw=st.swap;
   const msg={res: sw ? "ตัวนำโอห์มิก: กราฟเป็นเส้นตรงผ่านจุดกำเนิด อัตราส่วน ΔV/I ของทุกจุดเท่ากัน เมื่อ I อยู่บนแกนตั้ง ความชันของเส้นคือ I/ΔV = 1/R เส้นที่ชันกว่าจึงมีความต้านทานน้อยกว่า"

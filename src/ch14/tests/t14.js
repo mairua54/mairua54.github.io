@@ -6,7 +6,11 @@ const { chromium } = require('playwright');
  await p.route(/fonts\.(googleapis|gstatic)\.com/,r=>r.abort());
  await p.goto('file://'+require('path').resolve(__dirname,'../../../sims')+'/14-1-4.html'); await p.waitForTimeout(500);
  const out=await p.evaluate(()=>{
-  const S=window.__sim, $=id=>document.getElementById(id), T=id=>$(id).innerText.replace(/\s+/g,' ').trim();
+  const S=window.__sim, $=id=>document.getElementById(id);
+  // read text with stacked fractions written back as a/b and square roots as √(…), so the checks below stay simple
+  const T=id=>{ const c=$(id).cloneNode(true); c.querySelectorAll('.fr').forEach(f=>{ const [a,b]=f.children; f.replaceWith(a.textContent+'/'+b.textContent); });
+    c.querySelectorAll('.rad').forEach(r=>r.replaceWith('√('+r.querySelector('.rb').textContent+')')); c.querySelectorAll('div').forEach(d=>d.append(' '));
+    return c.textContent.replace(/\s+/g,' ').trim(); };
   const k=9.0e9, bad=[], notes=[];
   // ---- independent physics ----
   function indep(q1,q2,d,s0,x){ // returns signed components (N) on q0 = s0 × 1.0 μC

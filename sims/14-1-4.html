@@ -88,6 +88,13 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 
 .res{font-size:1.08rem;font-weight:700;margin-top:8px}
+/* stacked fraction and square root, written like the sheet's formula boxes */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.rad{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.rad>.rs{font-size:1.5em;line-height:1;align-self:center;margin-right:-1px}
+.rad>.rb{border-top:1.5px solid currentColor;padding:2px 2px 0}
 </style>
 </head>
 <body>
@@ -151,7 +158,7 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
   <details>
     <summary>2. ประจุชนิดเดียวกัน (Ex. 1.9 ก)</summary>
     <p class="q">กด "Ex. 1.9 ก" แล้วลาก <i class="m">q</i><sub>0</sub> หาตำแหน่งที่ลูกศร <i class="m">F</i><sub>1</sub> และ <i class="m">F</i><sub>2</sub> ยาวเท่ากัน ตำแหน่งนั้นอยู่ใกล้ประจุตัวไหน เพราะอะไร</p>
-    <p class="q"><b>คำตอบ</b> x = 0.30 m ใกล้ <i class="m">q</i><sub>1</sub> = +1.0 μC ซึ่งมีขนาดเล็กกว่า แรงแต่ละแรงมีขนาด 0.10 N ประจุที่เล็กกว่าต้องอยู่ใกล้กว่าจึงออกแรงได้เท่ากัน โดย <i class="m">r</i><sub>2</sub>/<i class="m">r</i><sub>1</sub> = √(4.0/1.0) = 2.0</p>
+    <p class="q"><b>คำตอบ</b> x = 0.30 m ใกล้ <i class="m">q</i><sub>1</sub> = +1.0 μC ซึ่งมีขนาดเล็กกว่า แรงแต่ละแรงมีขนาด 0.10 N ประจุที่เล็กกว่าต้องอยู่ใกล้กว่าจึงออกแรงได้เท่ากัน โดย <span class="nw"><span class="fr"><span><i class="m">r</i><sub>2</sub></span><span><i class="m">r</i><sub>1</sub></span></span> = <span class="rad"><span class="rs">√</span><span class="rb"><span class="fr"><span>4.0</span><span>1.0</span></span></span></span> = 2.0</span></p>
   </details>
   <details>
     <summary>3. เปลี่ยน <i class="m">q</i><sub>0</sub> เป็นประจุลบ</summary>
@@ -260,6 +267,8 @@ const half=()=>Math.ceil(120*st.d-1e-6)/100;          // window reaches 1.2 d be
 const win=()=>({lo:-half(), hi:Number((st.d+half()).toFixed(2))});
 const eps=()=>Math.ceil(15*st.d-1e-6)/100;   // q0 may not come closer than 0.15 d to a charge (the circles would hide each other)
 const sub=s=>`<sub>${s}</sub>`, Fh=i=>`${m("F")}${sub(i)}`, qh=i=>`${m("q")}${sub(i)}`;
+const fr=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const sq=a=>`<span class="rad"><span class="rs">√</span><span class="rb">${a}</span></span>`;
 
 /* physics */
 function forces(x){ // signed x-components (N) of the forces on q0 from q1 and q2
@@ -368,7 +377,7 @@ function draw(v){
 function forceLine(i,F,D,q,r){
   if(q===0) return `${Fh(i)} = 0|${qh(i)} = 0 จึงไม่มีแรง`;
   const push=q*st.s0>0;
-  return `${Fh(i)} = ${m("k")}│${qh(i)}││${qh(0)}│/${m("r")}${sub(i)}<sup>2</sup> = (9.0 × 10<sup>9</sup>)(${fx(Math.abs(q),1)} × 10<sup>-6</sup>)(1.0 × 10<sup>-6</sup>)/(${rtxt(r)})<sup>2</sup> = ${fmt(Math.abs(D),2)} N ทาง ${F>0?"+x":"-x"}|${qh(i)} ${push?"ผลัก":"ดูด"} ${qh(0)}`;
+  return `${Fh(i)} = ${fr(`${m("k")}│${qh(i)}││${qh(0)}│`,`${m("r")}${sub(i)}<sup>2</sup>`)} = ${fr(`(9.0 × 10<sup>9</sup>)(${fx(Math.abs(q),1)} × 10<sup>-6</sup>)(1.0 × 10<sup>-6</sup>)`,`(${rtxt(r)})<sup>2</sup>`)} = ${fmt(Math.abs(D),2)} N ทาง ${F>0?"+x":"-x"}|${qh(i)} ${push?"ผลัก":"ดูด"} ${qh(0)}`;
 }
 function statusHTML(v){
   const z=v.z, F1h=Fh(1), F2h=Fh(2);
@@ -387,9 +396,9 @@ function zeroHTML(z){
   if(z.kind==="one") return `<div>ไม่มีตำแหน่งที่แรงลัพธ์เป็นศูนย์ เพราะมีประจุเพียงตัวเดียว</div>`;
   if(z.kind==="eqopp") return `<div>ไม่มีตำแหน่งที่แรงลัพธ์เป็นศูนย์ เพราะประจุต่างชนิดมีขนาดเท่ากัน</div>`;
   const a=Math.abs(st.q1), b=Math.abs(st.q2), w=win(), off=z.x<w.lo||z.x>w.hi;
-  return DP.eqHTML([
-    `ตำแหน่งที่แรงลัพธ์เป็นศูนย์: ${m("k")}│${qh(1)}│/${m("r")}${sub(1)}<sup>2</sup> = ${m("k")}│${qh(2)}│/${m("r")}${sub(2)}<sup>2</sup>`,
-    `${m("r")}${sub(2)}/${m("r")}${sub(1)} = √(│${qh(2)}│/│${qh(1)}│) = √(${fx(b,1)}/${fx(a,1)}) = ${fmt(r2s(Math.sqrt(b/a)),2)}|${z.kind==="in"?"ประจุชนิดเดียวกัน จุดอยู่ระหว่างประจุ ใกล้ประจุที่ขนาดเล็กกว่า":"ประจุต่างชนิด จุดอยู่นอกช่วง ด้านประจุที่ขนาดเล็กกว่า"}`,
+  return `<div style="font-weight:700">ตำแหน่งที่แรงลัพธ์เป็นศูนย์</div>`+DP.eqHTML([
+    `${fr(`${m("k")}│${qh(1)}│`,`${m("r")}${sub(1)}<sup>2</sup>`)} = ${fr(`${m("k")}│${qh(2)}│`,`${m("r")}${sub(2)}<sup>2</sup>`)}`,
+    `${fr(`${m("r")}${sub(2)}`,`${m("r")}${sub(1)}`)} = ${sq(fr(`│${qh(2)}│`,`│${qh(1)}│`))} = ${sq(fr(fx(b,1),fx(a,1)))} = ${fmt(r2s(Math.sqrt(b/a)),2)}|${z.kind==="in"?"ประจุชนิดเดียวกัน จุดอยู่ระหว่างประจุ ใกล้ประจุที่ขนาดเล็กกว่า":"ประจุต่างชนิด จุดอยู่นอกช่วง ด้านประจุที่ขนาดเล็กกว่า"}`,
     `x = ${xtxt(z.x)} m${off?"|อยู่นอกภาพ":""}`]);
 }
 function update(){

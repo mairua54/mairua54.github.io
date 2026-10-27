@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>แรงลัพธ์บนเส้นตรงและตำแหน่งที่แรงลัพธ์เป็นศูนย์</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+/* Chapter 14 (electrostatics) adds: purple = electric field E, orange = electric force F and equipotential lines, green = resultant force, brown = weight mg, dark grey = field lines, crimson/teal = forces from the left/right charge (sheet Fig 1.10); red = positive charge, blue = negative charge. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#e27a0f; --f1:#c2185b; --f2:#1b9aaa;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--helper);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+.eyebrow a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
+summary{padding:10px 0;min-height:44px;box-sizing:border-box}
+
+.res{font-size:1.08rem;font-weight:700;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 1.3–1.4</div>
+  <h1>แรงลัพธ์บนเส้นตรงและตำแหน่งที่แรงลัพธ์เป็นศูนย์</h1>
+  <p class="lead">ตั้งจุดประจุ <i class="m">q</i><sub>1</sub> และ <i class="m">q</i><sub>2</sub> บนแกน x แล้วลากประจุ <i class="m">q</i><sub>0</sub> ไปตามแกน ดูแรงจากประจุแต่ละตัวกับแรงลัพธ์ และหาตำแหน่งที่แรงลัพธ์เป็นศูนย์</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-f">
+    <h2 id="h-f">แรงที่กระทำต่อ <i class="m">q</i><sub>0</sub></h2>
+    <svg id="f" viewBox="0 0 380 186" role="img" aria-label="จุดประจุสองตัวบนแกน x และลูกศรแรงที่กระทำต่อประจุ q0"></svg>
+    <p class="cap">แตะหรือลากบนภาพเพื่อเลื่อน <i class="m">q</i><sub>0</sub> (วงกลมเล็ก) ลูกศร <i class="m">F</i><sub>1</sub> (ชมพูเข้ม) คือแรงจาก <i class="m">q</i><sub>1</sub> ลูกศร <i class="m">F</i><sub>2</sub> (เขียวน้ำเงิน) คือแรงจาก <i class="m">q</i><sub>2</sub> และลูกศร <i class="m">F</i><sub>R</sub> (เขียว) ด้านล่างคือแรงลัพธ์ แถบสีจางคือช่วงที่ <i class="m">q</i><sub>0</sub> อยู่</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="ctl" style="margin-top:0">
+      <div class="row"><label for="s-q1"><span>ประจุ <i class="m">q</i><sub>1</sub> (ที่ x = 0)</span><output id="o-q1"></output></label>
+        <input type="range" id="s-q1" min="-9" max="9" step="0.5"></div>
+      <div class="row"><label for="s-q2"><span>ประจุ <i class="m">q</i><sub>2</sub> (ที่ x = <i class="m">d</i>)</span><output id="o-q2"></output></label>
+        <input type="range" id="s-q2" min="-9" max="9" step="0.5"></div>
+      <div class="row"><label for="s-d"><span>ระยะห่าง <i class="m">d</i></span><output id="o-d"></output></label>
+        <input type="range" id="s-d" min="0.2" max="1" step="0.05"></div>
+      <div class="row"><span style="font-size:15px">ประจุ <i class="m">q</i><sub>0</sub> ที่ลากได้</span>
+        <div class="seg" role="group" aria-label="ชนิดของประจุ q0">
+          <button id="p-pos" aria-pressed="true">+1.0 μC</button>
+          <button id="p-neg" aria-pressed="false">-1.0 μC</button>
+        </div></div>
+      <div class="row"><label for="s-x"><span>ตำแหน่งของ <i class="m">q</i><sub>0</sub></span><output id="o-x"></output></label>
+        <input type="range" id="s-x" step="0.01"></div>
+      <div class="btns">
+        <button class="btn" id="b-exa">Ex. 1.9 ก</button>
+        <button class="btn" id="b-exb">Ex. 1.9 ข</button>
+        <button class="btn" id="b-show" aria-pressed="false">แสดงตำแหน่งที่แรงลัพธ์เป็นศูนย์</button>
+        <button class="btn" id="b-put" hidden>วาง <i class="m">q</i><sub>0</sub> ที่ตำแหน่งนั้น</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณแบบ Ex. ในชีท</h2>
+    <div class="eq" id="eq"></div>
+    <div class="res" id="res"></div>
+    <div class="eq" id="zq" style="margin-top:10px"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: ประจุต่างชนิด จุดที่แรงลัพธ์เป็นศูนย์อยู่ช่วงไหน</summary>
+    <p class="q">กด "Ex. 1.9 ข" (<i class="m">q</i><sub>1</sub> = +1.0 μC ที่ x = 0 และ <i class="m">q</i><sub>2</sub> = -4.0 μC ที่ x = 0.90 m) ก่อนกดแสดงตำแหน่ง ให้ทำนายว่าจุดที่แรงลัพธ์เป็นศูนย์อยู่ทางซ้ายของ <i class="m">q</i><sub>1</sub> ระหว่างประจุ หรือทางขวาของ <i class="m">q</i><sub>2</sub> แล้วลาก <i class="m">q</i><sub>0</sub> ไปทีละช่วงเพื่อตรวจคำทำนาย</p>
+    <p class="q"><b>คำตอบ</b> ระหว่างประจุ <i class="m">F</i><sub>1</sub> และ <i class="m">F</i><sub>2</sub> ชี้ไปทาง +x ทั้งคู่ ทางขวาของ <i class="m">q</i><sub>2</sub> แรงชี้สวนกัน แต่ <i class="m">q</i><sub>0</sub> อยู่ใกล้ประจุที่ขนาดใหญ่กว่า <i class="m">F</i><sub>2</sub> จึงมากกว่าเสมอ จุดที่แรงลัพธ์เป็นศูนย์จึงอยู่ทางซ้ายของ <i class="m">q</i><sub>1</sub> ที่ x = -0.90 m ซึ่งแรงทั้งสองมีขนาด 0.011 N เท่ากัน</p>
+  </details>
+  <details>
+    <summary>2. ประจุชนิดเดียวกัน (Ex. 1.9 ก)</summary>
+    <p class="q">กด "Ex. 1.9 ก" แล้วลาก <i class="m">q</i><sub>0</sub> หาตำแหน่งที่ลูกศร <i class="m">F</i><sub>1</sub> และ <i class="m">F</i><sub>2</sub> ยาวเท่ากัน ตำแหน่งนั้นอยู่ใกล้ประจุตัวไหน เพราะอะไร</p>
+    <p class="q"><b>คำตอบ</b> x = 0.30 m ใกล้ <i class="m">q</i><sub>1</sub> = +1.0 μC ซึ่งมีขนาดเล็กกว่า แรงแต่ละแรงมีขนาด 0.10 N ประจุที่เล็กกว่าต้องอยู่ใกล้กว่าจึงออกแรงได้เท่ากัน โดย <i class="m">r</i><sub>2</sub>/<i class="m">r</i><sub>1</sub> = √(4.0/1.0) = 2.0</p>
+  </details>
+  <details>
+    <summary>3. เปลี่ยน <i class="m">q</i><sub>0</sub> เป็นประจุลบ</summary>
+    <p class="q">วาง <i class="m">q</i><sub>0</sub> ที่ตำแหน่งที่แรงลัพธ์เป็นศูนย์ แล้วกด "-1.0 μC" ลูกศรเปลี่ยนไปอย่างไร และตำแหน่งนี้ยังให้แรงลัพธ์เป็นศูนย์หรือไม่</p>
+    <p class="q"><b>คำตอบ</b> <i class="m">F</i><sub>1</sub> และ <i class="m">F</i><sub>2</sub> กลับทิศทั้งคู่ แต่ขนาดเท่าเดิม แรงลัพธ์จึงยังเป็นศูนย์ ตำแหน่งนี้ไม่ขึ้นกับขนาดหรือชนิดของประจุที่นำมาวาง เพราะ <i class="m">q</i><sub>0</sub> ตัดกันทั้งสองข้างของสมการ</p>
+  </details>
+  <details>
+    <summary>4. ประจุต่างชนิดที่มีขนาดเท่ากัน</summary>
+    <p class="q">ตั้ง <i class="m">q</i><sub>1</sub> = +4.0 μC และ <i class="m">q</i><sub>2</sub> = -4.0 μC มีตำแหน่งที่แรงลัพธ์เป็นศูนย์หรือไม่</p>
+    <p class="q"><b>คำตอบ</b> ไม่มี ระหว่างประจุ แรงทั้งสองชี้ทางเดียวกัน นอกช่วง แรงชี้สวนกัน แต่ <i class="m">q</i><sub>0</sub> อยู่ใกล้ประจุตัวหนึ่งมากกว่าเสมอ แรงจากตัวที่ใกล้กว่าจึงมากกว่าเสมอ แรงลัพธ์เข้าใกล้ศูนย์เมื่ออยู่ไกลมากเท่านั้น</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่า <i class="m">q</i><sub>1</sub>, <i class="m">q</i><sub>2</sub> และ <i class="m">q</i><sub>0</sub> เป็นจุดประจุที่ตรึงอยู่บนแกน x และใช้ <i class="m">k</i> = 9.0 × 10<sup>9</sup> N·m<sup>2</sup>/C<sup>2</sup> ภาพไม่ได้วาดตามมาตราส่วน ความยาวลูกศรเทียบกันได้เฉพาะลูกศรที่ตำแหน่งเดียวกัน เพราะแรงใกล้ประจุมีค่ามากจนลูกศรจะล้นภาพ เมื่อย้าย <i class="m">q</i><sub>0</sub> จึงย่อมาตราส่วนลูกศรลง ลูกศรที่สั้นมากวาดด้วยความยาวขั้นต่ำเพื่อให้เห็นทิศ วงกลมของประจุวาดใหญ่กว่าจริงมาก จึงวาง <i class="m">q</i><sub>0</sub> ห่างจากประจุน้อยกว่า 0.15<i class="m">d</i> ไม่ได้ ภาพแสดงตั้งแต่ x = -1.2<i class="m">d</i> ถึง 2.2<i class="m">d</i> ถ้าจุดที่แรงลัพธ์เป็นศูนย์อยู่ไกลกว่านั้น หน้าจะบอกตำแหน่งเป็นตัวเลข ตัวเลขแสดง 2 ตัวตามเลขนัยสำคัญของข้อมูล และแรงลัพธ์คำนวณจากค่าที่ปัดแล้ว เหมือน Ex. ในชีท</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,fmt,fx,m}=DP;
+const K=9.0e9, UC=1e-6, Q0=1.0e-6;
+const st={q1:1,q2:4,d:0.9,s0:1,x:0.6,show:false};
+const r2s=v=>Number(v.toPrecision(2));              // 2 significant figures like the sheet
+const half=()=>Math.ceil(120*st.d-1e-6)/100;          // window reaches 1.2 d beyond each charge
+const win=()=>({lo:-half(), hi:Number((st.d+half()).toFixed(2))});
+const eps=()=>Math.ceil(15*st.d-1e-6)/100;   // q0 may not come closer than 0.15 d to a charge (the circles would hide each other)
+const sub=s=>`<sub>${s}</sub>`, Fh=i=>`${m("F")}${sub(i)}`, qh=i=>`${m("q")}${sub(i)}`;
+
+/* physics */
+function forces(x){ // signed x-components (N) of the forces on q0 from q1 and q2
+  const q0=st.s0*Q0, out=[];
+  for(const [q,xc] of [[st.q1*UC,0],[st.q2*UC,st.d]]){
+    if(q===0){ out.push(0); continue; }
+    const dx=x-xc, r=Math.abs(dx); out.push(K*q*q0*Math.sign(dx)/(r*r));
+  }
+  return out;
+}
+function zeroPoint(){ // where the resultant is zero; it does not depend on q0
+  const a=Math.abs(st.q1), b=Math.abs(st.q2), d=st.d;
+  if(a===0&&b===0) return {kind:"none"};
+  if(a===0||b===0) return {kind:"one"};
+  const ra=Math.sqrt(a), rb=Math.sqrt(b);
+  if(st.q1*st.q2>0) return {kind:"in", x:d*ra/(ra+rb)};
+  if(a===b) return {kind:"eqopp"};
+  return a<b ? {kind:"out", x:-d*ra/(rb-ra)} : {kind:"out", x:d+d*rb/(ra-rb)};
+}
+const region=x=>x<0?"L":(x>st.d?"R":"M");
+const RNAME={L:"ทางซ้ายของ "+qh(1), M:"ระหว่าง "+qh(1)+" กับ "+qh(2), R:"ทางขวาของ "+qh(2)};
+const where=reg=>`${qh(0)} อยู่${RNAME[reg]} ในช่วงนี้`;
+
+/* numbers */
+const qtxt=q=>q===0?"0":(q>0?"+":"-")+fx(Math.abs(q),1)+" μC";
+const rtxt=r=>Math.abs(r*100-Math.round(r*100))<1e-6?fx(r,2):fx(r,3);
+const xtxt=x=>{ const s=fx(x,2); return s==="-0.00"?"0.00":s; };
+const sgn=v=>v>0?"+"+fmt(v,2):v<0?"-"+fmt(-v,2):"0";
+function view(){
+  const [F1,F2]=forces(st.x), FR=F1+F2, Fmax=Math.max(Math.abs(F1),Math.abs(F2));
+  const D1=Math.sign(F1)*r2s(Math.abs(F1)), D2=Math.sign(F2)*r2s(Math.abs(F2));
+  const DR=Number((D1+D2).toPrecision(12));
+  const exactZero = Fmax===0 || Math.abs(FR)<=1e-9*Fmax;
+  return {F1,F2,FR,D1,D2,DR,exactZero,z:zeroPoint(),reg:region(st.x)};
+}
+
+/* drawing */
+const G=$("f"), VX0=16, VX1=364, AY=106, ROW={1:36,2:60,R:170};
+const px=x=>{ const w=win(); return VX0+(VX1-VX0)*(x-w.lo)/(w.hi-w.lo); };
+function arrow(xq,y,len,dir,color,label){
+  const g=el("g",{},G), tip=xq+dir*len, h=6.5;
+  el("line",{x1:xq,y1:y,x2:tip-dir*h,y2:y,stroke:color,"stroke-width":3.2,"stroke-linecap":"round"},g);
+  DP.arrowHead(g,tip-dir*h,y,dir>0?0:180,color,h);
+  let lx, anchor;
+  if(dir>0 && tip+26<=376){ lx=tip+5; anchor="start"; } else if(dir<0 && tip-26>=4){ lx=tip-5; anchor="end"; }
+  else { lx=xq-dir*7; anchor=dir>0?"end":"start"; }
+  txt(g,lx,y+5,label,{"text-anchor":anchor,"font-size":14,fill:color,"font-weight":700});
+}
+function charge(x,q,name){
+  const cx=px(x);
+  if(q===0){ el("circle",{cx,cy:AY,r:12,fill:"var(--card)",stroke:"var(--helper)","stroke-width":1.6,"stroke-dasharray":"3 3"},G);
+    txt(G,cx,AY+5,"0",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"}); }
+  else { el("circle",{cx,cy:AY,r:12,fill:q>0?"var(--pos)":"var(--elec)"},G);
+    txt(G,cx,AY+6,q>0?"+":"−",{"text-anchor":"middle","font-size":18,"font-weight":700,fill:"#fff"}); }
+  txt(G,cx,AY-20,[["q",{it:1}],[name,{sub:1}],[" = "+qtxt(q),{back:1}]],{"text-anchor":"middle","font-size":13});
+}
+function draw(v){
+  G.textContent="";
+  const w=win(), xq=px(st.x);
+  // the part of the axis that q0 is in
+  const bounds={L:[VX0,px(0)],M:[px(0),px(st.d)],R:[px(st.d),VX1]}[v.reg];
+  el("rect",{x:bounds[0],y:20,width:bounds[1]-bounds[0],height:164,rx:6,fill:"var(--chip)"},G);
+  // axis and ticks
+  el("line",{x1:VX0,y1:AY,x2:VX1,y2:AY,stroke:"var(--ink)","stroke-width":1.5},G);
+  const span=w.hi-w.lo; let step=1; for(const s of [0.05,0.1,0.2,0.25,0.5,1]){ if(span/s<=8.5){ step=s; break; } }
+  const dec=step<0.1||step===0.25?2:1;
+  for(let k=Math.ceil(w.lo/step-1e-9);k*step<=w.hi+1e-9;k++){
+    const x=k*step, p=px(x); el("line",{x1:p,y1:AY,x2:p,y2:AY+5,stroke:"var(--ink)","stroke-width":1.2},G);
+    if(p>12&&p<368) txt(G,p,AY+21,fx(x,dec).replace(/^-0(\.0+)?$/,"0$1"),{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+  }
+  txt(G,VX1,AY-7,"x (m)",{"text-anchor":"end","font-size":12,fill:"var(--muted)"});
+  // guide line through q0
+  el("line",{x1:xq,y1:24,x2:xq,y2:178,stroke:"var(--helper)","stroke-width":1,"stroke-dasharray":"3 3"},G);
+  charge(0,st.q1,"1"); charge(st.d,st.q2,"2");
+  // zero point marker
+  if(st.show && v.z.x!==undefined){
+    const zx=px(v.z.x), lab=`แรงลัพธ์ = 0 ที่ x = ${xtxt(v.z.x)} m`;
+    if(v.z.x>=w.lo && v.z.x<=w.hi){
+      el("path",{d:`M${zx},${AY-8} L${zx+8},${AY} L${zx},${AY+8} L${zx-8},${AY} Z`,fill:"var(--card)",stroke:"var(--fnet)","stroke-width":2.2},G);
+      txt(G,Math.min(Math.max(zx,88),292),AY+44,lab,{"text-anchor":"middle","font-size":12.5,"font-weight":700,fill:"var(--fnet)"});
+    } else {
+      const left=v.z.x<w.lo, ex=left?VX0:VX1;
+      el("path",{d:left?`M${ex},${AY} L${ex+10},${AY-7} L${ex+10},${AY+7} Z`:`M${ex},${AY} L${ex-10},${AY-7} L${ex-10},${AY+7} Z`,fill:"var(--fnet)"},G);
+      txt(G,left?VX0:VX1,AY+44,lab+" (นอกภาพ)",{"text-anchor":left?"start":"end","font-size":12.5,"font-weight":700,fill:"var(--fnet)"});
+    }
+  }
+  // q0
+  const col=st.s0>0?"var(--pos)":"var(--elec)";
+  el("circle",{cx:xq,cy:AY,r:9,fill:"var(--card)",stroke:col,"stroke-width":2.4},G);
+  txt(G,xq,AY+5,st.s0>0?"+":"−",{"text-anchor":"middle","font-size":14,"font-weight":700,fill:col});
+  // arrows: one scale for all arrows at this point, compressed so arrows near a charge stay on screen
+  const Fmax=Math.max(Math.abs(v.F1),Math.abs(v.F2));
+  if(Fmax>0){
+    const Fref=K*Math.max(Math.abs(st.q1),Math.abs(st.q2))*UC*Q0/(st.d*st.d);
+    let f=110*Math.sqrt(Fmax/(Fmax+Fref))/Fmax;
+    for(const F of [v.F1,v.F2,v.exactZero?0:v.FR]) if(F!==0){ const room=(F>0?374-xq:xq-6)-4; f=Math.min(f,Math.max(room,8)/Math.abs(F)); }
+    const L=F=>Math.max(8,Math.abs(F)*f);
+    if(v.F1!==0) arrow(xq,ROW[1],L(v.F1),Math.sign(v.F1),"var(--f1)",[["F",{it:1}],["1",{sub:1}]]);
+    if(v.F2!==0) arrow(xq,ROW[2],L(v.F2),Math.sign(v.F2),"var(--f2)",[["F",{it:1}],["2",{sub:1}]]);
+    if(v.exactZero) txt(G,Math.min(Math.max(xq,40),340),ROW.R+5,[["F",{it:1}],["R",{sub:1}],[" = 0",{back:1}]],{"text-anchor":"middle","font-size":14,"font-weight":700,fill:"var(--fnet)"});
+    else arrow(xq,ROW.R,L(v.FR),Math.sign(v.FR),"var(--fnet)",[["F",{it:1}],["R",{sub:1}]]);
+  }
+}
+
+/* text */
+function forceLine(i,F,D,q,r){
+  if(q===0) return `${Fh(i)} = 0|${qh(i)} = 0 จึงไม่มีแรง`;
+  const push=q*st.s0>0;
+  return `${Fh(i)} = ${m("k")}│${qh(i)}││${qh(0)}│/${m("r")}${sub(i)}<sup>2</sup> = (9.0 × 10<sup>9</sup>)(${fx(Math.abs(q),1)} × 10<sup>-6</sup>)(1.0 × 10<sup>-6</sup>)/(${rtxt(r)})<sup>2</sup> = ${fmt(Math.abs(D),2)} N ทาง ${F>0?"+x":"-x"}|${qh(i)} ${push?"ผลัก":"ดูด"} ${qh(0)}`;
+}
+function statusHTML(v){
+  const z=v.z, F1h=Fh(1), F2h=Fh(2);
+  if(z.kind==="none") return `ยังไม่มีประจุบนแกน (${qh(1)} = ${qh(2)} = 0) จึงไม่มีแรงกระทำต่อ ${qh(0)}`;
+  if(z.kind==="one") return `มีประจุเพียงตัวเดียว แรงลัพธ์คือแรงจากประจุตัวนั้น จึงไม่เป็นศูนย์ที่ตำแหน่งใดเลย (เข้าใกล้ศูนย์เมื่ออยู่ไกลมากเท่านั้น)`;
+  if(v.exactZero) return `${F1h} และ ${F2h} มีขนาดเท่ากัน ทิศตรงข้าม แรงลัพธ์จึงเป็นศูนย์ ลองเปลี่ยนชนิดของ ${qh(0)} ตำแหน่งนี้ยังให้แรงลัพธ์เป็นศูนย์`;
+  if(Math.sign(v.F1)===Math.sign(v.F2)) return `${where(v.reg)} ${F1h} และ ${F2h} ชี้ไปทางเดียวกัน แรงลัพธ์จึงเป็นศูนย์ในช่วงนี้ไม่ได้`;
+  if(z.kind==="eqopp") return `${where(v.reg)} ${F1h} และ ${F2h} ชี้สวนกัน แต่ประจุสองตัวมีขนาดเท่ากัน และ ${qh(0)} อยู่ใกล้ตัวหนึ่งมากกว่าเสมอ แรงจากตัวที่ใกล้กว่าจึงมากกว่าเสมอ ไม่มีตำแหน่งที่แรงลัพธ์เป็นศูนย์`;
+  if(region(z.x)===v.reg) return v.DR===0
+    ? `${where(v.reg)} ${F1h} และ ${F2h} ชี้สวนกันและเกือบเท่ากัน (ต่างกันน้อยกว่าที่แสดงด้วยเลข 2 ตัว) ${qh(0)} อยู่ใกล้ตำแหน่งที่แรงลัพธ์เป็นศูนย์มาก`
+    : `${where(v.reg)} ${F1h} และ ${F2h} ชี้สวนกัน ตำแหน่งที่แรงลัพธ์เป็นศูนย์อยู่ในช่วงนี้ ลองเลื่อน ${qh(0)} จนลูกศรสองอันยาวเท่ากัน`;
+  return `${where(v.reg)} ${F1h} และ ${F2h} ชี้สวนกัน แต่ ${qh(0)} อยู่ใกล้ประจุที่มีขนาดใหญ่กว่า แรงจากประจุนั้นจึงมากกว่าเสมอ แรงลัพธ์เป็นศูนย์ในช่วงนี้ไม่ได้`;
+}
+function zeroHTML(z){
+  if(z.kind==="none") return "";
+  if(z.kind==="one") return `<div>ไม่มีตำแหน่งที่แรงลัพธ์เป็นศูนย์ เพราะมีประจุเพียงตัวเดียว</div>`;
+  if(z.kind==="eqopp") return `<div>ไม่มีตำแหน่งที่แรงลัพธ์เป็นศูนย์ เพราะประจุต่างชนิดมีขนาดเท่ากัน</div>`;
+  const a=Math.abs(st.q1), b=Math.abs(st.q2), w=win(), off=z.x<w.lo||z.x>w.hi;
+  return DP.eqHTML([
+    `ตำแหน่งที่แรงลัพธ์เป็นศูนย์: ${m("k")}│${qh(1)}│/${m("r")}${sub(1)}<sup>2</sup> = ${m("k")}│${qh(2)}│/${m("r")}${sub(2)}<sup>2</sup>`,
+    `${m("r")}${sub(2)}/${m("r")}${sub(1)} = √(│${qh(2)}│/│${qh(1)}│) = √(${fx(b,1)}/${fx(a,1)}) = ${fmt(r2s(Math.sqrt(b/a)),2)}|${z.kind==="in"?"ประจุชนิดเดียวกัน จุดอยู่ระหว่างประจุ ใกล้ประจุที่ขนาดเล็กกว่า":"ประจุต่างชนิด จุดอยู่นอกช่วง ด้านประจุที่ขนาดเล็กกว่า"}`,
+    `x = ${xtxt(z.x)} m${off?"|อยู่นอกภาพ":""}`]);
+}
+function update(){
+  const v=view(), w=win();
+  $("o-q1").textContent=qtxt(st.q1); $("o-q2").textContent=qtxt(st.q2); $("o-d").textContent=fx(st.d,2)+" m"; $("o-x").textContent="x = "+xtxt(st.x)+" m";
+  const sx=$("s-x"); sx.min=w.lo; sx.max=w.hi; sx.value=st.x;
+  const lines=[forceLine(1,v.F1,v.D1,st.q1,Math.abs(st.x)), forceLine(2,v.F2,v.D2,st.q2,Math.abs(st.x-st.d))];
+  if(st.q1!==0&&st.q2!==0) lines.push(`${Fh("R")} = (${sgn(v.D1)}) + (${sgn(v.D2)}) = ${v.DR===0?"0":sgn(v.DR)+" N"}`);
+  $("eq").innerHTML=`<div>กำหนดทางขวาเป็น +x และ <span class="nw">${qh(0)} = ${st.s0>0?"+":"-"}1.0 μC</span> อยู่ที่ <span class="nw">x = ${xtxt(st.x)} m</span></div>`+DP.eqHTML(lines);
+  $("res").innerHTML = v.z.kind==="none" ? `แรงลัพธ์บน ${qh(0)} เป็นศูนย์ (ไม่มีประจุบนแกน)`
+    : v.exactZero ? `แรงลัพธ์บน ${qh(0)} เป็นศูนย์`
+    : v.DR===0 ? `แรงลัพธ์บน ${qh(0)} เกือบเป็นศูนย์ (ประมาณ ${fmt(Math.abs(v.FR),1)} N ทาง ${v.FR>0?"+x":"-x"})`
+    : `แรงลัพธ์บน ${qh(0)} มีขนาด ${fmt(Math.abs(v.DR),2)} N ทาง ${v.DR>0?"+x":"-x"}`;
+  $("zq").innerHTML=st.show?zeroHTML(v.z):"";
+  $("status").innerHTML=statusHTML(v);
+  const bp=$("b-put"), can=v.z.x!==undefined && v.z.x>=w.lo && v.z.x<=w.hi;
+  bp.hidden=!st.show || v.z.x===undefined; bp.disabled=!can;
+  $("b-show").setAttribute("aria-pressed",st.show);
+  draw(v);
+}
+function clampX(x){
+  const w=win(), e=eps(); x=Math.round(x*100)/100; x=Math.min(w.hi,Math.max(w.lo,x));
+  for(const xc of [0,st.d]) if(Math.abs(x-xc)<e-1e-9) x=Number((xc+(x>=xc?e:-e)).toFixed(2));
+  return Number(x.toFixed(2));
+}
+function sync(){ $("s-q1").value=st.q1; $("s-q2").value=st.q2; $("s-d").value=st.d; DP.setSeg(["p-pos","p-neg"],st.s0>0?"p-pos":"p-neg"); update(); }
+$("s-q1").addEventListener("input",e=>{ st.q1=+e.target.value; update(); });
+$("s-q2").addEventListener("input",e=>{ st.q2=+e.target.value; update(); });
+$("s-d").addEventListener("input",e=>{ const dOld=st.d; st.d=+e.target.value; st.x=clampX(st.x*st.d/dOld); update(); });
+$("s-x").addEventListener("input",e=>{ st.x=clampX(+e.target.value); update(); });
+DP.seg(["p-pos","p-neg"],id=>{ st.s0=id==="p-pos"?1:-1; update(); });
+$("b-exa").addEventListener("click",()=>{ Object.assign(st,{q1:1,q2:4,d:0.9,s0:1,x:0.6,show:false}); sync(); });
+$("b-exb").addEventListener("click",()=>{ Object.assign(st,{q1:1,q2:-4,d:0.9,s0:1,x:0.45,show:false}); sync(); });
+$("b-show").addEventListener("click",()=>{ st.show=!st.show; update(); });
+$("b-put").addEventListener("click",()=>{ const z=zeroPoint(); if(z.x!==undefined){ st.x=z.x; update(); } });
+function pointer(ev){ const r=G.getBoundingClientRect(), vx=(ev.clientX-r.left)*380/r.width, w=win();
+  st.x=clampX(w.lo+(vx-VX0)/(VX1-VX0)*(w.hi-w.lo)); update(); }
+G.addEventListener("pointerdown",e=>{ G.setPointerCapture(e.pointerId); pointer(e); });
+G.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") pointer(e); });
+sync();
+window.__sim={st,sync,update,forces,zeroPoint,view,win,eps,clampX};
+})();
+</script>
+
+</body>
+</html>

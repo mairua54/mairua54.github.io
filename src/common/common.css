@@ -1,19 +1,21 @@
 /* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+/* Chapter 14 (electrostatics) adds: purple = electric field E, orange = electric force F and equipotential lines, green = resultant force, brown = weight mg, dark grey = field lines, crimson/teal = forces from the left/right charge (sheet Fig 1.10); red = positive charge, blue = negative charge. */
 :root{
   --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
   --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
   --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#e27a0f; --f1:#c2185b; --f2:#1b9aaa;
   --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
   --math:"Times New Roman","Noto Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; color-scheme:dark}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 .nw{white-space:nowrap}

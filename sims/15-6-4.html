@@ -87,6 +87,13 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 .back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
 summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 
+/* stacked fractions: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp{display:none}
+.flat .fr,.flat .fr>span{display:inline;padding:0;margin:0;border:0}
+.flat .fr>.fs,.flat .fr .fp{display:inline}
 </style>
 </head>
 <body>
@@ -129,7 +136,7 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
   <details>
     <summary>1. โวลต์มิเตอร์ 10 kΩ กับ 1.0 MΩ</summary>
     <p class="q">เลือก "โวลต์มิเตอร์" ตัวต้านทาน 10 kΩ สองตัวต่ออนุกรมกับแหล่งกำเนิด 12 V วัดคร่อมตัวหนึ่งด้วยโวลต์มิเตอร์ 10 kΩ แล้วเปลี่ยนเป็น 1.0 MΩ ค่าที่อ่านได้เป็นเท่าใด</p>
-    <p class="q"><b>คำตอบ</b> ก่อนต่อโวลต์มิเตอร์ ความต่างศักย์คร่อมแต่ละตัวเป็น 6.00 V โวลต์มิเตอร์ 10 kΩ ทำให้ส่วนที่วัดเหลือ 5.0 kΩ จึงอ่านได้ (12 V)(5.0 kΩ)/(15 kΩ) = 4.00 V ส่วนโวลต์มิเตอร์ 1.0 MΩ อ่านได้ประมาณ 5.97 V ใกล้ค่าเดิมมาก โวลต์มิเตอร์จึงควรมีความต้านทานมากกว่าส่วนที่วัดมาก</p>
+    <p class="q"><b>คำตอบ</b> ก่อนต่อโวลต์มิเตอร์ ความต่างศักย์คร่อมแต่ละตัวเป็น 6.00 V โวลต์มิเตอร์ 10 kΩ ทำให้ส่วนที่วัดเหลือ 5.0 kΩ จึงอ่านได้ <span class="nw"><span class="fr"><span>(12 V)(5.0 kΩ)</span><span class="fs">/</span><span><span class="fp">(</span>15 kΩ<span class="fp">)</span></span></span> = 4.00 V</span> ส่วนโวลต์มิเตอร์ 1.0 MΩ อ่านได้ประมาณ 5.97 V ใกล้ค่าเดิมมาก โวลต์มิเตอร์จึงควรมีความต้านทานมากกว่าส่วนที่วัดมาก</p>
   </details>
   <details>
     <summary>2. วัด R สองแบบ (ต่อยอด)</summary>
@@ -226,6 +233,7 @@ return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,
 (function(){
 "use strict";
 const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };   // stacked fraction a over b; pa/pb = brackets kept for the a/b reading
 const SEQ=[1e3,2e3,5e3,1e4,2e4,5e4,1e5,2e5,5e5,1e6,2e6,5e6,1e7];
 const RSEQ=[1,2,5,10,20,50,100,200,500,1e3,2e3,5e3,1e4];
 const st={tab:"a", a:{e:1.5,R:10,RA:0.5}, v:{e:12,R:1e4,RV:1e4}, r:{e:6,R:100,RA:1,RV:1e4,cfg:1}};
@@ -301,22 +309,22 @@ function update(){
   const R=results(); DP.setSeg(["t-a","t-v","t-r"],{a:"t-a",v:"t-v",r:"t-r"}[st.tab]);
   let lines=[], msg="";
   if(st.tab==="a"){ const c=st.a; $("o-x1").textContent=fR(c.R,2); $("o-x2").textContent=fx(c.RA,2)+" Ω";
-    lines=[`ก่อนต่อแอมมิเตอร์: ${m("I")} = ${m("ε")}/${m("R")} = (${fx(c.e,1)} V)/(${fR(c.R,2)}) = ${fmt(R.I0,3)} A`,
-      `ค่าที่อ่านได้: ${m("I")} = ${m("ε")}/(${m("R")} + ${m("R")}${sub("A")}) = (${fx(c.e,1)} V)/(${fR(c.R,2)} + ${fx(c.RA,2)} Ω) = ${fmt(R.I,3)} A`,
+    lines=[`ก่อนต่อแอมมิเตอร์: ${m("I")} = ${fr(m("ε"),m("R"))} = ${fr(`${fx(c.e,1)} V`,fR(c.R,2),"()","()")} = ${fmt(R.I0,3)} A`,
+      `ค่าที่อ่านได้: ${m("I")} = ${fr(m("ε"),`${m("R")} + ${m("R")}${sub("A")}`,"","()")} = ${fr(`${fx(c.e,1)} V`,`${fR(c.R,2)} + ${fx(c.RA,2)} Ω`,"()","()")} = ${fmt(R.I,3)} A`,
       `อ่านได้${errTxt(R.err,"ค่าเดิม")}`];
     msg= c.RA===0? "แอมมิเตอร์อุดมคติไม่มีความต้านทาน ค่าที่อ่านได้จึงเท่ากับกระแสก่อนต่อ" : "แอมมิเตอร์ทำให้ความต้านทานของสาขาเพิ่มขึ้น ค่าที่อ่านได้จึงน้อยกว่ากระแสก่อนต่อแอมมิเตอร์ ผลนี้น้อยเมื่อ R_A น้อยกว่าความต้านทานอื่นในสาขามาก";
   } else if(st.tab==="v"){ const c=st.v; $("o-x1").textContent=fR(c.R,2); $("o-x2").textContent=fR(c.RV,2);
-    lines=[`ก่อนต่อโวลต์มิเตอร์: Δ${m("V")}${sub("2")} = (12 V)/2 = ${fmt(R.V0,3)} V|ตัวต้านทานเท่ากัน แบ่งความต่างศักย์ได้เท่ากัน`,
-      `ส่วนที่วัด: ${m("R")}${sub("2")} ขนาน ${m("R")}${sub("V")} = (${fR(c.R,2)})(${fR(c.RV,2)})/(${fR(c.R,2)} + ${fR(c.RV,2)}) = ${fR(R.Rp,3)}`,
-      `ค่าที่อ่านได้: (12 V)(${fR(R.Rp,3)})/(${fR(c.R,2)} + ${fR(R.Rp,3)}) = ${fmt(R.V,3)} V`,
+    lines=[`ก่อนต่อโวลต์มิเตอร์: Δ${m("V")}${sub("2")} = ${fr("12 V","2","()","")} = ${fmt(R.V0,3)} V|ตัวต้านทานเท่ากัน แบ่งความต่างศักย์ได้เท่ากัน`,
+      `ส่วนที่วัด: ${m("R")}${sub("2")} ขนาน ${m("R")}${sub("V")} = ${fr(`(${fR(c.R,2)})(${fR(c.RV,2)})`,`${fR(c.R,2)} + ${fR(c.RV,2)}`,"","()")} = ${fR(R.Rp,3)}`,
+      `ค่าที่อ่านได้: ${fr(`(12 V)(${fR(R.Rp,3)})`,`${fR(c.R,2)} + ${fR(R.Rp,3)}`,"","()")} = ${fmt(R.V,3)} V`,
       `อ่านได้${errTxt(R.err,"ค่าเดิม")}`];
     msg="โวลต์มิเตอร์เป็นสาขาขนานที่เพิ่มขึ้น ความต้านทานของส่วนที่วัดลดลง ความต่างศักย์คร่อมส่วนนั้นจึงลดลง ผลนี้น้อยเมื่อ R_V มากกว่าความต้านทานของส่วนที่วัดมาก";
   } else { const c=st.r; $("o-x1").textContent=fR(c.R,2); $("o-x2").textContent=fx(c.RA,2)+" Ω"; $("o-x3").textContent=fR(c.RV,2);
     const Ia=DP.sig(c.cfg===1?R.I1:R.I2,3), Va=DP.sig(c.cfg===1?R.V1:R.V2,3), Rm=c.cfg===1?R.R1:R.R2, ratio=Va/Ia, same=Math.abs(DP.sig(ratio,3)-DP.sig(Rm,3))<1e-9*Rm;
     const meters=[`แอมมิเตอร์อ่านได้ ${m("I")} = ${fmt(Ia,3)} A และโวลต์มิเตอร์อ่านได้ Δ${m("V")} = ${fmt(Va,3)} V`,
-        `Δ${m("V")}/${m("I")} = (${fmt(Va,3)} V)/(${fmt(Ia,3)} A) ${same?"=":"≈"} ${fR(Rm,3)}`+(same?"":"|ต่างจากบรรทัดก่อนเล็กน้อยเพราะปัดเศษ")];
+        `${fr(`Δ${m("V")}`,m("I"))} = ${fr(`${fmt(Va,3)} V`,`${fmt(Ia,3)} A`,"()","()")} ${same?"=":"≈"} ${fR(Rm,3)}`+(same?"":"|ต่างจากบรรทัดก่อนเล็กน้อยเพราะปัดเศษ")];
     lines= c.cfg===1 ? [`แอมมิเตอร์อ่านกระแสรวมของ ${m("R")} กับโวลต์มิเตอร์ ค่าที่คำนวณได้จึงเป็นความต้านทานของ ${m("R")} ขนาน ${m("R")}${sub("V")}`,
-        `${m("R")}${m("R")}${sub("V")}/(${m("R")} + ${m("R")}${sub("V")}) = (${fR(c.R,2)})(${fR(c.RV,2)})/(${fR(c.R,2)} + ${fR(c.RV,2)}) = ${fR(R.R1,3)}`, ...meters,
+        `${fr(`${m("R")}${m("R")}${sub("V")}`,`${m("R")} + ${m("R")}${sub("V")}`,"","()")} = ${fr(`(${fR(c.R,2)})(${fR(c.RV,2)})`,`${fR(c.R,2)} + ${fR(c.RV,2)}`,"","()")} = ${fR(R.R1,3)}`, ...meters,
         `${errTxt(R.err1," R ")}`, `เทียบ: แบบที่ 2 ได้ ${fR(R.R2,3)} (${errTxt(R.err2," R ")})`]
       : [`โวลต์มิเตอร์อ่านความต่างศักย์รวมของ ${m("R")} กับแอมมิเตอร์ ค่าที่คำนวณได้จึงเป็น ${m("R")} + ${m("R")}${sub("A")}`,
         `${m("R")} + ${m("R")}${sub("A")} = ${fR(c.R,2)} + ${fx(c.RA,2)} Ω = ${fR(R.R2,3)}`, ...meters,

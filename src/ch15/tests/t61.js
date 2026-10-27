@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 (async()=>{ const b=await chromium.launch(); const p=await b.newPage({viewport:{width:400,height:900},deviceScaleFactor:2});
  const errs=[]; p.on('pageerror',e=>errs.push(e.message));
- await p.goto('file://'+require('path').resolve(__dirname,'../../../sims')+'/15-6-1.html'); await p.waitForTimeout(500);
+ await p.goto('file://'+require('path').resolve(__dirname,'../../../sims')+'/15-6-1.html'); await p.waitForTimeout(500); await p.evaluate(()=>document.documentElement.classList.add('flat'));   // stacked fractions read as a/b, the same text as before they were stacked
  const out=await p.evaluate(()=>{ const S=window.__sim, r=[]; const eq=()=>document.getElementById('eq').innerText.replace(/\n/g,' | '); const tb=()=>document.getElementById('tbl').innerText.replace(/\n/g,' | ');
   for(const id of ['p1','p2','p3']){ document.getElementById(id).click(); r.push(id+': '+eq()+' || '+tb()); }
   // independent loop-rule check: walk the series row left→right with assumed current j, potential change must sum to zero round the loop

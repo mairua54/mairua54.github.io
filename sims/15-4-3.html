@@ -74,6 +74,13 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 .note{font-size:14px;color:var(--muted);margin:0}
 .ylab{font-size:12px}
 @media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+/* stacked fractions: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp{display:none}
+.flat .fr,.flat .fr>span{display:inline;padding:0;margin:0;border:0}
+.flat .fr>.fs,.flat .fr .fp{display:inline}
 </style>
 </head>
 <body>
@@ -143,7 +150,7 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
   <details>
     <summary>1. ลด R จนกระแสเป็น 4.00 A</summary>
     <p class="q">เริ่มจากค่าตั้งต้น (<i class="m">ε</i> = 12.0 V, <i class="m">r</i> = 0.50 Ω, <i class="m">R</i> = 5.5 Ω) ทำนายก่อนว่าต้องตั้ง <i class="m">R</i> เท่าใดกระแสจึงเป็น 4.00 A และตอนนั้นโวลต์มิเตอร์อ่านได้เท่าใด แล้วเลื่อนตรวจ</p>
-    <p class="q"><b>คำตอบ</b> <i class="m">R</i> = <i class="m">ε</i>/<i class="m">I</i> - <i class="m">r</i> = 12.0 V/4.00 A - 0.50 Ω = 2.5 Ω และ V<sub>+</sub> - V<sub>−</sub> = 12.0 V - (4.00 A)(0.50 Ω) = 10.0 V กระแสมากขึ้น ประจุเสียพลังงานในความต้านทานภายในมากขึ้น ความต่างศักย์ระหว่างขั้วจึงลดลงจาก 11.0 V</p>
+    <p class="q"><b>คำตอบ</b> <span class="nw"><i class="m">R</i> = <span class="fr"><span><i class="m">ε</i></span><span class="fs">/</span><span><i class="m">I</i></span></span> - <i class="m">r</i></span> <span class="nw">= <span class="fr"><span>12.0 V</span><span class="fs">/</span><span>4.00 A</span></span> - 0.50 Ω</span> <span class="nw">= 2.5 Ω</span> และ V<sub>+</sub> - V<sub>−</sub> = 12.0 V - (4.00 A)(0.50 Ω) = 10.0 V กระแสมากขึ้น ประจุเสียพลังงานในความต้านทานภายในมากขึ้น ความต่างศักย์ระหว่างขั้วจึงลดลงจาก 11.0 V</p>
   </details>
   <details>
     <summary>2. จ่ายกระแสกับถูกประจุ ด้วยกระแสเท่ากัน</summary>
@@ -373,6 +380,7 @@ G.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") poi
 const sup=s=>`<sub>${s}</sub>`;
 const VPM="V"+sup("+")+" - V"+sup("−");
 const m=s=>`<i class="m">${s}</i>`;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };   // stacked fraction a over b; pa/pb = brackets kept for the a/b reading
 function update(){
   const p=solve();
   $("o-emf").textContent=f1(st.emf)+" V"; $("o-r").textContent=f2(st.r)+" Ω";
@@ -391,11 +399,11 @@ function update(){
   else S.innerHTML=`อีเอ็มเอฟของเครื่องประจุน้อยกว่าของแบตเตอรี่ กระแสจึงไหลย้อนทาง แบตเตอรี่กลายเป็นฝ่ายจ่ายกระแส กระแสภายในไหลจากขั้วลบไปขั้วบวก จึงใช้ ${VPM} = ${m("ε")} - ${m("Ir")}`;
   const lines=[];
   if(st.mode==="sup"){
-    lines.push(`${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${f1(st.emf)} V)/(${f1(R)} Ω + ${f2(st.r)} Ω) = ${sig3(p.I)} A`);
+    lines.push(`${m("I")} = ${fr(m("ε"),`${m("R")} + ${m("r")}`,"","()")} = ${fr(`${f1(st.emf)} V`,`${f1(R)} Ω + ${f2(st.r)} Ω`,"()","()")} = ${sig3(p.I)} A`);
   } else {
     const EC=`${m("ε")}${sup("เครื่องประจุ")}`, chBig=st.ch>=st.emf;
     lines.push(`อีเอ็มเอฟสมมูล = ${chBig?EC+" - "+m("ε"):m("ε")+" - "+EC} = ${chBig?f1(st.ch)+" V - "+f1(st.emf):f1(st.emf)+" V - "+f1(st.ch)} V = ${f1(Math.abs(st.ch-st.emf))} V|แหล่งกำเนิดสองตัวหันขั้วสวนกัน หัวข้อ 6.1`);
-    lines.push(`${m("I")} = (อีเอ็มเอฟสมมูล)/(${m("R")} + ${m("r")}) = (${f1(Math.abs(st.ch-st.emf))} V)/(${f1(R)} Ω + ${f2(st.r)} Ω) = ${sig3(p.I)} A`);
+    lines.push(`${m("I")} = ${fr("อีเอ็มเอฟสมมูล",`${m("R")} + ${m("r")}`,"()","()")} = ${fr(`${f1(Math.abs(st.ch-st.emf))} V`,`${f1(R)} Ω + ${f2(st.r)} Ω`,"()","()")} = ${sig3(p.I)} A`);
   }
   if(p.I<1e-9) lines.push(`${VPM} = ${m("ε")} = ${vtStr} V`);
   else lines.push(`${VPM} = ${m("ε")} ${supplying?"-":"+"} ${m("Ir")} = ${f1(st.emf)} V ${supplying?"-":"+"} (${sig3(Id)} A)(${f2(st.r)} Ω) = ${vtStr} V`);

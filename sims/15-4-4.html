@@ -87,6 +87,13 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 .back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
 summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 
+/* stacked fractions: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp{display:none}
+.flat .fr,.flat .fr>span{display:inline;padding:0;margin:0;border:0}
+.flat .fr>.fs,.flat .fr .fp{display:inline}
 </style>
 </head>
 <body>
@@ -138,12 +145,12 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
   <details>
     <summary>1. อ่านค่าจากกราฟแบบ Ex. 4.6</summary>
     <p class="q">กด "ค่าของ Ex. 4.6" แล้วอ่านจากกราฟ: อีเอ็มเอฟ ความต้านทานภายใน และกระแสลัดวงจร จากนั้นปรับ R จนกระแสเป็น 0.50 A ความต้านทานภายนอกเป็นเท่าใด</p>
-    <p class="q"><b>คำตอบ</b> จุดตัดแกนตั้งคือ ε = 6.0 V ความชันคือ (4.0 V - 6.0 V)/(2.0 A - 0) = -1.0 Ω จึงได้ r = 1.0 Ω กระแสลัดวงจร ε/r = 6.0 A และเมื่อ I = 0.50 A ได้ ΔV = 5.5 V จึงได้ R = ΔV/I = 11 Ω ซึ่งเป็นความชันของเส้นจากจุดกำเนิดมายังจุดนั้น ไม่ใช่ r</p>
+    <p class="q"><b>คำตอบ</b> จุดตัดแกนตั้งคือ ε = 6.0 V ความชันคือ <span class="nw"><span class="fr"><span><span class="fp">(</span>4.0 V - 6.0 V<span class="fp">)</span></span><span class="fs">/</span><span><span class="fp">(</span>2.0 A - 0<span class="fp">)</span></span></span> = -1.0 Ω</span> จึงได้ r = 1.0 Ω กระแสลัดวงจร <span class="nw"><span class="fr"><span>ε</span><span class="fs">/</span><span>r</span></span> = 6.0 A</span> และเมื่อ I = 0.50 A ได้ ΔV = 5.5 V จึงได้ <span class="nw">R = <span class="fr"><span>ΔV</span><span class="fs">/</span><span>I</span></span> = 11 Ω</span> ซึ่งเป็นความชันของเส้นจากจุดกำเนิดมายังจุดนั้น ไม่ใช่ r</p>
   </details>
   <details>
     <summary>2. หา ε และ r จากสองจุด (Ex. 4.7)</summary>
     <p class="q">ตั้ง ε = 3.0 V และ r = 0.50 Ω (หรือให้เพื่อนตั้งโดยไม่บอก) แล้วกด "ซ่อน ε และ r" บันทึกจุดที่ R = 1.0 Ω และ R = 2.5 Ω แล้วใช้เฉพาะค่าที่มิเตอร์อ่านได้ของสองจุดนั้นหา ε และ r</p>
-    <p class="q"><b>คำตอบ</b> สองจุดคือ (2.00 A, 2.00 V) และ (1.00 A, 2.50 V) ความชัน = (2.00 V - 2.50 V)/(2.00 A - 1.00 A) = -0.50 Ω จึงได้ r = 0.50 Ω และ ε = 2.50 V + (1.00 A)(0.50 Ω) = 3.00 V กด "แสดง ε และ r" เพื่อตรวจ</p>
+    <p class="q"><b>คำตอบ</b> สองจุดคือ (2.00 A, 2.00 V) และ (1.00 A, 2.50 V) ความชัน = <span class="nw"><span class="fr"><span><span class="fp">(</span>2.00 V - 2.50 V<span class="fp">)</span></span><span class="fs">/</span><span><span class="fp">(</span>2.00 A - 1.00 A<span class="fp">)</span></span></span> = -0.50 Ω</span> จึงได้ r = 0.50 Ω และ ε = 2.50 V + (1.00 A)(0.50 Ω) = 3.00 V กด "แสดง ε และ r" เพื่อตรวจ</p>
   </details>
 </section>
 
@@ -235,6 +242,7 @@ return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,
 (function(){
 "use strict";
 const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };   // stacked fraction a over b; pa/pb = brackets kept for the a/b reading
 const st={e:6.0,r:1.0,R:2.0,pts:[],hide:false}; let cleared=false;
 const ACT=[1000,100,10,3.3,1];
 const niceStep=v=>{ const p=Math.pow(10,Math.floor(Math.log10(v))); for(const k of [1,2,2.5,5,10]) if(k*p>=v-1e-9) return k*p; return 10*p; };
@@ -274,11 +282,11 @@ function update(){
   const S=shown(st.R);
   const ratio=S.Vd/S.Id, eqR=Math.abs(ratio-st.R)<=5e-4*st.R;
   const lines= st.hide ? [`แอมมิเตอร์อ่านได้ ${m("I")} = ${S.Itxt} A`]
-    : [`แอมมิเตอร์: ${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,1)} Ω + ${fx(st.r,2)} Ω) = ${S.Itxt} A`];
+    : [`แอมมิเตอร์: ${m("I")} = ${fr(m("ε"),`${m("R")} + ${m("r")}`,"","()")} = ${fr(`${fx(st.e,1)} V`,`${fx(st.R,1)} Ω + ${fx(st.r,2)} Ω`,"()","()")} = ${S.Itxt} A`];
   if(st.R>0){ lines.push(st.hide?`โวลต์มิเตอร์อ่านได้ Δ${m("V")} = ${S.Vtxt} V`:`โวลต์มิเตอร์: Δ${m("V")} = ${m("ε")} - ${m("Ir")} = ${fx(st.e,1)} V - (${S.Itxt} A)(${fx(st.r,2)} Ω) = ${S.Vtxt} V`);
-    lines.push(`Δ${m("V")}/${m("I")} = (${S.Vtxt} V)/(${S.Itxt} A) = ${fmt(ratio,3)} Ω|${eqR?"เท่ากับ":"≈"} R ของวงจรภายนอก${eqR?"":" (ต่างเล็กน้อยเพราะปัดเศษ)"} ไม่ใช่ r`); }
+    lines.push(`${fr(`Δ${m("V")}`,m("I"))} = ${fr(`${S.Vtxt} V`,`${S.Itxt} A`,"()","()")} = ${fmt(ratio,3)} Ω|${eqR?"เท่ากับ":"≈"} R ของวงจรภายนอก${eqR?"":" (ต่างเล็กน้อยเพราะปัดเศษ)"} ไม่ใช่ r`); }
   else lines.push(`โวลต์มิเตอร์: Δ${m("V")} = 0 เพราะขั้วทั้งสองต่อถึงกันด้วยลวด`);
-  if(!st.hide) lines.push(`กระแสลัดวงจร = ${m("ε")}/${m("r")} = (${fx(st.e,1)} V)/(${fx(st.r,2)} Ω) = ${fmt(st.e/st.r,3)} A`);
+  if(!st.hide) lines.push(`กระแสลัดวงจร = ${fr(m("ε"),m("r"))} = ${fr(`${fx(st.e,1)} V`,`${fx(st.r,2)} Ω`,"()","()")} = ${fmt(st.e/st.r,3)} A`);
   $("eq").innerHTML=eqHTML(lines);
   const Sx=$("status"); Sx.classList.toggle("rev",st.R===0);
   Sx.innerHTML= st.R===0 ? `R = 0 คือการต่อขั้วทั้งสองด้วยลวดโดยตรง กระแสเท่ากับกระแสลัดวงจร ${m("ε")}/${m("r")} ซึ่งเป็นกระแสมากที่สุดที่เซลล์จ่ายได้ และพลังงานทั้งหมดกลายเป็นความร้อนในเซลล์ เซลล์จริงจะร้อนมาก ห้ามทำ`

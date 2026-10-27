@@ -4,7 +4,7 @@ const sig3=x=>{ if(Math.abs(x)<1e-12) return 0; return Number(x.toPrecision(3));
 (async()=>{
  const b=await chromium.launch(); const p=await b.newPage({viewport:{width:400,height:900}});
  const errs=[]; p.on('pageerror',e=>errs.push(e.message));
- await p.goto('file://'+require('path').resolve(__dirname,'../../../sims/15-4-3.html')); await p.waitForTimeout(500);
+ await p.goto('file://'+require('path').resolve(__dirname,'../../../sims/15-4-3.html')); await p.waitForTimeout(500); await p.evaluate(()=>document.documentElement.classList.add('flat'));   // stacked fractions read as a/b, the same text as before they were stacked
  const E=[1.5,6,12], Rr=[0,0.05,0.5,2], RR=[0.5,2.5,5.5,20], CH=[1.5,6,11.5,12,12.5,17.5,18,24];
  const cases=[]; for(const e of E)for(const r of Rr)for(const R of RR){ cases.push({mode:'sup',e,r,R}); for(const ch of CH) cases.push({mode:'chg',e,r,R,ch}); }
  let fails=[], n=0;

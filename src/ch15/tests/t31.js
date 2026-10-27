@@ -16,7 +16,7 @@ function ref(mode,on,sw,R){ const e=[], bulbs=[];
   const V=nodal(nn,e); return bulbs.map(([a,b],i)=> on[i]? Math.abs(V[a]-V[b])/R[i] : 0); }
 (async()=>{ const b=await chromium.launch(); const p=await b.newPage({viewport:{width:400,height:900},deviceScaleFactor:2});
  const errs=[]; p.on('pageerror',e=>errs.push(e.message));
- await p.goto('file://'+require('path').resolve(__dirname,'../../../sims')+'/15-3-1.html'); await p.waitForTimeout(500);
+ await p.goto('file://'+require('path').resolve(__dirname,'../../../sims')+'/15-3-1.html'); await p.waitForTimeout(500); await p.evaluate(()=>document.documentElement.classList.add('flat'));   // stacked fractions read as a/b, the same text as before they were stacked
  let bad=[], n=0;
  const RS=[[12,12,12],[6,12,24],[24,6,12],[6,6,24]];
  const ORD=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]; let indep=0;

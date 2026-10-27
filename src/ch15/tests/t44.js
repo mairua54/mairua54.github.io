@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 (async()=>{ const b=await chromium.launch(); const p=await b.newPage({viewport:{width:400,height:900},deviceScaleFactor:2});
  const errs=[]; p.on('pageerror',e=>errs.push(e.message));
- await p.goto('file://'+require('path').resolve(__dirname,'../../../sims')+'/15-4-4.html'); await p.waitForTimeout(500);
+ await p.goto('file://'+require('path').resolve(__dirname,'../../../sims')+'/15-4-4.html'); await p.waitForTimeout(500); await p.evaluate(()=>document.documentElement.classList.add('flat'));   // stacked fractions read as a/b, the same text as before they were stacked
  const out=await p.evaluate(()=>{ const S=window.__sim, r=[]; const eq=()=>document.getElementById('eq').innerText.replace(/\n/g,' | ');
   r.push('Ex4.6 R=2: '+eq()); S.st.R=11; S.sync(); r.push('R=11: '+eq());
   Object.assign(S.st,{e:3,r:0.5,R:1}); S.sync(); r.push('Ex4.7a: '+eq()); S.st.R=2.5; S.sync(); r.push('Ex4.7b: '+eq());

@@ -5,6 +5,13 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
 <style>
 /*COMMON_CSS*/
+/* stacked fractions: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp{display:none}
+.flat .fr,.flat .fr>span{display:inline;padding:0;margin:0;border:0}
+.flat .fr>.fs,.flat .fr .fp{display:inline}
 </style>
 
 <div class="wrap">
@@ -66,11 +73,11 @@
   <details>
     <summary>3. ความต้านทานของหลอดไส้</summary>
     <p class="q">เลือกหลอดไส้ กด "0.30 A" และ "0.50 A" ที่แต่ละจุด ΔV/I เท่าใด ความชันของเส้นสัมผัสเท่าใด และค่าใดคือความต้านทานของหลอด</p>
-    <p class="q"><b>คำตอบ</b> ที่ 0.30 A ได้ ΔV = 1.5 V จึงได้ R = ΔV/I = 5.0 Ω ส่วนความชันของเส้นสัมผัสคือ 13 Ω ที่ 0.50 A ได้ ΔV = 6.0 V จึงได้ R = 12 Ω ส่วนความชันของเส้นสัมผัสคือ 34 Ω ความต้านทานคือ ΔV/I ของจุดนั้น (5.0 Ω และ 12 Ω) และเพิ่มขึ้นเมื่อกระแสมากขึ้น เพราะไส้หลอดร้อนขึ้น (หัวข้อ 2.5) ความชันของเส้นสัมผัสมากกว่า ΔV/I เสมอเพราะกราฟโค้งขึ้น และไม่ใช่ความต้านทาน</p>
+    <p class="q"><b>คำตอบ</b> ที่ 0.30 A ได้ ΔV = 1.5 V จึงได้ <span class="nw">R = <span class="fr"><span>ΔV</span><span class="fs">/</span><span>I</span></span> = 5.0 Ω</span> ส่วนความชันของเส้นสัมผัสคือ 13 Ω ที่ 0.50 A ได้ ΔV = 6.0 V จึงได้ R = 12 Ω ส่วนความชันของเส้นสัมผัสคือ 34 Ω ความต้านทานคือ ΔV/I ของจุดนั้น (5.0 Ω และ 12 Ω) และเพิ่มขึ้นเมื่อกระแสมากขึ้น เพราะไส้หลอดร้อนขึ้น (หัวข้อ 2.5) ความชันของเส้นสัมผัสมากกว่า ΔV/I เสมอเพราะกราฟโค้งขึ้น และไม่ใช่ความต้านทาน</p>
   </details>
 </section>
 
-<p class="note">แบบจำลองนี้ถือว่าอุณหภูมิของตัวต้านทานและไดโอดคงตัว กราฟของไดโอดเป็นไดโอดซิลิคอนที่ต่อในทิศที่กระแสผ่านได้ง่าย และผ่านจุด P และ Q ของ Ex. 2.3 กราฟของหลอดไส้เป็นแบบจำลองอย่างง่ายของหลอดพิกัด 6 V 0.5 A ซึ่งไส้หลอดร้อนขึ้นเมื่อกระแสมากขึ้น ค่าจริงของหลอดแต่ละรุ่นต่างกัน ตัวเลขบนหน้านี้แสดง 2 ตัวตาม Ex. ในชีท และขั้นถัดไปใช้ค่าที่ปัดแล้ว เช่น หลอดไส้ที่ 0.30 A ได้ (1.5 V)/(0.30 A) = 5.0 Ω แม้ค่าที่ไม่ปัดคือ 5.09 Ω</p>
+<p class="note">แบบจำลองนี้ถือว่าอุณหภูมิของตัวต้านทานและไดโอดคงตัว กราฟของไดโอดเป็นไดโอดซิลิคอนที่ต่อในทิศที่กระแสผ่านได้ง่าย และผ่านจุด P และ Q ของ Ex. 2.3 กราฟของหลอดไส้เป็นแบบจำลองอย่างง่ายของหลอดพิกัด 6 V 0.5 A ซึ่งไส้หลอดร้อนขึ้นเมื่อกระแสมากขึ้น ค่าจริงของหลอดแต่ละรุ่นต่างกัน ตัวเลขบนหน้านี้แสดง 2 ตัวตาม Ex. ในชีท และขั้นถัดไปใช้ค่าที่ปัดแล้ว เช่น หลอดไส้ที่ 0.30 A ได้ <span class="nw"><span class="fr"><span><span class="fp">(</span>1.5 V<span class="fp">)</span></span><span class="fs">/</span><span><span class="fp">(</span>0.30 A<span class="fp">)</span></span></span> = 5.0 Ω</span> แม้ค่าที่ไม่ปัดคือ 5.09 Ω</p>
 <p class="note">ความรู้เพิ่มเติม (ต่อยอด): ความชันของเส้นสัมผัสบอกว่าความต่างศักย์เปลี่ยนไปเท่าใดเมื่อกระแสเปลี่ยนไปเล็กน้อยรอบจุดนั้น ในวิชาอิเล็กทรอนิกส์เรียกว่า <b>ความต้านทานพลวัต (dynamic resistance)</b> ซึ่งเป็นปริมาณคนละอย่างกับความต้านทาน <i class="m">R</i> = Δ<i class="m">V</i>/<i class="m">I</i> ที่ใช้ในบทนี้</p>
 <p class="back"><a href="../15/">← แบบจำลองอื่นของบท 15 ไฟฟ้ากระแส</a></p>
 </div>
@@ -80,6 +87,7 @@
 (function(){
 "use strict";
 const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };   // stacked fraction a over b; pa/pb = brackets kept for the a/b reading
 const Is=2e-9, LAMP_R0=1.2, LAMP_A=36;
 /* device models: I in A; V(I), dV/dI */
 const DEV={
@@ -156,10 +164,10 @@ function update(){
   const Isi = fmt(S.Isi,2)+" A";
   const R = S.R, nR = 2;
   const lines=[`ที่จุดนี้ ${m("I")} = ${S.Itxt} และ Δ${m("V")} = ${S.Vtxt}`,
-    `${m("R")} = Δ${m("V")}/${m("I")} = (${S.Vtxt})/(${Isi}) = ${fmt(R,nR)} Ω`];
+    `${m("R")} = ${fr(`Δ${m("V")}`,m("I"))} = ${fr(S.Vtxt,Isi,"()","()")} = ${fmt(R,nR)} Ω`];
   const same = st.dev==="res";   // only the ohmic resistor has tangent slope = ΔV/I at every point
   if(!st.swap) lines.push(`ความชันของเส้นสัมผัส = ${fmt(s,nR)} Ω|${same?"เท่ากับ ΔV/I":"ไม่เท่ากับ ΔV/I"}`);
-  else lines.push(`ความชันของเส้นจุดจากจุดกำเนิด = ${m("I")}/Δ${m("V")} = 1/${m("R")} = ${fmt(1/R,nR)} A/V`, `ความชันของเส้นสัมผัส = ${fmt(1/s,nR)} A/V|${same?"เท่ากับ 1/R":"ไม่ใช่ 1/R"}`);
+  else lines.push(`ความชันของเส้นจุดจากจุดกำเนิด = ${fr(m("I"),`Δ${m("V")}`)} = ${fr("1",m("R"))} = ${fmt(1/R,nR)} A/V`, `ความชันของเส้นสัมผัส = ${fmt(1/s,nR)} A/V|${same?"เท่ากับ 1/R":"ไม่ใช่ 1/R"}`);
   $("eq").innerHTML=eqHTML(lines);
   const sw=st.swap;
   const msg={res: sw ? "ตัวนำโอห์มิก: กราฟเป็นเส้นตรงผ่านจุดกำเนิด อัตราส่วน ΔV/I ของทุกจุดเท่ากัน เมื่อ I อยู่บนแกนตั้ง ความชันของเส้นคือ I/ΔV = 1/R เส้นที่ชันกว่าจึงมีความต้านทานน้อยกว่า"

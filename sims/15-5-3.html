@@ -87,6 +87,13 @@ summary{cursor:pointer;font-weight:600;color:var(--graph)}
 .back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
 summary{padding:10px 0;min-height:44px;box-sizing:border-box}
 
+/* stacked fractions: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp{display:none}
+.flat .fr,.flat .fr>span{display:inline;padding:0;margin:0;border:0}
+.flat .fr>.fs,.flat .fr .fp{display:inline}
 </style>
 </head>
 <body>
@@ -133,12 +140,12 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
   <details>
     <summary>1. ตรวจ Ex. 5.5</summary>
     <p class="q">กด "ค่าของ Ex. 5.5" (ε = 12.0 V, r = 0.50 Ω, R = 5.5 Ω) แล้วตรวจว่ากำลังที่แบตเตอรี่เปลี่ยนพลังงานเคมีเป็นพลังงานไฟฟ้าเท่ากับผลรวมของกำลังที่ R ได้รับกับอัตราการเกิดความร้อนในแบตเตอรี่</p>
-    <p class="q"><b>คำตอบ</b> I = 2.00 A ได้ Iε = 24.0 W, I<sup>2</sup>R = 22.0 W และ I<sup>2</sup>r = 2.00 W ซึ่งรวมกันได้ 24.0 W พอดี ประสิทธิภาพ R/(R + r) = 91.7 %</p>
+    <p class="q"><b>คำตอบ</b> I = 2.00 A ได้ Iε = 24.0 W, I<sup>2</sup>R = 22.0 W และ I<sup>2</sup>r = 2.00 W ซึ่งรวมกันได้ 24.0 W พอดี ประสิทธิภาพ <span class="nw"><span class="fr"><span>R</span><span class="fs">/</span><span><span class="fp">(</span>R + r<span class="fp">)</span></span></span> = 91.7 %</span></p>
   </details>
   <details>
     <summary>2. R เท่าใด ตัวต้านทานได้รับกำลังมากที่สุด</summary>
     <p class="q">ใช้ค่าเดิม ลองเลื่อน R หาค่าที่ทำให้กำลังที่ R ได้รับมากที่สุด กำลังนั้นเท่าใด และประสิทธิภาพเป็นเท่าใด</p>
-    <p class="q"><b>คำตอบ</b> มากที่สุดเมื่อ R = r = 0.50 Ω ได้ ε<sup>2</sup>/(4r) = (12.0 V)<sup>2</sup>/[4(0.50 Ω)] = 72.0 W แต่ประสิทธิภาพเหลือเพียง 50.0 % พลังงานอีกครึ่งหนึ่งกลายเป็นความร้อนในแบตเตอรี่ เครื่องใช้ไฟฟ้าจึงออกแบบให้ R มากกว่า r มาก ซึ่งได้รับกำลังน้อยกว่าค่ามากที่สุด แต่สูญเสียเป็นความร้อนในแหล่งกำเนิดน้อย</p>
+    <p class="q"><b>คำตอบ</b> มากที่สุดเมื่อ R = r = 0.50 Ω ได้ <span class="nw"><span class="fr"><span>ε<sup>2</sup></span><span class="fs">/</span><span><span class="fp">(</span>4r<span class="fp">)</span></span></span> = <span class="fr"><span>(12.0 V)<sup>2</sup></span><span class="fs">/</span><span><span class="fp">[</span>4(0.50 Ω)<span class="fp">]</span></span></span> = 72.0 W</span> แต่ประสิทธิภาพเหลือเพียง 50.0 % พลังงานอีกครึ่งหนึ่งกลายเป็นความร้อนในแบตเตอรี่ เครื่องใช้ไฟฟ้าจึงออกแบบให้ R มากกว่า r มาก ซึ่งได้รับกำลังน้อยกว่าค่ามากที่สุด แต่สูญเสียเป็นความร้อนในแหล่งกำเนิดน้อย</p>
   </details>
 </section>
 
@@ -230,6 +237,7 @@ return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,
 (function(){
 "use strict";
 const {$,el,txt,fmt,fx,m,sub,eqHTML}=DP;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };   // stacked fraction a over b; pa/pb = brackets kept for the a/b reading
 const st={e:12,r:0.5,R:5.5};
 const PR=R=>st.e*st.e*R/((R+st.r)*(R+st.r));
 const niceStep=v=>{ const p=Math.pow(10,Math.floor(Math.log10(v))); for(const k of [1,2,2.5,5,10]) if(k*p>=v-1e-9) return k*p; return 10*p; };
@@ -259,11 +267,11 @@ function update(){
   const I=st.e/(st.R+st.r), Id=Number(DP.sig(I,3));
   const Pe=Id*st.e, PRd=Id*Id*st.R, Pr=Id*Id*st.r, eta=st.R/(st.R+st.r);
   $("eq").innerHTML=eqHTML([
-    `${m("I")} = ${m("ε")}/(${m("R")} + ${m("r")}) = (${fx(st.e,1)} V)/(${fx(st.R,2)} Ω + ${fx(st.r,2)} Ω) = ${fmt(Id,3)} A`,
+    `${m("I")} = ${fr(m("ε"),`${m("R")} + ${m("r")}`,"","()")} = ${fr(`${fx(st.e,1)} V`,`${fx(st.R,2)} Ω + ${fx(st.r,2)} Ω`,"()","()")} = ${fmt(Id,3)} A`,
     `${m("I")}${m("ε")} = (${fmt(Id,3)} A)(${fx(st.e,1)} V) = ${fmt(Pe,3)} W|กำลังที่แบตเตอรี่เปลี่ยนพลังงานเคมีเป็นพลังงานไฟฟ้า`,
     `${m("I")}<sup>2</sup>${m("R")} = (${fmt(Id,3)} A)<sup>2</sup>(${fx(st.R,2)} Ω) = ${fmt(PRd,3)} W|กำลังที่ R ได้รับ`,
     `${m("I")}<sup>2</sup>${m("r")} = (${fmt(Id,3)} A)<sup>2</sup>(${fx(st.r,2)} Ω) = ${fmt(Pr,3)} W|อัตราการเกิดความร้อนในแบตเตอรี่`,
-    `ประสิทธิภาพ ${m("η")} = ${m("R")}/(${m("R")} + ${m("r")}) = ${fmt(100*eta,3,{intok:1})} %`]);
+    `ประสิทธิภาพ ${m("η")} = ${fr(m("R"),`${m("R")} + ${m("r")}`,"","()")} = ${fmt(100*eta,3,{intok:1})} %`]);
   $("e1").style.width=(100*eta)+"%"; $("e1").style.background="var(--graph)"; $("e2").style.width=(100*(1-eta))+"%"; $("e2").style.background="var(--heat)";
   $("leg").innerHTML=`<div><span class="sw" style="background:var(--graph)"></span>ส่งให้ R ${fmt(100*eta,3,{intok:1})} %</div><div><span class="sw" style="background:var(--heat)"></span>กลายเป็นความร้อนใน r ${fmt(100*(1-eta),3,{intok:1})} %</div>`;
   const d=st.R-st.r;

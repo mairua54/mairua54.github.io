@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>ความต่างศักย์ งาน และพลังงานในสนามไฟฟ้าสม่ำเสมอ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+/* Chapter 14 (electrostatics) adds: purple = electric field E, orange = electric force F and equipotential lines, green = resultant force, brown = weight mg, dark grey = field lines, crimson/teal = forces from the left/right charge (sheet Fig 1.10); red = positive charge, blue = negative charge. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#e27a0f; --f1:#c2185b; --f2:#1b9aaa;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--helper);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+.eyebrow a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
+summary{padding:10px 0;min-height:44px;box-sizing:border-box}
+
+/* stacked fractions and square roots: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp,.rad .fp{display:none}
+.rad{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.rad>.rs{font-size:1.5em;line-height:1;align-self:center;margin-right:-1px}
+.rad>.rb{border-top:1.5px solid currentColor;padding:2px 2px 0}
+.flat .fr,.flat .fr>span,.flat .rad,.flat .rad>span{display:inline;padding:0;margin:0;border:0;font-size:inherit}
+.flat .fr>.fs,.flat .fr .fp,.flat .rad .fp{display:inline}
+.res{font-size:1.08rem;font-weight:700;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 3.1, 3.2 และ 3.5</div>
+  <h1>ความต่างศักย์ งาน และพลังงานในสนามไฟฟ้าสม่ำเสมอ</h1>
+  <p class="lead">ลากจุดต้นและจุดปลายในสนามไฟฟ้าสม่ำเสมอ ดูความต่างศักย์ งานที่ต้องทำในการเลื่อนประจุช้า ๆ และลองปล่อยประจุให้เคลื่อนที่เอง แล้วดูพลังงานศักย์เปลี่ยนเป็นพลังงานจลน์</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-f">
+    <h2 id="h-f">สนามไฟฟ้าสม่ำเสมอ</h2>
+    <svg id="f" viewBox="0 0 380 300" role="img" aria-label="สนามไฟฟ้าสม่ำเสมอ เส้นศักย์เท่ากัน และจุดต้นกับจุดปลาย"></svg>
+    <p class="cap">แตะหรือลากใกล้จุดใดจุดหนึ่งเพื่อเลื่อนจุดนั้น (จุดติดตารางทุก 0.05 m) เส้นสีเทาเข้มคือเส้นสนามไฟฟ้า เส้นประสีส้มคือแนวที่มีศักย์เท่ากัน ตัวเลขด้านบนคือศักย์ของแต่ละแนว</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="ประจุที่เลื่อน">
+      <button id="c-p" aria-pressed="true">โปรตอน</button>
+      <button id="c-e" aria-pressed="false">อิเล็กตรอน</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="s-E"><span>สนามไฟฟ้า <i class="m">E</i> (ทิศ +x)</span><output id="o-E"></output></label>
+        <input type="range" id="s-E" min="0" step="1"></div>
+      <div class="btns">
+        <button class="btn" id="b-a">Ex. 3.3 ก และ ง</button>
+        <button class="btn" id="b-b">Ex. 3.3 ข</button>
+        <button class="btn" id="b-c">Ex. 3.3 ค</button>
+        <button class="btn" id="b-6">Ex. 3.6</button>
+        <button class="btn" id="b-go">ปล่อยประจุ</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณ</h2>
+    <div class="eq" id="eq"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+  <section class="card" aria-labelledby="h-en">
+    <h2 id="h-en">พลังงานของประจุที่ปล่อยจากจุดต้น</h2>
+    <p class="cap" style="margin:0 0 4px">แท่งซ้ายคือพลังงานศักย์ <i class="m">U</i> = <i class="m">qV</i> แท่งกลางคือพลังงานจลน์ <i class="m">E</i><sub>k</sub> แท่งขวาคือผลรวม แท่งที่อยู่ใต้เส้นมีค่าเป็นลบ</p>
+    <svg id="bars" viewBox="0 0 380 170" role="img" aria-label="แท่งพลังงานศักย์ พลังงานจลน์ และผลรวม"></svg>
+    <p class="cap" id="en-cap"></p>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: เลื่อนตามแนวเฉียง (Ex. 3.3 ค)</summary>
+    <p class="q">กด "Ex. 3.3 ค" (C อยู่ที่ (0, 0.30) m และ D อยู่ที่ (0.20, 0.10) m สนาม 500 V/m ทิศ +x) ระยะตรงจาก C ถึง D ประมาณ 0.28 m ก่อนดูคำตอบ ให้ทำนาย <i class="m">V</i><sub>D</sub> - <i class="m">V</i><sub>C</sub></p>
+    <p class="q"><b>คำตอบ</b> -100 V ใช้เฉพาะระยะตามแนวสนาม <i class="m">d</i> = 0.20 m ไม่ใช่ระยะตรง 0.28 m เพราะส่วนที่ตั้งฉากกับสนามไม่ทำให้ศักย์เปลี่ยน ตรงกับ Ex. 3.3 ค</p>
+  </details>
+  <details>
+    <summary>2. งานที่ต้องทำ: อิเล็กตรอนกับโปรตอน (Ex. 3.3 ง)</summary>
+    <p class="q">กด "Ex. 3.3 ก และ ง" (อิเล็กตรอน จาก A ไป B) งานที่ต้องทำเป็นเท่าใด แล้วเปลี่ยนเป็นโปรตอน งานเปลี่ยนไปอย่างไร</p>
+    <p class="q"><b>คำตอบ</b> อิเล็กตรอน: <i class="m">W</i><sub>ext</sub> = (-1.6 × 10<sup>-19</sup> C)(-100 V) = +1.6 × 10<sup>-17</sup> J ต้องออกแรงดันอิเล็กตรอนไปทางศักย์ต่ำ โปรตอน: -1.6 × 10<sup>-17</sup> J ค่าลบแปลว่าแรงไฟฟ้าดึงโปรตอนไปทางนั้นอยู่แล้ว เราต้องรั้งไว้ ความต่างศักย์ -100 V เท่าเดิม เพราะเป็นสมบัติของตำแหน่ง ไม่ขึ้นกับประจุ</p>
+  </details>
+  <details>
+    <summary>3. ปล่อยโปรตอนจากศักย์ 5000 V (Ex. 3.6)</summary>
+    <p class="q">กด "Ex. 3.6" แล้วกด "ปล่อยประจุ" โปรตอนมีอัตราเร็วเท่าใดเมื่อถึงแนวศักย์ 0 V ถ้าเปลี่ยนเป็นอิเล็กตรอนแล้วปล่อย จะเคลื่อนที่ไปทางใด</p>
+    <p class="q"><b>คำตอบ</b> 9.8 × 10<sup>5</sup> m/s ตรงกับ Ex. 3.6 พลังงานศักย์ที่ลดลง 8.0 × 10<sup>-16</sup> J กลายเป็นพลังงานจลน์ทั้งหมด ผลรวมคงตัว ส่วนอิเล็กตรอนเคลื่อนไปทาง -x คือทางศักย์สูง จึงไม่ไปทาง B</p>
+  </details>
+  <details>
+    <summary>4. เลื่อนตามแนวศักย์เท่ากัน (Ex. 3.3 ข)</summary>
+    <p class="q">กด "Ex. 3.3 ข" (จาก A ไป C ตั้งฉากกับสนาม) ความต่างศักย์และงานเป็นเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> เป็นศูนย์ทั้งคู่ A และ C อยู่บนเส้นประเส้นเดียวกัน แรงไฟฟ้าตั้งฉากกับการกระจัด จึงไม่มีงาน</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าสนามสม่ำเสมอทั่วบริเวณ และเลือกให้ศักย์เป็นศูนย์ที่แนว x = 0.40 m (ขอบขวา) ค่าศักย์ของแต่ละจุดขึ้นกับการเลือกนี้ แต่ความต่างศักย์และงานไม่ขึ้นกับการเลือก งานที่ต้องทำคิดเมื่อเลื่อนประจุช้า ๆ ด้วยความเร็วคงตัว ประจุที่ปล่อยไม่คิดแรงโน้มถ่วง และมีแต่แรงไฟฟ้าทำงาน ใช้ <i class="m">e</i> = 1.6 × 10<sup>-19</sup> C มวลโปรตอน 1.67 × 10<sup>-27</sup> kg และมวลอิเล็กตรอน 9.1 × 10<sup>-31</sup> kg ภาพย่อส่วนจากจริงตามมาตราส่วนเดียวกันทั้งสองแนว ภาพเคลื่อนไหวช้าลงมากเพื่อให้มองเห็น แท่งพลังงานวาดตามมาตราส่วนจริง ศักย์และความต่างศักย์แสดง 3 ตัว เพราะสนามบางค่ามีเลขนัยสำคัญ 3 ตัว งานและพลังงานแสดง 2 ตัวตามประจุ 1.6 × 10<sup>-19</sup> C และขั้นถัดไปใช้ค่าที่ปัดแล้ว</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,m}=DP;
+const rd=(v,n)=>{ if(!isFinite(v)||v===0) return v; const [mt,ex]=Math.abs(v).toExponential(11).split("e"), dg=mt.replace(".",""); return Math.sign(v)*Number((Number(dg.slice(0,n))+(+dg[n]>=5?1:0))+"e"+(+ex-n+1)); };   // round half up on the decimal digits, so floating-point noise (674999.99999…) still gives 6.8 × 10^5 as by hand
+const fmt=(x,n,o)=>DP.fmt(rd(x,n||3),n,o);
+const QE=1.6e-19, MP=1.67e-27, ME=9.1e-31, XR=0.40, YT=0.30;
+const ES=[100,200,250,500,1000,2000,2500,5000,10000,12500];
+const st={c:"e",ei:ES.indexOf(500),a:[0,0],b:[0.20,0],na:"A",nb:"B",run:null};
+const sub=s=>`<sub>${s}</sub>`, V=n=>`${m("V")}${sub(n)}`;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };
+const sq=a=>`<span class="rad"><span class="rs">√</span><span class="rb"><span class="fp">(</span>${a}<span class="fp">)</span></span></span>`;
+const r2=v=>rd(v,2);
+const Ev=()=>ES[st.ei], q=()=>st.c==="p"?QE:-QE, mass=()=>st.c==="p"?MP:ME;
+const Vx=x=>Ev()*(XR-x);                              // V = 0 on the line x = 0.40 m
+const s3=v=>rd(v,3);   // potentials and potential differences with 3 figures (E has up to 3)
+const nV=v=>fmt(s3(v),3,{intok:1});
+const d2=x=>{ const s=x.toFixed(2); return s==="-0.00"?"0.00":s; };
+
+/* drawing */
+const G=$("f"), X0=42, Y1=270, SC=800;
+const px=x=>X0+x*SC, py=y=>Y1-y*SC;
+function draw(){
+  G.textContent="";
+  const E=Ev();
+  // equipotential lines every 0.05 m, labelled every 0.10 m
+  for(let i=0;i<=8;i++){ const x=i*0.05, X=px(x);
+    el("line",{x1:X,y1:py(YT),x2:X,y2:py(0),stroke:"var(--equi)","stroke-width":1.4,"stroke-dasharray":"5 4","stroke-opacity":0.9},G);
+    if(i%2===0) txt(G,X,py(YT)-10,nV(Vx(x))+" V",{"text-anchor":"middle","font-size":11,fill:"var(--equi)","font-weight":700}); }
+  // field lines
+  for(let j=0;j<6;j++){ const y=py(0.025+0.05*j);
+    el("line",{x1:px(0),y1:y,x2:px(XR)+12,y2:y,stroke:"var(--fline)","stroke-width":1.4},G); DP.arrowHead(G,px(XR)+14,y,0,"var(--fline)",5); }
+  txt(G,px(XR)+6,py(YT)+18,[["E",{it:1}]],{"font-size":15,fill:"var(--efield)","font-weight":700});
+  // axes
+  for(let i=0;i<=4;i++){ const X=px(i*0.1); txt(G,X,Y1+16,(i*0.1).toFixed(1),{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); }
+  for(let i=1;i<=3;i++){ const Y=py(i*0.1); txt(G,X0-7,Y+4,(i*0.1).toFixed(1),{"text-anchor":"end","font-size":11,fill:"var(--muted)"}); }
+  txt(G,px(XR),Y1+28,"x (m)",{"text-anchor":"end","font-size":11,fill:"var(--muted)"});
+  // displacement and its part along the field
+  const [ax,ay]=st.a, [bx,by]=st.b, A=[px(ax),py(ay)], B=[px(bx),py(by)];
+  el("line",{x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:"var(--ink)","stroke-width":1.4,"stroke-dasharray":"2 3"},G);
+  if(Math.abs(bx-ax)>1e-9){ const Y=A[1]+16<=Y1-4?A[1]+16:A[1]-16;   // the part of the displacement along the field, drawn just below the start point
+    el("line",{x1:A[0],y1:Y,x2:B[0],y2:Y,stroke:"var(--helper)","stroke-width":1.3},G);
+    DP.arrowHead(G,B[0],Y,bx>ax?0:180,"var(--helper)",4.5);
+    el("line",{x1:B[0],y1:B[1],x2:B[0],y2:Y,stroke:"var(--helper)","stroke-width":1,"stroke-dasharray":"2 3"},G);
+    const t=txt(G,(A[0]+B[0])/2,Y+(Y>A[1]?14:-6),[["d",{it:1}]],{"text-anchor":"middle","font-size":14,fill:"var(--muted)"}); t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); }
+  for(const [P,n] of [[A,st.na],[B,st.nb]]){
+    el("circle",{cx:P[0],cy:P[1],r:5.5,fill:"var(--ink)",stroke:"var(--card)","stroke-width":1.5},G);
+    const lx=P[0]+(P[0]>px(XR)-20?-10:10), t=txt(G,lx,P[1]-9,n,{"font-size":15,"font-weight":700,"text-anchor":P[0]>px(XR)-20?"end":"start"});
+    t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); }
+  // released charge
+  if(st.run){ const X=px(st.run.x), Y=py(ay);
+    el("circle",{cx:X,cy:Y,r:9,fill:st.c==="p"?"var(--pos)":"var(--elec)",stroke:"var(--card)","stroke-width":1.5},G);
+    txt(G,X,Y+5,st.c==="p"?"+":"−",{"text-anchor":"middle","font-size":15,"font-weight":700,fill:"#fff"}); }
+}
+function drawBars(){
+  const S=$("bars"); S.textContent="";
+  const qq=q(), VA=Vx(st.a[0]), x=st.run?st.run.x:st.a[0];
+  const U=qq*Vx(x), K=qq*(VA-Vx(x)), T=qq*VA;
+  const ref=Math.max(Math.abs(qq*Ev()*XR),1e-30), y0=92, hmax=52, bw=74;
+  el("line",{x1:20,y1:y0,x2:360,y2:y0,stroke:"var(--ink)","stroke-width":1.2},S);
+  const items=[[[["U",{it:1}]],U,"var(--graph)"],[[["E",{it:1}],["k",{sub:1}]],K,"var(--heat)"],[[["U",{it:1}]," + ",["E",{it:1}],["k",{sub:1}]],T,"var(--helper)"]];
+  items.forEach(([lab,v,col],i)=>{ const x0=36+i*114, h=hmax*v/ref;
+    el("rect",{x:x0,y:h>=0?y0-h:y0,width:bw,height:Math.max(Math.abs(h),0.5),fill:col,rx:2},S);
+    txt(S,x0+bw/2,h>=0?y0-h-6:y0-h+15,fmt(r2(v),2,{plain:1})+" J",{"text-anchor":"middle","font-size":11.5});
+    txt(S,x0+bw/2,16,lab,{"text-anchor":"middle","font-size":14,fill:"var(--muted)"}); });
+  const nm=st.c==="p"?"โปรตอน":"อิเล็กตรอน";
+  $("en-cap").innerHTML = st.run ? (st.run.edge?`${nm}ถูกแรงไปทาง ${st.c==="p"?"+x":"-x"} แต่จุด ${st.na} อยู่ที่ขอบของบริเวณที่แสดงแล้ว ${nm}จึงเคลื่อนออกนอกภาพทันที ลองย้ายจุด ${st.na}`
+      : st.run.done?`${nm}ออกนอกบริเวณที่แสดงที่ x = ${d2(st.run.x)} m พลังงานศักย์ที่ลดลงกลายเป็นพลังงานจลน์ทั้งหมด ผลรวมคงตัว`:"กำลังเคลื่อนที่: พลังงานศักย์ลดลงเท่ากับพลังงานจลน์ที่เพิ่มขึ้น ผลรวมคงตัว")
+    : `ขณะยังไม่ปล่อย ประจุอยู่นิ่งที่จุด ${st.na} พลังงานจลน์เป็นศูนย์ กด "ปล่อยประจุ" เพื่อดูพลังงานเปลี่ยนรูป`;
+}
+
+/* text */
+function update(){
+  const E=Ev(), qq=q(), [ax,ay]=st.a, [bx,by]=st.b, na=st.na, nb=st.nb;
+  $("o-E").textContent=fmt(E,3,{intok:1})+" V/m"; $("s-E").value=st.ei;
+  DP.setSeg(["c-p","c-e"],st.c==="p"?"c-p":"c-e");
+  const VA=Vx(ax), VB=Vx(bx), d=Number((bx-ax).toFixed(2)), dV=Number((-E*d).toPrecision(6));
+  const W=r2(qq*s3(dV)), name=st.c==="p"?"โปรตอน":"อิเล็กตรอน", qtxt=`(${st.c==="p"?"+":"-"}1.6 × 10<sup>-19</sup> C)`;
+  const lines=[
+    `${V(na)} = ${nV(VA)} V และ ${V(nb)} = ${nV(VB)} V|อ่านจากเส้นประ เลือก V = 0 ที่ x = 0.40 m`,
+    `${m("d")} = ${m("x")}${sub(nb)} - ${m("x")}${sub(na)} = ${d2(bx)} m - ${d2(ax)} m = ${d2(d)} m|ระยะตามแนวสนาม${by!==ay&&d!==0?" ส่วนที่ตั้งฉากกับสนามไม่นับ":""}`,
+    `${V(nb)} - ${V(na)} = -${m("Ed")} = -(${fmt(E,3,{intok:1})} V/m)(${d2(d)} m) = ${dV===0?"0":nV(dV)+" V"}`,
+    `${m("W")}${sub("ext")} = ${m("q")}(${V(nb)} - ${V(na)}) = ${qtxt}(${nV(dV)} V) = ${W===0?"0":(W>0?"+":"")+fmt(W,2)+" J"}|งานที่ต้องทำเมื่อเลื่อนช้า ๆ`,
+    `${m("W")}${sub(na+" → "+nb)} = -${m("W")}${sub("ext")} = ${W===0?"0":(W<0?"+":"-")+fmt(Math.abs(W),2)+" J"}|งานของแรงไฟฟ้า`];
+  const gain=qq*(VA-VB);   // kinetic energy gained if released from the start point
+  if(gain>0){ const K=r2(QE*s3(Math.abs(VA-VB))), v=r2(Math.sqrt(2*K/mass()));   // from the values as shown
+    lines.push(`ปล่อยจาก ${na}: ½${m("mv")}<sup>2</sup> = ${m("q")}(${V(na)} - ${V(nb)}) = (1.6 × 10<sup>-19</sup>)(${nV(Math.abs(VA-VB))}) = ${fmt(K,2)} J`,
+               `${m("v")} = ${sq(fr(`2(${fmt(K,2)})`,st.c==="p"?"1.67 × 10<sup>-27</sup>":"9.1 × 10<sup>-31</sup>"))} = ${fmt(v,2)} m/s|เมื่อถึงแนวศักย์ของ ${nb}`); }
+  $("eq").innerHTML=DP.eqHTML(lines);
+  let s;
+  if(dV===0) s=`${na} และ ${nb} อยู่บนเส้นประเดียวกัน ศักย์เท่ากัน การเลื่อนประจุระหว่างสองจุดนี้ไม่มีงาน เพราะแรงไฟฟ้าตั้งฉากกับการกระจัด`;
+  else {
+    s=(W>0?`งานที่ต้องทำเป็นบวก ต้องออกแรงดัน${name}ไปทางที่แรงไฟฟ้าต้าน พลังงานศักย์เพิ่มขึ้น`:`งานที่ต้องทำเป็นลบ แรงไฟฟ้าดึง${name}ไปทางนั้นอยู่แล้ว เราต้องรั้งไว้ พลังงานศักย์ลดลง`);
+    if(by!==ay) s=`การกระจัดเฉียงกับสนาม ใช้เฉพาะส่วนที่ขนานกับสนาม ${m("d")} = ${d2(d)} m `+s;
+  }
+  s+=gain>0?` ถ้าปล่อยจาก ${na} ${name}จะเคลื่อนไปทางศักย์${st.c==="p"?"ต่ำ":"สูง"}เอง จนถึงแนวศักย์ของ ${nb}`
+     :` ถ้าปล่อยจาก ${na} ${name}จะเคลื่อนไปทางศักย์${st.c==="p"?"ต่ำ":"สูง"} (ทาง ${st.c==="p"?"+x":"-x"}) ซึ่ง${dV===0?"ไม่ใช่แนวของ "+nb:"ออกห่างจากแนวศักย์ของ "+nb} จึงไปไม่ถึง`;
+  $("status").innerHTML=s;
+  $("b-go").textContent=`ปล่อย${name}จาก ${na}`;
+  draw(); drawBars();
+}
+let raf=null;
+function stop(){ if(raf) cancelAnimationFrame(raf); raf=null; st.run=null; }
+function release(){
+  stop(); const x0=st.a[0], dir=st.c==="p"?1:-1, end=dir>0?XR:0, dist=Math.abs(end-x0);
+  if(dist<1e-9){ st.run={x:end,done:true,edge:true}; draw(); drawBars(); return; }
+  if(DP.reduce){ st.run={x:end,done:true}; draw(); drawBars(); return; }
+  st.run={x:x0,done:false};
+  const dur=2000*Math.sqrt(dist/XR), t0=performance.now();
+  const step=now=>{ const f=Math.max(0,Math.min(1,(now-t0)/dur)); st.run={x:x0+dir*dist*f*f,done:f>=1}; draw(); drawBars(); if(f<1) raf=requestAnimationFrame(step); else raf=null; };
+  raf=requestAnimationFrame(step);
+}
+function set(o){ stop(); Object.assign(st,o); update(); }
+$("s-E").max=ES.length-1;
+$("s-E").addEventListener("input",e=>set({ei:+e.target.value}));
+DP.seg(["c-p","c-e"],id=>set({c:id==="c-p"?"p":"e"}));
+$("b-a").addEventListener("click",()=>set({c:"e",ei:ES.indexOf(500),a:[0,0],b:[0.20,0],na:"A",nb:"B"}));
+$("b-b").addEventListener("click",()=>set({c:"e",ei:ES.indexOf(500),a:[0,0],b:[0,0.30],na:"A",nb:"C"}));
+$("b-c").addEventListener("click",()=>set({c:"e",ei:ES.indexOf(500),a:[0,0.30],b:[0.20,0.10],na:"C",nb:"D"}));
+$("b-6").addEventListener("click",()=>set({c:"p",ei:ES.indexOf(12500),a:[0,0.15],b:[0.40,0.15],na:"A",nb:"B"}));
+$("b-go").addEventListener("click",()=>{ release(); });
+/* dragging: the nearer point follows the finger, on a 0.05 m grid */
+let which=null;
+function toGrid(ev){ const r=G.getBoundingClientRect(), vx=(ev.clientX-r.left)*380/r.width, vy=(ev.clientY-r.top)*300/r.height;
+  const x=Math.min(XR,Math.max(0,Math.round((vx-X0)/SC/0.05)*0.05)), y=Math.min(YT,Math.max(0,Math.round((Y1-vy)/SC/0.05)*0.05));
+  return [[Number(x.toFixed(2)),Number(y.toFixed(2))],[vx,vy]]; }
+G.addEventListener("pointerdown",e=>{ G.setPointerCapture(e.pointerId); const [p,[vx,vy]]=toGrid(e);
+  const dA=Math.hypot(vx-px(st.a[0]),vy-py(st.a[1])), dB=Math.hypot(vx-px(st.b[0]),vy-py(st.b[1])); which=dA<=dB?"a":"b"; set({[which]:p}); });
+G.addEventListener("pointermove",e=>{ if(which&&(e.buttons||e.pointerType==="touch")){ const [p]=toGrid(e); if(p[0]!==st[which][0]||p[1]!==st[which][1]) set({[which]:p}); } });
+G.addEventListener("pointerup",()=>{ which=null; });
+update();
+window.__sim={st,update,set,release,Vx,ES};
+})();
+</script>
+
+</body>
+</html>

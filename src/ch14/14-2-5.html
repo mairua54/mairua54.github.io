@@ -1,0 +1,211 @@
+<title>อนุภาคมีประจุเคลื่อนที่ระหว่างแผ่นโลหะคู่ขนาน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+/* stacked fractions and square roots: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp,.rad .fp{display:none}
+.rad{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.rad>.rs{font-size:1.5em;line-height:1;align-self:center;margin-right:-1px}
+.rad>.rb{border-top:1.5px solid currentColor;padding:2px 2px 0}
+.flat .fr,.flat .fr>span,.flat .rad,.flat .rad>span{display:inline;padding:0;margin:0;border:0;font-size:inherit}
+.flat .fr>.fs,.flat .fr .fp,.flat .rad .fp{display:inline}
+.res{font-size:1.08rem;font-weight:700;margin-top:8px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 2.5</div>
+  <h1>อนุภาคมีประจุเคลื่อนที่ระหว่างแผ่นโลหะคู่ขนาน</h1>
+  <p class="lead">ยิงอิเล็กตรอนหรือโปรตอนในแนวขนานกับแผ่นเข้าไปที่กึ่งกลางระหว่างแผ่นโลหะคู่ขนาน ปรับอัตราเร็วและสนามไฟฟ้า แล้วดูว่าอนุภาคเบนไปทางใด เท่าใด และพ้นแผ่นได้หรือไม่</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-f">
+    <h2 id="h-f">ทางเดินของอนุภาค</h2>
+    <svg id="f" viewBox="0 0 380 230" role="img" aria-label="ทางเดินของอนุภาคระหว่างแผ่นโลหะคู่ขนาน"></svg>
+    <p class="cap">แผ่นยาว <i class="m">L</i> = 4.0 cm ห่างกัน 2.0 cm ตาม Ex. 2.8 ลูกศรสีม่วงคือสนามไฟฟ้า <i class="m">E</i> ลูกศรสีดำคือความเร็ว เส้นประหลังพ้นแผ่นคือทางเดินต่อไปซึ่งเป็นเส้นตรง เพราะนอกแผ่นถือว่าไม่มีสนาม</p>
+    <div class="btns" style="margin-top:8px"><button class="btn" id="b-fire">ยิงอีกครั้ง</button></div>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="ชนิดอนุภาค">
+      <button id="p-e" aria-pressed="true">อิเล็กตรอน</button>
+      <button id="p-p" aria-pressed="false">โปรตอน</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="s-u"><span>อัตราเร็วขณะเข้าสู่แผ่น <i class="m">u</i></span><output id="o-u"></output></label>
+        <input type="range" id="s-u" min="0" step="1"></div>
+      <div class="row"><label for="s-E"><span>สนามไฟฟ้าระหว่างแผ่น <i class="m">E</i></span><output id="o-E"></output></label>
+        <input type="range" id="s-E" min="0" step="1"></div>
+      <div class="seg" role="group" aria-label="ทิศของสนามไฟฟ้า">
+        <button id="d-down" aria-pressed="true">สนามชี้ลง</button>
+        <button id="d-up" aria-pressed="false">สนามชี้ขึ้น</button>
+      </div>
+      <div class="btns"><button class="btn" id="b-ex">ค่าของ Ex. 2.8</button></div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณแบบ Ex. 2.8</h2>
+    <div class="eq" id="eq"></div>
+    <div class="res" id="res"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: อิเล็กตรอนเบนขึ้นหรือลง (Ex. 2.8)</summary>
+    <p class="q">กด "ค่าของ Ex. 2.8" (อิเล็กตรอน <i class="m">u</i> = 2.0 × 10<sup>7</sup> m/s สนาม 2.0 × 10<sup>4</sup> N/C ชี้ลง) ก่อนดูภาพ ให้ทำนายว่าอิเล็กตรอนเบนขึ้นหรือลง และพ้นแผ่นได้หรือไม่</p>
+    <p class="q"><b>คำตอบ</b> เบนขึ้น เพราะอิเล็กตรอนมีประจุลบ ถูกแรงทิศตรงข้ามกับสนาม เบนเพียง 0.70 cm ซึ่งน้อยกว่า 1.0 cm จึงพ้นแผ่นได้ ความเร็วขาออกทำมุมประมาณ 19° กับแนวเดิม ตรงกับ Ex. 2.8</p>
+  </details>
+  <details>
+    <summary>2. เปลี่ยนเป็นโปรตอน</summary>
+    <p class="q">ใช้ค่าเดิม แล้วกด "โปรตอน" โปรตอนเบนไปทางใด เท่าใด</p>
+    <p class="q"><b>คำตอบ</b> เบนลงตามทิศสนาม เพราะโปรตอนมีประจุบวก แต่เบนเพียง 3.8 × 10<sup>-6</sup> m จนมองไม่เห็นในภาพ แรงที่กระทำมีขนาดเท่ากับแรงบนอิเล็กตรอน แต่โปรตอนมีมวลมากกว่าราว 1800 เท่า ความเร่งจึงน้อยกว่าราว 1800 เท่า</p>
+  </details>
+  <details>
+    <summary>3. ลดอัตราเร็วเหลือครึ่งหนึ่ง</summary>
+    <p class="q">กด "ค่าของ Ex. 2.8" แล้วลด <i class="m">u</i> เหลือ 1.0 × 10<sup>7</sup> m/s ทำนายก่อนว่าระยะเบี่ยงเบนจะเป็นกี่เท่า แล้วอิเล็กตรอนยังพ้นแผ่นได้หรือไม่</p>
+    <p class="q"><b>คำตอบ</b> เวลาในแผ่นเพิ่มเป็น 2 เท่า ระยะเบี่ยงเบน ½<i class="m">at</i><sup>2</sup> จึงเพิ่มเป็น 4 เท่า คือ 2.8 cm ซึ่งมากกว่า 1.0 cm อิเล็กตรอนจึงชนแผ่นบนก่อนพ้นแผ่น ที่ระยะ 2.4 cm จากขอบแผ่น</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ไม่คิดแรงโน้มถ่วง (เล็กมากเมื่อเทียบกับแรงไฟฟ้า) ถือว่าสนามระหว่างแผ่นสม่ำเสมอ และนอกแผ่นไม่มีสนาม (ไม่คิดผลขอบ) อนุภาคเข้าที่กึ่งกลางระหว่างแผ่นในแนวขนานกับแผ่น และอัตราเร็วน้อยกว่าอัตราเร็วแสงมาก จึงใช้กลศาสตร์ของนิวตันได้ ใช้ <i class="m">e</i> = 1.6 × 10<sup>-19</sup> C มวลอิเล็กตรอน 9.1 × 10<sup>-31</sup> kg และมวลโปรตอน 1.67 × 10<sup>-27</sup> kg ภาพวาดตามมาตราส่วนจริงทั้งความยาวแผ่น ระยะห่างแผ่น และระยะเบี่ยงเบน ระยะเบี่ยงเบนที่น้อยกว่าราว 0.02 mm จึงมองไม่เห็นในภาพ ขนาดของอนุภาคและลูกศรวาดใหญ่กว่าจริง ตัวเลขแสดง 2 ตัวตาม Ex. 2.8 และขั้นถัดไปใช้ค่าที่ปัดแล้ว</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,m}=DP;
+const rd=(v,n)=>{ if(!isFinite(v)||v===0) return v; const [mt,ex]=Math.abs(v).toExponential(11).split("e"), dg=mt.replace(".",""); return Math.sign(v)*Number((Number(dg.slice(0,n))+(+dg[n]>=5?1:0))+"e"+(+ex-n+1)); };   // round half up on the decimal digits, so floating-point noise (674999.99999…) still gives 6.8 × 10^5 as by hand
+const fmt=(x,n,o)=>DP.fmt(rd(x,n||3),n,o);
+const E_=1.6e-19, ME=9.1e-31, MP=1.67e-27, L=0.040, HALF=0.010;
+const US=[1.0e5,2.0e5,5.0e5,1.0e6,2.0e6,4.0e6,6.0e6,8.0e6,1.0e7,1.5e7,2.0e7,2.5e7,3.0e7,4.0e7,5.0e7];
+const ES=[0,1.0e2,2.0e2,5.0e2,1.0e3,2.0e3,5.0e3,1.0e4,2.0e4,5.0e4,1.0e5,2.0e5,5.0e5];
+const st={p:"e",ui:US.indexOf(2.0e7),ei:ES.indexOf(2.0e4),down:true};
+const sub=s=>`<sub>${s}</sub>`;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };
+const sq=a=>`<span class="rad"><span class="rs">√</span><span class="rb"><span class="fp">(</span>${a}<span class="fp">)</span></span></span>`;
+const r2=v=>rd(v,2);
+const f2=v=>fmt(v,2);
+const fm=v=>{ if(v===0||Math.abs(v)>=0.01) return fmt(v,2); const e=Math.floor(Math.log10(Math.abs(v))+1e-9), mm=r2(v/Math.pow(10,e)); return `${mm.toFixed(1)} × 10<sup>${e}</sup>`; };   // metres below 1 cm in powers of ten, as in Ex. 2.8
+
+/* motion: exact values for the picture, rounded values (2 figures, each step from the rounded values before it) for the text */
+function solve(){
+  const u=US[st.ui], E=ES[st.ei], mass=st.p==="e"?ME:MP;
+  const up=(st.p==="e")===st.down;   // electron: force opposite to E; proton: along E
+  const a=E_*E/mass, t=L/u, y=0.5*a*t*t, hits=y>HALF;
+  const as=r2(a), ts=r2(t), ys=r2(0.5*as*ts*ts), tans=r2(as*ts/u), th=Math.atan(tans)*180/Math.PI;
+  const thit=hits?Math.sqrt(2*HALF/a):null, thits=hits?r2(Math.sqrt(2*HALF/as)):null, xhits=hits?r2(u*thits):null;
+  return {u,E,mass,up,a,t,y,hits,as,ts,ys,tans,th,thit,thits,xhits};
+}
+
+/* drawing (true scale: 55 px per cm) */
+const G=$("f"), X0=70, X1=290, YM=111, SC=5500, XS=20;
+let anim=null;
+function draw(v,frac){
+  G.textContent="";
+  const top=YM-55, bot=YM+55, sgn=v.up?-1:1;
+  el("rect",{x:X0,y:top-6,width:X1-X0,height:6,fill:"var(--helper)"},G); el("rect",{x:X0,y:bot,width:X1-X0,height:6,fill:"var(--helper)"},G);
+  if(v.E>0){
+    const topPos=st.down;   // E points from + to −
+    for(let i=0;i<9;i++){ const x=X0+12+i*24.5;
+      txt(G,x,top-10,topPos?"+":"−",{"text-anchor":"middle","font-size":14,"font-weight":700,fill:topPos?"var(--pos)":"var(--elec)"});
+      txt(G,x,bot+20,topPos?"−":"+",{"text-anchor":"middle","font-size":14,"font-weight":700,fill:topPos?"var(--elec)":"var(--pos)"}); }
+    for(const x of [110,170,230]){ const y0=st.down?YM-24:YM+24, y1=st.down?YM+24:YM-24;
+      el("line",{x1:x,y1:y0,x2:x,y2:y1-(st.down?5:-5),stroke:"var(--efield)","stroke-width":1.6,"stroke-opacity":0.7},G);
+      DP.arrowHead(G,x,y1-(st.down?5:-5),st.down?90:-90,"var(--efield)",5); }
+    txt(G,250,YM+(st.down?30:-22),[["E",{it:1}]],{"font-size":15,fill:"var(--efield)"});
+  }
+  // dimensions
+  el("line",{x1:X0,y1:bot+32,x2:X1,y2:bot+32,stroke:"var(--helper)","stroke-width":1},G);
+  DP.arrowHead(G,X0+4,bot+32,180,"var(--helper)",4); DP.arrowHead(G,X1-4,bot+32,0,"var(--helper)",4);
+  txt(G,(X0+X1)/2,bot+47,[["L",{it:1}]," = 4.0 cm"],{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+  // path: exact physics at true scale
+  const pts=[[XS,YM],[X0,YM]], xmax=v.hits?Math.min(X1,X0+v.u*v.thit*SC):X1;
+  const n=80; for(let i=1;i<=n;i++){ const x=X0+(xmax-X0)*i/n, t=(x-X0)/SC/v.u; pts.push([x,YM+sgn*0.5*v.a*t*t*SC]); }
+  const col=st.p==="e"?"var(--elec)":"var(--pos)";
+  el("polyline",{points:DP.pl(pts),fill:"none",stroke:col,"stroke-width":2.2},G);
+  let ex=X1, ey=pts[pts.length-1][1];
+  if(!v.hits){ const vy=v.a*v.t, k=vy/v.u, x2=376, y2=ey+sgn*k*(x2-X1);
+    el("line",{x1:X1,y1:ey,x2:x2,y2:Math.max(-50,Math.min(280,y2)),stroke:col,"stroke-width":1.8,"stroke-dasharray":"5 4"},G);
+    // exit velocity and the angle with the original direction
+    const vl=46, ang=Math.atan(k); const vx=X1+vl*Math.cos(ang), vyp=ey+sgn*vl*Math.sin(ang);
+    el("line",{x1:X1,y1:ey,x2:X1+56,y2:ey,stroke:"var(--helper)","stroke-width":1,"stroke-dasharray":"3 3"},G);
+    el("line",{x1:X1,y1:ey,x2:vx-6*Math.cos(ang),y2:vyp-sgn*6*Math.sin(ang),stroke:"var(--ink)","stroke-width":2.4},G);
+    DP.arrowHead(G,vx-6*Math.cos(ang),vyp-sgn*6*Math.sin(ang),sgn*ang*180/Math.PI,"var(--ink)",5.5);
+    txt(G,vx+4,vyp+(sgn<0?-4:14),[["v",{it:1}]],{"font-size":14,"font-weight":700});
+    if(ang>0.05) txt(G,X1+30,ey+(sgn<0?-3:12)+sgn*4,[["θ",{it:1}]],{"font-size":13});
+  } else {
+    el("circle",{cx:xmax,cy:v.up?YM-55:YM+55,r:4,fill:col},G);
+    txt(G,xmax,v.up?YM-55+16:YM+55-8,"ชน",{"text-anchor":"middle","font-size":12,"font-weight":700,fill:col});
+  }
+  // the particle (at the start, or moving during the replay)
+  let px=XS, py=YM;
+  if(frac!==undefined){ const total=pts.length-1, f=frac*total, i=Math.min(total-1,Math.floor(f)), r=f-i; px=pts[i][0]+(pts[i+1][0]-pts[i][0])*r; py=pts[i][1]+(pts[i+1][1]-pts[i][1])*r; }
+  el("circle",{cx:px,cy:py,r:7,fill:col},G);
+  txt(G,px,py+4.5,st.p==="e"?"−":"+",{"text-anchor":"middle","font-size":13,"font-weight":700,fill:"#fff"});
+  if(frac===undefined){ el("line",{x1:XS+9,y1:YM,x2:XS+38,y2:YM,stroke:"var(--ink)","stroke-width":2.4},G); DP.arrowHead(G,XS+40,YM,0,"var(--ink)",5.5);
+    txt(G,XS+24,YM-10,[["u",{it:1}]],{"font-size":14,"font-weight":700,"text-anchor":"middle"}); }
+}
+
+/* text */
+function update(){
+  if(anim){ cancelAnimationFrame(anim); anim=null; }   // a replay in progress would keep drawing the old values
+  const v=solve(), name=st.p==="e"?"อิเล็กตรอน":"โปรตอน", mtxt=st.p==="e"?"9.1 × 10<sup>-31</sup>":"1.67 × 10<sup>-27</sup>";
+  $("o-u").innerHTML=f2(v.u)+" m/s"; $("o-E").innerHTML=v.E===0?"0":f2(v.E)+" N/C";
+  DP.setSeg(["p-e","p-p"],st.p==="e"?"p-e":"p-p"); DP.setSeg(["d-down","d-up"],st.down?"d-down":"d-up");
+  const lines=[];
+  if(v.E===0){
+    lines.push(`${m("a")} = 0|ไม่มีสนาม จึงไม่มีแรงไฟฟ้า`, `${m("t")} = ${fr(m("L"),m("u"))} = ${fr("0.040",f2(v.u))} = ${f2(v.ts)} s`);
+    $("eq").innerHTML=DP.eqHTML(lines);
+    $("res").innerHTML=`${name}เคลื่อนที่เป็นเส้นตรงด้วยความเร็วคงตัว ไม่เบี่ยงเบน`;
+    $("status").innerHTML=`ไม่มีสนามไฟฟ้าระหว่างแผ่น ${name}จึงไม่ถูกแรง (ไม่คิดแรงโน้มถ่วง) ลองเพิ่ม <i class="m">E</i>`;
+  } else {
+    lines.push(`${m("a")} = ${fr(`${m("e")}${m("E")}`,m("m"))} = ${fr(`(1.6 × 10<sup>-19</sup>)(${f2(v.E)})`,mtxt)} = ${f2(v.as)} m/s<sup>2</sup>`);
+    lines.push(`${m("t")} = ${fr(m("L"),m("u"))} = ${fr("0.040",f2(v.u))} = ${f2(v.ts)} s|เวลาที่ใช้ถ้าพ้นแผ่น`);
+    lines.push(`${m("y")} = ½${m("at")}<sup>2</sup> = ½(${f2(v.as)})(${f2(v.ts)})<sup>2</sup> = ${fm(v.ys)} m = ${f2(r2(v.ys*100))} cm${v.hits?"|ระยะที่จะเบนถ้าไม่ชนแผ่น":""}`);
+    if(!v.hits) lines.push(`tan ${m("θ")} = ${fr(m("at"),m("u"))} = ${fr(`(${f2(v.as)})(${f2(v.ts)})`,f2(v.u))} = ${f2(v.tans)} ⇒ ${m("θ")} ≈ ${f2(r2(v.th))}°`);
+    else lines.push(`${m("y")} มากกว่า 1.0 cm จึงชนแผ่นก่อนพ้นแผ่น ที่เวลาและระยะตามแนวแผ่น`, `${m("t")} = ${sq(fr(`2(0.010)`,`${f2(v.as)}`))} = ${f2(v.thits)} s`, `${m("x")} = ${m("ut")} = (${f2(v.u)})(${f2(v.thits)}) = ${fm(v.xhits)} m`);
+    $("eq").innerHTML=DP.eqHTML(lines);
+    const way=v.up?"ขึ้น":"ลง";
+    $("res").innerHTML = v.hits ? `${name}ชนแผ่น${v.up?"บน":"ล่าง"}ที่ระยะ ${f2(r2(v.xhits*100))} cm จากขอบแผ่น`
+      : `${name}พ้นแผ่นได้ เบน${way} ${f2(r2(v.ys*100))} cm ความเร็วขาออกทำมุมประมาณ ${f2(r2(v.th))}° ${v.up?"เหนือ":"ใต้"}แนวเดิม`;
+    let s=`${name}มีประจุ${st.p==="e"?"ลบ ถูกแรงทิศตรงข้ามกับ":"บวก ถูกแรงทิศเดียวกับ"}สนาม สนามชี้${st.down?"ลง":"ขึ้น"} แรงจึงชี้${way} แนวขนานกับแผ่นไม่มีแรง ความเร็ว ${m("u")} คงตัว ส่วนแนวตั้งฉากกับแผ่นมีความเร่งคงตัว ทางเดินจึงเป็นพาราโบลาเหมือนโพรเจกไทล์ ไม่ใช่ส่วนโค้งของวงกลม`;
+    if(!v.hits && v.y<2e-5) s+=` ระยะเบี่ยงเบนน้อยมากจนมองไม่เห็นในภาพ`+(st.p==="p"?` เพราะโปรตอนมีมวลมากกว่าอิเล็กตรอนราว 1800 เท่า ความเร่งจึงน้อยมาก`:"");
+    $("status").innerHTML=s;
+  }
+  $("s-u").value=st.ui; $("s-E").value=st.ei;
+  draw(v);
+}
+function fire(){
+  if(anim) cancelAnimationFrame(anim); const v=solve();
+  if(DP.reduce){ draw(v); return; }
+  const t0=performance.now(), dur=1600;   // the first frame time can be a little before t0, so the fraction is clamped at 0
+  const step=now=>{ const f=Math.max(0,Math.min(1,(now-t0)/dur)); draw(v,f); if(f<1) anim=requestAnimationFrame(step); else { anim=null; draw(v); } };
+  anim=requestAnimationFrame(step);
+}
+$("s-u").max=US.length-1; $("s-E").max=ES.length-1;
+$("s-u").addEventListener("input",e=>{ st.ui=+e.target.value; update(); });
+$("s-E").addEventListener("input",e=>{ st.ei=+e.target.value; update(); });
+DP.seg(["p-e","p-p"],id=>{ st.p=id==="p-e"?"e":"p"; update(); fire(); });
+DP.seg(["d-down","d-up"],id=>{ st.down=id==="d-down"; update(); });
+$("b-ex").addEventListener("click",()=>{ Object.assign(st,{p:"e",ui:US.indexOf(2.0e7),ei:ES.indexOf(2.0e4),down:true}); update(); fire(); });
+$("b-fire").addEventListener("click",fire);
+update();
+window.__sim={st,update,solve,US,ES};
+})();
+</script>

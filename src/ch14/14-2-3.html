@@ -1,0 +1,350 @@
+<title>สนามไฟฟ้า เส้นสนามไฟฟ้า และจุดสะเทิน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+/* stacked fractions and square roots: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp,.rad .fp{display:none}
+.rad{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.rad>.rs{font-size:1.5em;line-height:1;align-self:center;margin-right:-1px}
+.rad>.rb{border-top:1.5px solid currentColor;padding:2px 2px 0}
+.flat .fr,.flat .fr>span,.flat .rad,.flat .rad>span{display:inline;padding:0;margin:0;border:0;font-size:inherit}
+.flat .fr>.fs,.flat .fr .fp,.flat .rad .fp{display:inline}
+.res{font-size:1.08rem;font-weight:700;margin-top:8px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 2.2–2.4</div>
+  <h1>สนามไฟฟ้า เส้นสนามไฟฟ้า และจุดสะเทิน</h1>
+  <p class="lead">ตั้งจุดประจุ <i class="m">q</i><sub>1</sub> และ <i class="m">q</i><sub>2</sub> แล้วลากจุด P ไปที่ใดก็ได้ ดูสนามไฟฟ้าจากประจุแต่ละตัว สนามลัพธ์ เส้นสนามไฟฟ้า และจุดสะเทิน</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-f">
+    <h2 id="h-f">สนามไฟฟ้าที่จุด P</h2>
+    <svg id="f" viewBox="0 0 380 300" role="img" aria-label="จุดประจุ เส้นสนามไฟฟ้า และเวกเตอร์สนามไฟฟ้าที่จุด P"></svg>
+    <p class="cap">แตะหรือลากบนภาพเพื่อเลื่อน P ลูกศร <i class="m">E</i><sub>1</sub> (ชมพูเข้ม) และ <i class="m">E</i><sub>2</sub> (เขียวน้ำเงิน) คือสนามจาก <i class="m">q</i><sub>1</sub> และ <i class="m">q</i><sub>2</sub> ลูกศร <i class="m">E</i><sub>R</sub> (ม่วง) คือสนามลัพธ์ เส้นสีเทาเข้มคือเส้นสนามไฟฟ้า วาด 3 เส้นต่อประจุ 1 หน่วย จำนวนเส้นจึงแปรผันตรงกับขนาดของประจุ</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="ctl" style="margin-top:0">
+      <div class="row"><label for="s-q1"><span>ประจุ <i class="m">q</i><sub>1</sub> (ที่ x = 0)</span><output id="o-q1"></output></label>
+        <input type="range" id="s-q1" min="-8" max="8" step="1"></div>
+      <div class="row"><label for="s-q2"><span>ประจุ <i class="m">q</i><sub>2</sub> (ที่ x = <span id="o-d"></span>)</span><output id="o-q2"></output></label>
+        <input type="range" id="s-q2" min="-8" max="8" step="1"></div>
+      <div class="row"><label for="s-x"><span>ตำแหน่งของ P ตามแนว x</span><output id="o-x"></output></label>
+        <input type="range" id="s-x" step="0.01"></div>
+      <div class="row"><label for="s-y"><span>ตำแหน่งของ P ตามแนว y</span><output id="o-y"></output></label>
+        <input type="range" id="s-y" step="0.01"></div>
+      <div class="btns">
+        <button class="btn" id="b-22">Ex. 2.2</button>
+        <button class="btn" id="b-23">Ex. 2.3</button>
+        <button class="btn" id="b-25">Ex. 2.5</button>
+        <button class="btn" id="b-lines" aria-pressed="true">แสดงเส้นสนาม</button>
+        <button class="btn" id="b-show" aria-pressed="false">แสดงจุดสะเทิน</button>
+        <button class="btn" id="b-put" hidden>วาง P ที่จุดสะเทิน</button>
+      </div>
+      <p class="note">ระยะห่างของประจุและหน่วยของประจุเป็นไปตาม Ex. ที่เลือกล่าสุด</p>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณแบบ Ex. ในชีท</h2>
+    <div class="eq" id="eq"></div>
+    <div class="res" id="res"></div>
+    <div class="eq" id="zq" style="margin-top:10px"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: สนามที่จุดกึ่งกลางเสริมหรือหักล้างกัน (Ex. 2.3)</summary>
+    <p class="q">กด "Ex. 2.3" (<i class="m">q</i><sub>1</sub> = +4.0 μC ที่ x = 0 และ <i class="m">q</i><sub>2</sub> = -1.0 μC ที่ x = 0.30 m P อยู่ที่จุดกึ่งกลาง) ก่อนดูลูกศร ให้ทำนายว่าสนามจากประจุทั้งสองที่จุดกึ่งกลางเสริมกันหรือหักล้างกัน</p>
+    <p class="q"><b>คำตอบ</b> เสริมกัน สนามจากประจุบวกชี้ออกจากประจุ (ทาง +x) สนามจากประจุลบชี้เข้าหาประจุ (ทาง +x เช่นกัน) สนามลัพธ์ 1.6 × 10<sup>6</sup> + 4.0 × 10<sup>5</sup> = 2.0 × 10<sup>6</sup> N/C ทิศ +x ตรงกับ Ex. 2.3</p>
+  </details>
+  <details>
+    <summary>2. หาจุดสะเทิน (Ex. 2.5)</summary>
+    <p class="q">กด "Ex. 2.5" (+2.0 nC และ +8.0 nC ห่างกัน 15 cm) แล้วเลื่อน P ไปตามแกน x จนลูกศร <i class="m">E</i><sub>R</sub> หายไป จากนั้นกด "แสดงจุดสะเทิน" เพื่อตรวจ เส้นสนามบริเวณจุดสะเทินเป็นอย่างไร</p>
+    <p class="q"><b>คำตอบ</b> จุดสะเทินอยู่ที่ x = 0.050 m ห่างจาก +2.0 nC เป็นระยะ 5.0 cm ใกล้ประจุที่ขนาดเล็กกว่า ตรงกับ Ex. 2.5 บริเวณนี้เส้นสนามห่างกันมาก แสดงว่าสนามอ่อน และไม่มีเส้นสนามผ่านจุดสะเทินเลย</p>
+  </details>
+  <details>
+    <summary>3. ระยะเพิ่มเป็น 2 เท่า (Ex. 2.2)</summary>
+    <p class="q">กด "Ex. 2.2" (จุดประจุ -2.0 μC ตัวเดียว P ห่าง 30 cm) แล้วเลื่อน P ออกไปที่ x = 0.60 m สนามเปลี่ยนไปเป็นกี่เท่า</p>
+    <p class="q"><b>คำตอบ</b> จาก 2.0 × 10<sup>5</sup> N/C เป็น 5.0 × 10<sup>4</sup> N/C เหลือ 1/4 เท่า เพราะสนามแปรผกผันกับ <i class="m">r</i><sup>2</sup> ทิศพุ่งเข้าหาประจุทั้งสองตำแหน่ง เพราะประจุเป็นลบ</p>
+  </details>
+  <details>
+    <summary>4. จำนวนเส้นสนามบอกขนาดของประจุ</summary>
+    <p class="q">ใช้ค่าของ Ex. 2.5 นับเส้นสนามที่ออกจาก +8.0 nC เทียบกับ +2.0 nC</p>
+    <p class="q"><b>คำตอบ</b> 24 เส้นต่อ 6 เส้น หรือ 4 เท่า เท่ากับอัตราส่วนของประจุ เส้นรอบประจุ +8.0 nC จึงชิดกันกว่า สนามบริเวณนั้นแรงกว่า</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่า <i class="m">q</i><sub>1</sub> และ <i class="m">q</i><sub>2</sub> เป็นจุดประจุที่อยู่นิ่ง และใช้ <i class="m">k</i> = 9.0 × 10<sup>9</sup> N·m<sup>2</sup>/C<sup>2</sup> เส้นสนามคำนวณจากทิศของสนามลัพธ์ทีละช่วงสั้น ๆ เส้นสนามวาดบนระนาบเดียว ความหนาแน่นของเส้นจึงบอกได้เพียงแนวโน้มว่าสนามแรงหรืออ่อน เทียบขนาดเป็นตัวเลขไม่ได้ ภาพไม่ได้วาดตามมาตราส่วน ความยาวลูกศรเทียบกันได้เฉพาะลูกศรที่ P ตำแหน่งเดียวกัน เพราะสนามใกล้ประจุมีค่ามากจนลูกศรจะล้นภาพ เมื่อย้าย P จึงย่อมาตราส่วนลูกศรลง ลูกศรที่สั้นมากวาดด้วยความยาวขั้นต่ำเพื่อให้เห็นทิศ วงกลมของประจุวาดใหญ่กว่าจริงมาก จึงวาง P ใกล้ประจุเกินไปไม่ได้ ตัวเลขแสดง 2 ตัวตามเลขนัยสำคัญของข้อมูล เมื่อ P ไม่อยู่บนแกน x และต้องแตกองค์ประกอบ ตัวเลขแสดง 3 ตัวแบบ Ex. 2.4 เพื่อลดผลของการปัดเศษ ขั้นถัดไปใช้ค่าที่ปัดแล้ว เหมือน Ex. ในชีท เมื่อองค์ประกอบเกือบหักล้างกัน สนามลัพธ์ที่คำนวณจากค่าที่ปัดแล้วอาจต่างจากค่าจริงหลายเปอร์เซ็นต์</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,m}=DP;
+const rd=(v,n)=>{ if(!isFinite(v)||v===0) return v; const [mt,ex]=Math.abs(v).toExponential(11).split("e"), dg=mt.replace(".",""); return Math.sign(v)*Number((Number(dg.slice(0,n))+(+dg[n]>=5?1:0))+"e"+(+ex-n+1)); };   // round half up on the decimal digits, so floating-point noise (674999.99999…) still gives 6.8 × 10^5 as by hand
+const fmt=(x,n,o)=>DP.fmt(rd(x,n||3),n,o);
+const fx=(x,d)=>DP.fx(Math.sign(x)*Number(Math.round(Number(Math.abs(x).toPrecision(12)+"e"+d))+"e-"+d),d);   // same for a fixed number of decimals
+const K=9.0e9;
+const st={q1:4,q2:-1,d:0.30,unit:"μC",px:0.15,py:0,lines:true,show:false};
+const U=()=>st.unit==="μC"?1e-6:1e-9, UEXP=()=>st.unit==="μC"?-6:-9;
+const sub=s=>`<sub>${s}</sub>`, Eh=i=>`${m("E")}${sub(i)}`, qh=i=>`${m("q")}${sub(i)}`;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };
+const sq=a=>`<span class="rad"><span class="rs">√</span><span class="rb"><span class="fp">(</span>${a}<span class="fp">)</span></span></span>`;
+const r2s=v=>rd(v,2);
+
+/* geometry of the picture */
+const W=380, H=300;
+const win=()=>{ const lo=-0.6*st.d, hi=1.6*st.d, hy=(hi-lo)*H/W/2; return {lo,hi,hy}; };
+const sc=()=>{ const w=win(); return W/(w.hi-w.lo); };
+const PX=x=>(x-win().lo)*sc(), PY=y=>H/2-y*sc();
+const charges=()=>[[st.q1,0],[st.q2,st.d]].filter(c=>c[0]!==0);
+
+/* physics: field vector (N/C) of each charge and the resultant */
+function fieldAt(x,y){
+  const out=[];
+  for(const [q,xc] of [[st.q1,0],[st.q2,st.d]]){
+    if(q===0){ out.push([0,0]); continue; }
+    const dx=x-xc, dy=y, r=Math.hypot(dx,dy), E=K*q*U()/(r*r*r); out.push([E*dx,E*dy]);
+  }
+  return out;
+}
+function zeroPoint(){   // where the resultant is zero (on the x axis only); the same as the zero-force point of a positive test charge
+  const a=Math.abs(st.q1), b=Math.abs(st.q2), d=st.d;
+  if(a===0&&b===0) return {kind:"none"};
+  if(a===0||b===0) return {kind:"one"};
+  const ra=Math.sqrt(a), rb=Math.sqrt(b);
+  if(st.q1*st.q2>0) return {kind:"in", x:d*ra/(ra+rb)};
+  if(a===b) return {kind:"eqopp"};
+  return a<b ? {kind:"out", x:-d*ra/(rb-ra)} : {kind:"out", x:d+d*rb/(ra-rb)};
+}
+
+/* field lines: 3 lines per unit of charge, traced along E from positive charges and against E into negative ones */
+let lineCache=null, cacheKey="";
+function traceLines(){
+  const key=[st.q1,st.q2,st.d].join(); if(key===cacheKey) return lineCache;
+  const w=win(), s=sc(), ds=1.2/s, r0=13/s, rStop=11/s, out=[];
+  const ch=[[st.q1,0],[st.q2,st.d]].filter(c=>c[0]!==0);
+  const dir=(x,y)=>{ let ex=0,ey=0; for(const [q,xc] of ch){ const dx=x-xc, r=Math.hypot(dx,y); ex+=q*dx/(r*r*r); ey+=q*y/(r*r*r); } const L=Math.hypot(ex,ey); return [ex/L,ey/L,L]; };
+  const near=(x,y)=>{ for(const c of ch) if(Math.hypot(x-c[1],y)<rStop) return c; return null; };
+  const xmin=w.lo-0.4*(w.hi-w.lo), xmax=w.hi+0.4*(w.hi-w.lo), ymax=w.hy*1.6;
+  for(const [q,xc] of ch){
+    const n=3*Math.abs(q), sgn=Math.sign(q);
+    for(let i=0;i<n;i++){
+      const a=2*Math.PI*(i+0.5)/n+0.013; let x=xc+r0*Math.cos(a), y=r0*Math.sin(a); const pts=[[x,y]]; let end=null, px=0, py=0;   // the small offset keeps lines off the axis, which runs into the neutral point
+      for(let k=0;k<2500;k++){
+        let [ux,uy,E]=dir(x,y); if(!isFinite(ux)||E<1e-3*Math.abs(q)/(st.d*st.d)) break;
+        const mx=x+sgn*ux*ds/2, my=y+sgn*uy*ds/2; [ux,uy]=dir(mx,my); if(!isFinite(ux)) break;
+        if(k>0 && ux*px+uy*py<0.9) break;   // the direction turned sharply: the line reached a neutral point
+        px=ux; py=uy;
+        x+=sgn*ux*ds; y+=sgn*uy*ds; pts.push([x,y]);
+        const c=near(x,y); if(c&&!(c[1]===xc)){ end=c; break; }
+        if(x<xmin||x>xmax||Math.abs(y)>ymax) break;
+      }
+      if(sgn<0 && end && end[0]>0) continue;   // already drawn from the positive charge
+      out.push({pts,from:sgn});
+    }
+  }
+  cacheKey=key; lineCache=out; return out;
+}
+
+/* drawing */
+const G=$("f");
+function arrow(g,x,y,dx,dy,color,label){
+  let L=Math.hypot(dx,dy); if(L<1e-9) return;
+  const ux=dx/L, uy=dy/L, h=6.5; if(L<12){ dx=ux*12; dy=uy*12; L=12; }
+  el("line",{x1:x,y1:y,x2:x+dx-ux*h,y2:y+dy-uy*h,stroke:color,"stroke-width":3.2,"stroke-linecap":"round"},g);
+  DP.arrowHead(g,x+dx-ux*h,y+dy-uy*h,Math.atan2(dy,dx)*180/Math.PI,color,h);
+  const lx=Math.min(Math.max(x+dx+ux*13,12),W-12), ly=Math.min(Math.max(y+dy+uy*12+5,14),H-6);
+  txt(g,lx,ly,label,{"text-anchor":"middle","font-size":14,"font-weight":700,fill:color});
+}
+function draw(v){
+  G.textContent="";
+  const s=sc();
+  // axis
+  el("line",{x1:0,y1:PY(0),x2:W,y2:PY(0),stroke:"var(--line)","stroke-width":1.2},G);
+  txt(G,W-6,PY(0)-6,"x (m)",{"text-anchor":"end","font-size":12,fill:"var(--muted)"});
+  // field lines
+  if(st.lines){
+    const g=el("g",{},G);
+    for(const L of traceLines()){
+      const pts=L.pts.map(p=>[PX(p[0]),PY(p[1])]);
+      el("polyline",{points:DP.pl(pts),fill:"none",stroke:"var(--fline)","stroke-width":1.3,"stroke-opacity":0.85},g);
+      // one arrowhead about 46 px from the charge the line starts at, pointing along E
+      let acc=0, j=1; for(;j<pts.length;j++){ acc+=Math.hypot(pts[j][0]-pts[j-1][0],pts[j][1]-pts[j-1][1]); if(acc>46) break; }
+      if(j<pts.length-1){ const [x,y]=pts[j], f=fieldAt(L.pts[j][0],L.pts[j][1]); const ex=f[0][0]+f[1][0], ey=f[0][1]+f[1][1];
+        if(x>2&&x<W-2&&y>2&&y<H-2) DP.arrowHead(g,x,y,Math.atan2(-ey,ex)*180/Math.PI,"var(--fline)",4.5); }
+    }
+  }
+  // charges
+  for(const [q,xc,n] of [[st.q1,0,"1"],[st.q2,st.d,"2"]]){
+    if(q===0) continue;
+    const cx=PX(xc), cy=PY(0);
+    el("circle",{cx,cy,r:11,fill:q>0?"var(--pos)":"var(--elec)",stroke:"var(--card)","stroke-width":1.5},G);
+    txt(G,cx,cy+6,q>0?"+":"−",{"text-anchor":"middle","font-size":17,"font-weight":700,fill:"#fff"});
+    const lab=txt(G,cx,cy+28,[["q",{it:1}],[n,{sub:1}]],{"text-anchor":"middle","font-size":13,"font-weight":700});
+    lab.setAttribute("paint-order","stroke"); lab.setAttribute("stroke","var(--card)"); lab.setAttribute("stroke-width",4);
+  }
+  // neutral point
+  if(st.show && v.z.x!==undefined){
+    const w=win(), nx=PX(v.z.x), ny=PY(0);
+    if(v.z.x>=w.lo&&v.z.x<=w.hi){ el("circle",{cx:nx,cy:ny,r:6,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2.2},G);
+      const t=txt(G,nx,ny+62,"N (จุดสะเทิน)",{"text-anchor":"middle","font-size":12.5,"font-weight":700}); t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); }
+  }
+  // point P and the field vectors there
+  const x=PX(st.px), y=PY(st.py);
+  const Em=Math.max(Math.hypot(...v.E1),Math.hypot(...v.E2));
+  if(Em>0){
+    const qmax=Math.max(Math.abs(st.q1),Math.abs(st.q2))*U(), Eref=K*qmax/(st.d*st.d);
+    let f=95*Math.sqrt(Em/(Em+Eref))/Em;
+    for(const E of [v.E1,v.E2,v.exactZero?[0,0]:v.ER]){ const Lp=Math.hypot(...E)*f; if(Lp<1e-9) continue;
+      const tx=x+E[0]*f, ty=y-E[1]*f; let k=1;
+      if(tx<14) k=Math.min(k,(x-14)/(x-tx)); if(tx>W-14) k=Math.min(k,(W-14-x)/(tx-x)); if(ty<14) k=Math.min(k,(y-14)/(y-ty)); if(ty>H-14) k=Math.min(k,(H-14-y)/(ty-y));
+      if(k<1) f*=Math.max(k,0.05); }
+    const g=el("g",{},G), axis=st.py===0 && st.q1!==0 && st.q2!==0;   // on the x axis all three vectors lie on one line: draw them in rows, like the force rows in 14-1-4
+    const y1=axis?y-38:y, y2=axis?y-20:y, yR=axis?y+24:y;
+    if(axis) el("line",{x1:x,y1:y-46,x2:x,y2:y+30,stroke:"var(--helper)","stroke-width":1,"stroke-dasharray":"3 3"},g);
+    if(st.q1!==0) arrow(g,x,y1,v.E1[0]*f,-v.E1[1]*f,"var(--f1)",[["E",{it:1}],["1",{sub:1}]]);
+    if(st.q2!==0) arrow(g,x,y2,v.E2[0]*f,-v.E2[1]*f,"var(--f2)",[["E",{it:1}],["2",{sub:1}]]);
+    if(!v.exactZero && st.q1!==0 && st.q2!==0) arrow(g,x,yR,v.ER[0]*f,-v.ER[1]*f,"var(--efield)",[["E",{it:1}],["R",{sub:1}]]);
+    if(axis && v.exactZero && st.q1!==0 && st.q2!==0){ const t=txt(g,x,yR+5,[["E",{it:1}],["R",{sub:1}],[" = 0",{back:1}]],{"text-anchor":"middle","font-size":14,"font-weight":700,fill:"var(--efield)"}); t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); }
+  }
+  el("circle",{cx:x,cy:y,r:4.5,fill:"var(--ink)",stroke:"var(--card)","stroke-width":1.5},G);
+  const pl=txt(G,x-9,(st.py===0&&st.q1!==0&&st.q2!==0)?y+17:y-8,"P",{"text-anchor":"end","font-size":14,"font-weight":700}); pl.setAttribute("paint-order","stroke"); pl.setAttribute("stroke","var(--card)"); pl.setAttribute("stroke-width",4);
+}
+
+/* numbers */
+const qtxt=q=>q===0?"0":(q>0?"+":"-")+fx(Math.abs(q),1)+" "+st.unit;
+const ctxt=(x)=>{ const s=Math.abs(x*100-Math.round(x*100))<1e-6?fx(x,2):fx(x,3); return s==="-0.00"?"0.00":s; };
+const sgn=v=>v>0?"+"+fmt(v,2):v<0?"-"+fmt(-v,2):"0";
+const qsci=q=>`${fx(Math.abs(q),1)} × 10<sup>${UEXP()}</sup>`;
+function view(){
+  const [E1,E2]=fieldAt(st.px,st.py), ER=[E1[0]+E2[0],E1[1]+E2[1]];
+  const m1=Math.hypot(...E1), m2=Math.hypot(...E2), mR=Math.hypot(...ER), mx=Math.max(m1,m2);
+  const exactZero = mx===0 || mR<=1e-9*mx;
+  return {E1,E2,ER,m1,m2,mR,exactZero,z:zeroPoint()};
+}
+function dirWords(E){
+  const ex=E[0], ey=E[1], mag=Math.hypot(ex,ey); if(mag===0) return "";
+  if(Math.abs(ey)<=1e-12*mag) return ex>0?"ทิศ +x":"ทิศ -x";
+  if(Math.abs(ex)<=1e-12*mag) return ey>0?"ทิศ +y":"ทิศ -y";
+  const phi=Math.round(Math.atan(Math.abs(ey)/Math.abs(ex))*180/Math.PI);
+  return `ทิศทำมุม ${phi}° ${ey>0?"เหนือ":"ใต้"}แกน ${ex>0?"+x":"-x"}`;
+}
+const rShown=r=>Number(ctxt(r));
+const Eshown=(q,r,nf)=>q===0?0:rd(K*Math.abs(q)*U()/(rShown(r)**2),nf);   // from the distance as shown, like the sheet
+function lineFor(i,q,r,nf){
+  if(q===0) return `${Eh(i)} = 0|${qh(i)} = 0`;
+  return `${Eh(i)} = ${fr(`${m("k")}│${qh(i)}│`,`${m("r")}${sub(i)}<sup>2</sup>`)} = ${fr(`(9.0 × 10<sup>9</sup>)(${qsci(q)})`,`(${ctxt(r)})<sup>2</sup>`)} = ${fmt(Eshown(q,r,nf),nf)} N/C|ชี้${q>0?"ออกจาก":"เข้าหา"} ${qh(i)}`;
+}
+function update(){
+  const v=view(), w=win();
+  $("o-q1").textContent=qtxt(st.q1); $("o-q2").textContent=qtxt(st.q2); $("o-d").textContent=fx(st.d,2)+" m";
+  $("o-x").textContent="x = "+ctxt(st.px)+" m"; $("o-y").textContent="y = "+ctxt(st.py)+" m";
+  const sx=$("s-x"), sy=$("s-y"); sx.min=(Math.ceil(w.lo*100)/100).toFixed(2); sx.max=(Math.floor(w.hi*100)/100).toFixed(2); sx.value=st.px;
+  sy.min=(-Math.floor(w.hy*100)/100).toFixed(2); sy.max=(Math.floor(w.hy*100)/100).toFixed(2); sy.value=st.py;
+  const onAxis=st.py===0, nf=(onAxis||st.q1===0||st.q2===0)?2:3, rn=v=>rd(v,nf), sg=v=>v>0?"+"+fmt(v,nf):v<0?"-"+fmt(-v,nf):"0";   // 3 figures when the field has to be split into components, as in Ex. 2.4
+  const r1=Math.hypot(st.px,st.py), r2=Math.hypot(st.px-st.d,st.py);
+  const head=`<div>P อยู่ที่ <span class="nw">(x, y) = (${ctxt(st.px)}, ${ctxt(st.py)}) m</span></div>`;
+  const lines=[];
+  if(!onAxis){
+    const rl=[]; if(st.q1!==0) rl.push(`${m("r")}${sub(1)} = ${sq(`(${ctxt(st.px)})<sup>2</sup> + (${ctxt(st.py)})<sup>2</sup>`)} = ${ctxt(r1)} m`);
+    if(st.q2!==0) rl.push(`${m("r")}${sub(2)} = ${sq(`(${ctxt(st.px-st.d)})<sup>2</sup> + (${ctxt(st.py)})<sup>2</sup>`)} = ${ctxt(r2)} m`);
+    lines.push(...rl);
+  }
+  lines.push(lineFor(1,st.q1,r1,nf), lineFor(2,st.q2,r2,nf));
+  // the resultant, from the rounded magnitudes as in the sheet
+  const d1=Eshown(st.q1,r1,nf), d2=Eshown(st.q2,r2,nf), u1=v.m1?[v.E1[0]/v.m1,v.E1[1]/v.m1]:[0,0], u2=v.m2?[v.E2[0]/v.m2,v.E2[1]/v.m2]:[0,0];
+  let ERshow=null, resTxt;
+  if(st.q1!==0 && st.q2!==0){
+    if(onAxis){
+      const a=Math.sign(u1[0])*d1, b=Math.sign(u2[0])*d2, s=Number((a+b).toPrecision(12));
+      lines.push(`${Eh("R")} = (${sg(a)}) + (${sg(b)}) = ${v.exactZero||s===0?"0":sg(s)+" N/C"}|กำหนดทางขวาเป็น +x`);
+      ERshow=[s,0];
+    } else {
+      const ax=rn(d1*u1[0]), ay=rn(d1*u1[1]), bx=rn(d2*u2[0]), by=rn(d2*u2[1]);
+      const sx_=Number((ax+bx).toPrecision(12)), sy_=Number((ay+by).toPrecision(12)), mag=rn(Math.hypot(rn(sx_),rn(sy_)));   // from the components as shown
+      lines.push(`${m("E")}${sub("x")} = (${sg(ax)}) + (${sg(bx)}) = ${sg(rn(sx_))} N/C|แตกองค์ประกอบ ทางขวาเป็น +x`,
+                 `${m("E")}${sub("y")} = (${sg(ay)}) + (${sg(by)}) = ${sg(rn(sy_))} N/C|ทางขึ้นเป็น +y`,
+                 `${Eh("R")} = ${sq(`${m("E")}${sub("x")}<sup>2</sup> + ${m("E")}${sub("y")}<sup>2</sup>`)} = ${fmt(mag,nf)} N/C`);
+      ERshow=[rn(sx_),rn(sy_)];
+    }
+  }
+  $("eq").innerHTML=head+DP.eqHTML(lines);
+  if(st.q1===0&&st.q2===0) resTxt="ไม่มีประจุ จึงไม่มีสนามไฟฟ้า";
+  else if(st.q1===0||st.q2===0){ const E=st.q1?v.E1:v.E2; resTxt=`สนามไฟฟ้าที่ P มีขนาด ${fmt(st.q1?Eshown(st.q1,r1,nf):Eshown(st.q2,r2,nf),nf)} N/C ${dirWords(E)}`; }
+  else if(v.exactZero) resTxt="สนามไฟฟ้าลัพธ์ที่ P เป็นศูนย์";
+  else { const mag=rn(Math.hypot(...ERshow)); resTxt = mag===0 ? `สนามลัพธ์ที่ P เกือบเป็นศูนย์ (ประมาณ ${fmt(v.mR,1)} N/C ${dirWords(v.ER)})` : `สนามลัพธ์ที่ P มีขนาด ${fmt(mag,nf)} N/C ${dirWords(v.ER)}`; }
+  $("res").innerHTML=resTxt;
+  $("zq").innerHTML=st.show?zeroHTML(v.z):"";
+  $("status").innerHTML=statusHTML(v,onAxis);
+  const bp=$("b-put"), can=v.z.x!==undefined && v.z.x>=w.lo && v.z.x<=w.hi;
+  bp.hidden=!st.show || v.z.x===undefined; bp.disabled=!can;
+  $("b-show").setAttribute("aria-pressed",st.show); $("b-lines").setAttribute("aria-pressed",st.lines);
+  draw(v);
+}
+function zeroHTML(z){
+  if(z.kind==="none") return "";
+  if(z.kind==="one") return `<div>ไม่มีจุดสะเทิน เพราะมีประจุเพียงตัวเดียว</div>`;
+  if(z.kind==="eqopp") return `<div>ไม่มีจุดสะเทิน เพราะประจุต่างชนิดมีขนาดเท่ากัน</div>`;
+  const a=Math.abs(st.q1), b=Math.abs(st.q2), w=win(), off=z.x<w.lo||z.x>w.hi;
+  return `<div style="font-weight:700">จุดสะเทิน</div>`+DP.eqHTML([
+    `${fr(`${m("k")}│${qh(1)}│`,`${m("r")}${sub(1)}<sup>2</sup>`)} = ${fr(`${m("k")}│${qh(2)}│`,`${m("r")}${sub(2)}<sup>2</sup>`)}`,
+    `${fr(`${m("r")}${sub(2)}`,`${m("r")}${sub(1)}`)} = ${sq(fr(`│${qh(2)}│`,`│${qh(1)}│`))} = ${sq(fr(fx(b,1),fx(a,1)))} = ${fmt(r2s(Math.sqrt(b/a)),2)}|${z.kind==="in"?"ประจุชนิดเดียวกัน จุดอยู่ระหว่างประจุ ใกล้ประจุที่ขนาดเล็กกว่า":"ประจุต่างชนิด จุดอยู่นอกช่วง ด้านประจุที่ขนาดเล็กกว่า"}`,
+    `x = ${ctxt(z.x)} m${off?"|อยู่นอกภาพ":""}`]);
+}
+function statusHTML(v,onAxis){
+  if(st.q1===0&&st.q2===0) return "ยังไม่มีประจุ ลองตั้งค่าประจุ";
+  if(st.q1===0||st.q2===0){ const q=st.q1||st.q2;
+    return `มีจุดประจุตัวเดียว สนามมีขนาด ${m("k")}│${m("Q")}│/${m("r")}<sup>2</sup> ถ้าเลื่อน P ให้ห่างจากประจุเป็น 2 เท่า สนามเหลือ 1/4 เท่า ทิศ${q>0?"พุ่งออกจาก":"พุ่งเข้าหา"}ประจุเสมอ เพราะประจุเป็น${q>0?"บวก":"ลบ"} เส้นสนามจึงเป็นเส้นตรงแผ่ตามแนวรัศมี`; }
+  if(v.exactZero) return `P อยู่ที่จุดสะเทิน สนามจาก ${qh(1)} และ ${qh(2)} ขนาดเท่ากัน ทิศตรงข้าม สนามลัพธ์จึงเป็นศูนย์ ไม่มีเส้นสนามผ่านจุดนี้`;
+  let s=`สนามลัพธ์ที่ P คือผลรวมแบบเวกเตอร์ของ ${Eh(1)} และ ${Eh(2)} ลูกศร ${Eh("R")} สัมผัสกับเส้นสนามที่ผ่าน P`;
+  if(onAxis){ const same=Math.sign(v.E1[0])===Math.sign(v.E2[0]);
+    s+= same ? ` ที่ตำแหน่งนี้สนามทั้งสองชี้ไปทางเดียวกัน จึงเสริมกัน` : ` ที่ตำแหน่งนี้สนามทั้งสองชี้สวนกัน จึงหักล้างกันบางส่วน`; }
+  return s;
+}
+
+/* controls */
+function clampP(x,y){
+  const w=win(), e=Math.max(0.01,Math.ceil(10*st.d)/100);
+  x=Math.round(x*100)/100; y=Math.round(y*100)/100;
+  x=Math.min(Math.floor(w.hi*100)/100,Math.max(Math.ceil(w.lo*100)/100,x)); y=Math.min(Math.floor(w.hy*100)/100,Math.max(-Math.floor(w.hy*100)/100,y));
+  for(const [q,xc] of [[st.q1,0],[st.q2,st.d]]) if(q!==0 && Math.hypot(x-xc,y)<e-1e-9){ x=Number((xc+(x>=xc?e:-e)).toFixed(2)); }
+  return [Number(x.toFixed(2)),Number(y.toFixed(2))];
+}
+function sync(){ $("s-q1").value=st.q1; $("s-q2").value=st.q2; [st.px,st.py]=clampP(st.px,st.py); update(); }
+$("s-q1").addEventListener("input",e=>{ st.q1=+e.target.value; [st.px,st.py]=clampP(st.px,st.py); update(); });
+$("s-q2").addEventListener("input",e=>{ st.q2=+e.target.value; [st.px,st.py]=clampP(st.px,st.py); update(); });
+$("s-x").addEventListener("input",e=>{ [st.px,st.py]=clampP(+e.target.value,st.py); update(); });
+$("s-y").addEventListener("input",e=>{ [st.px,st.py]=clampP(st.px,+e.target.value); update(); });
+$("b-22").addEventListener("click",()=>{ Object.assign(st,{q1:-2,q2:0,d:0.40,unit:"μC",px:0.30,py:0,show:false}); sync(); });
+$("b-23").addEventListener("click",()=>{ Object.assign(st,{q1:4,q2:-1,d:0.30,unit:"μC",px:0.15,py:0,show:false}); sync(); });
+$("b-25").addEventListener("click",()=>{ Object.assign(st,{q1:2,q2:8,d:0.15,unit:"nC",px:0.10,py:0,show:false}); sync(); });
+$("b-lines").addEventListener("click",()=>{ st.lines=!st.lines; update(); });
+$("b-show").addEventListener("click",()=>{ st.show=!st.show; update(); });
+$("b-put").addEventListener("click",()=>{ const z=zeroPoint(); if(z.x!==undefined){ st.px=z.x; st.py=0; update(); } });
+function pointer(ev){ const r=G.getBoundingClientRect(), vx=(ev.clientX-r.left)*W/r.width, vy=(ev.clientY-r.top)*H/r.height, s=sc(), w=win();
+  [st.px,st.py]=clampP(w.lo+vx/s,(H/2-vy)/s); update(); }
+G.addEventListener("pointerdown",e=>{ G.setPointerCapture(e.pointerId); pointer(e); });
+G.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") pointer(e); });
+sync();
+window.__sim={st,sync,update,view,fieldAt,zeroPoint,win,clampP,traceLines};
+})();
+</script>

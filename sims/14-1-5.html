@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>ทรงกลมสองลูกแขวนจากจุดเดียวกัน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+/* Chapter 14 (electrostatics) adds: purple = electric field E, orange = electric force F and equipotential lines, green = resultant force, brown = weight mg, dark grey = field lines, crimson/teal = forces from the left/right charge (sheet Fig 1.10); red = positive charge, blue = negative charge. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#e27a0f; --f1:#c2185b; --f2:#1b9aaa;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--helper);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+.eyebrow a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
+summary{padding:10px 0;min-height:44px;box-sizing:border-box}
+
+/* stacked fractions and square roots: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp,.rad .fp{display:none}
+.rad{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.rad>.rs{font-size:1.5em;line-height:1;align-self:center;margin-right:-1px}
+.rad>.rb{border-top:1.5px solid currentColor;padding:2px 2px 0}
+.flat .fr,.flat .fr>span,.flat .rad,.flat .rad>span{display:inline;padding:0;margin:0;border:0;font-size:inherit}
+.flat .fr>.fs,.flat .fr .fp,.flat .rad .fp{display:inline}
+.res{font-size:1.08rem;font-weight:700;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 1.5</div>
+  <h1>ทรงกลมสองลูกแขวนจากจุดเดียวกัน</h1>
+  <p class="lead">ทรงกลมเล็กมวลเท่ากันสองลูกมีประจุชนิดเดียวกัน แขวนด้วยด้ายยาวเท่ากันจากจุดเดียวกัน ปรับประจุ มวล และความยาวเส้นด้าย แล้วดูมุมที่ด้ายเอียงและแรงที่กระทำต่อทรงกลม</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-f">
+    <h2 id="h-f">ภาพ</h2>
+    <svg id="f" viewBox="0 0 380 300" role="img" aria-label="ทรงกลมสองลูกแขวนจากจุดเดียวกันและแรงที่กระทำ"></svg>
+    <p class="cap">ลูกศรบนทรงกลมลูกขวาคือแรงทั้งสามที่กระทำต่อลูกนั้น ได้แก่ แรงดึงในเส้นด้าย <i class="m">T</i> (ดำ) น้ำหนัก <i class="m">mg</i> (น้ำตาลแดง) และแรงไฟฟ้า <i class="m">F</i><sub>E</sub> (ส้ม) ลูกศรสีส้มบนลูกซ้ายคือแรงไฟฟ้าที่ลูกขวากระทำต่อลูกซ้าย</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="ctl" style="margin-top:0">
+      <div class="row"><label for="s-q1"><span>ประจุ <i class="m">q</i><sub>1</sub> (ลูกซ้าย)</span><output id="o-q1"></output></label>
+        <input type="range" id="s-q1" min="0" max="5" step="0.1"></div>
+      <div class="row"><label for="s-q2"><span>ประจุ <i class="m">q</i><sub>2</sub> (ลูกขวา)</span><output id="o-q2"></output></label>
+        <input type="range" id="s-q2" min="0" max="5" step="0.1"></div>
+      <div class="row"><label for="s-m"><span>มวลของทรงกลมแต่ละลูก <i class="m">m</i></span><output id="o-m"></output></label>
+        <input type="range" id="s-m" min="1" max="50" step="1"></div>
+      <div class="row"><label for="s-L"><span>ความยาวเส้นด้าย <i class="m">L</i></span><output id="o-L"></output></label>
+        <input type="range" id="s-L" min="0.2" max="1" step="0.05"></div>
+      <div class="btns"><button class="btn" id="b-ex">ค่าของ Ex. 1.10</button></div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณ</h2>
+    <div class="eq" id="eq"></div>
+    <div class="res" id="res"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: ประจุไม่เท่ากัน ลูกไหนเอียงมากกว่า</summary>
+    <p class="q">กด "ค่าของ Ex. 1.10" แล้วตั้ง <i class="m">q</i><sub>1</sub> = 1.0 μC และ <i class="m">q</i><sub>2</sub> = 4.0 μC ก่อนดูภาพ ให้ทำนายว่าด้ายของลูกใดเอียงมากกว่า</p>
+    <p class="q"><b>คำตอบ</b> เอียงเท่ากันทั้งสองข้าง <i class="m">θ</i> = 28.2° แรงไฟฟ้าที่ลูกทั้งสองกระทำต่อกันเป็นคู่แรงกิริยา–ปฏิกิริยา มีขนาดเท่ากัน (0.161 N) ทรงกลมมีมวลเท่ากัน มุมจึงเท่ากันแม้ประจุไม่เท่ากัน</p>
+  </details>
+  <details>
+    <summary>2. ตรวจ Ex. 1.10</summary>
+    <p class="q">กด "ค่าของ Ex. 1.10" (ประจุลูกละ 3.0 μC มวลลูกละ 30 g ด้ายยาว 0.50 m) ทรงกลมอยู่ห่างกันเท่าใด และแรงไฟฟ้ามีขนาดเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> <i class="m">r</i> = 0.600 m และ <i class="m">θ</i> = 36.9° (ประมาณ 37° ตามชีท ซึ่ง sin <i class="m">θ</i> = 0.6) แรงไฟฟ้า 0.225 N ตรงกับ Ex. 1.10 ซึ่งให้ประจุลูกละ 3.0 μC จากระยะห่าง 0.60 m</p>
+  </details>
+  <details>
+    <summary>3. เพิ่มประจุเป็น 2 เท่า มุมเพิ่มเป็น 2 เท่าหรือไม่</summary>
+    <p class="q">ใช้มวลและความยาวเส้นด้ายของ Ex. 1.10 ตั้งประจุลูกละ 2.0 μC แล้วเปลี่ยนเป็นลูกละ 4.0 μC มุมและแรงไฟฟ้าเปลี่ยนไปอย่างไร</p>
+    <p class="q"><b>คำตอบ</b> มุมเพิ่มจาก 28.2° เป็น 44.4° ไม่ถึง 2 เท่า และแรงไฟฟ้าเพิ่มจาก 0.161 N เป็น 0.294 N ไม่ถึง 4 เท่า แม้ผลคูณของประจุเพิ่มเป็น 4 เท่า เพราะทรงกลมผลักกันจนอยู่ห่างกันมากขึ้น ระยะ <i class="m">r</i> ที่เพิ่มขึ้นทำให้แรงลดลงตาม 1/<i class="m">r</i><sup>2</sup></p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าทรงกลมเป็นจุดประจุ (เล็กมากเมื่อเทียบกับ <i class="m">r</i>) ด้ายเบา ไม่ยืด และเป็นฉนวน ประจุไม่รั่ว ทรงกลมสองลูกมีมวลเท่ากันเสมอ และใช้ <i class="m">g</i> = 10 m/s<sup>2</sup> ตาม Ex. 1.10 กับ <i class="m">k</i> = 9.0 × 10<sup>9</sup> N·m<sup>2</sup>/C<sup>2</sup> มุม <i class="m">θ</i> หาจากการแก้สมการ tan <i class="m">θ</i> = <i class="m">F</i><sub>E</sub>/(<i class="m">mg</i>) โดย <i class="m">r</i> = 2<i class="m">L</i> sin <i class="m">θ</i> ด้วยการคำนวณเชิงตัวเลข ตัวเลขจึงแสดง 3 ตัว และขั้นถัดไปใช้ค่าที่ปัดแล้ว ประจุวาดเป็นบวกทั้งคู่ ถ้าเป็นลบทั้งคู่ ผลเหมือนกันเพราะยังผลักกัน ภาพไม่ได้วาดตามมาตราส่วน เมื่อมุมกว้าง ภาพย่อความยาวเส้นด้ายให้อยู่ในจอ ลูกศรแรงบนลูกขวาเป็นสัดส่วนกัน ยกเว้นลูกศรที่สั้นมาก ซึ่งวาดด้วยความยาวขั้นต่ำเพื่อให้เห็นทิศ และขนาดทรงกลมวาดใหญ่กว่าจริง</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt,m}=DP;
+const rd=(v,n)=>{ if(!isFinite(v)||v===0) return v; const [mt,ex]=Math.abs(v).toExponential(11).split("e"), dg=mt.replace(".",""); return Math.sign(v)*Number((Number(dg.slice(0,n))+(+dg[n]>=5?1:0))+"e"+(+ex-n+1)); };   // round half up on the decimal digits, so floating-point noise (674999.99999…) still gives 6.8 × 10^5 as by hand
+const fmt=(x,n,o)=>DP.fmt(rd(x,n||3),n,o);
+const fx=(x,d)=>DP.fx(Math.sign(x)*Number(Math.round(Number(Math.abs(x).toPrecision(12)+"e"+d))+"e-"+d),d);   // same for a fixed number of decimals
+const K=9.0e9, G=10;
+const st={q1:3,q2:3,m:30,L:0.5};
+const sub=s=>`<sub>${s}</sub>`;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };
+const sq=a=>`<span class="rad"><span class="rs">√</span><span class="rb"><span class="fp">(</span>${a}<span class="fp">)</span></span></span>`;
+const s3=v=>rd(v,3);
+
+/* equilibrium: tan θ = k q1 q2 /(mg r²) with r = 2L sin θ; the left side minus the right side increases with θ, so bisection finds the one root */
+function solve(){
+  const Q=K*st.q1*1e-6*st.q2*1e-6, mg=st.m/1000*G;
+  if(Q===0) return 0;
+  const h=t=>mg*Math.tan(t)*Math.pow(2*st.L*Math.sin(t),2)-Q;
+  let a=1e-9, b=Math.PI/2-1e-9; for(let i=0;i<200;i++){ const c=(a+b)/2; if(h(c)>0) b=c; else a=c; }
+  return (a+b)/2;
+}
+function values(){
+  const th=solve(), deg=th*180/Math.PI;
+  const r=s3(2*st.L*Math.sin(th)), mg=s3(st.m/1000*G);
+  const F= th===0?0:s3(K*st.q1*1e-6*st.q2*1e-6/(r*r));
+  const tn=s3(F/mg), tanShown=s3(Math.tan(Number(deg.toFixed(1))*Math.PI/180)), T=s3(Math.sqrt(F*F+mg*mg));
+  return {th,deg,r,mg,F,tn,tanShown,T};
+}
+
+/* drawing */
+const S=$("f"), PX=190, PY=26;
+function arrow(g,x,y,dx,dy,color,label,lx,ly,anchor){
+  let L=Math.hypot(dx,dy); if(L<1e-9) return;
+  const ux=dx/L, uy=dy/L, h=6; if(L<12){ dx=ux*12; dy=uy*12; L=12; }   // very short arrows are drawn at a minimum length so the direction shows x+=ux*11; y+=uy*11;   // start at the sphere's edge
+  el("line",{x1:x,y1:y,x2:x+dx-ux*h,y2:y+dy-uy*h,stroke:color,"stroke-width":3,"stroke-linecap":"round"},g);
+  DP.arrowHead(g,x+dx-ux*h,y+dy-uy*h,Math.atan2(dy,dx)*180/Math.PI,color,h);
+  txt(g,lx,ly,label,{"font-size":14,"font-weight":700,fill:color,"text-anchor":anchor||"middle"});
+}
+function draw(v){
+  S.textContent=""; const g=el("g",{},S), th=v.th;
+  const Ls=Math.min(176,128/Math.max(Math.sin(th),1e-9));   // shorter strings in the picture when the angle is wide
+  const hx=Math.max(Ls*Math.sin(th),12), x1=PX-hx, x2=PX+hx, y=PY+Ls*Math.cos(th);   // spheres touch when there is no repulsion
+  el("line",{x1:PX-46,y1:PY,x2:PX+46,y2:PY,stroke:"var(--ink)","stroke-width":4},g);
+  el("line",{x1:PX,y1:PY,x2:PX,y2:PY+Ls+8,stroke:"var(--helper)","stroke-width":1.2,"stroke-dasharray":"4 4"},g);
+  for(const x of [x1,x2]) el("line",{x1:PX,y1:PY,x2:x,y2:y,stroke:"var(--muted)","stroke-width":1.8},g);
+  if(th>0.1){   // angle marks (left out when the angle is too small to label)
+    const R=34; for(const s of [-1,1]){ const ex=PX+s*R*Math.sin(th), ey=PY+R*Math.cos(th);
+      el("path",{d:`M${PX},${PY+R} A${R},${R} 0 0 ${s>0?0:1} ${ex.toFixed(1)},${ey.toFixed(1)}`,fill:"none",stroke:"var(--ink)","stroke-width":1.3},g);
+      const a=th/2, tx=PX+s*(R+11)*Math.sin(a), ty=PY+(R+11)*Math.cos(a)+5; txt(g,tx,ty,[["θ",{it:1}]],{"text-anchor":"middle","font-size":14}); }
+    }
+  txt(g,(PX+x1)/2-10,(PY+y)/2,[["L",{it:1}]],{"font-size":15,"text-anchor":"end"});
+  // separation r between the centres
+  if(th>0.02){ const yy=y; el("line",{x1:x1+14,y1:yy,x2:x2-14,y2:yy,stroke:"var(--helper)","stroke-width":1.2},g);
+    DP.arrowHead(g,x1+14,yy,180,"var(--helper)",4); DP.arrowHead(g,x2-14,yy,0,"var(--helper)",4);
+    if(x2-x1>60) txt(g,PX,yy-6,[["r",{it:1}]],{"text-anchor":"middle","font-size":15,fill:"var(--muted)"}); }
+  // spheres
+  for(const [x,q,n] of [[x1,st.q1,"1"],[x2,st.q2,"2"]]){
+    el("circle",{cx:x,cy:y,r:11,fill:q>0?"var(--pos)":"var(--card)",stroke:q>0?"none":"var(--helper)","stroke-width":1.5},g);
+    if(q>0) txt(g,x,y+6,"+",{"text-anchor":"middle","font-size":17,"font-weight":700,fill:"#fff"});
+  }
+  // forces on the right sphere, one scale: T, mg, F_E (F_E² + (mg)² = T²)
+  const sc=Math.min(80/v.T,(v.F>0?42/v.F:Infinity));
+  const ux=(PX-x2), uy=(PY-y), uL=Math.hypot(ux,uy), Tl=v.T*sc;
+  arrow(g,x2,y,ux/uL*Tl,uy/uL*Tl,"var(--ink)",[["T",{it:1}]],x2+ux/uL*(Tl+11)+12,y+uy/uL*(Tl+11)+6);
+  arrow(g,x2,y,0,v.mg*sc,"var(--weight)",[["mg",{it:1}]],x2+18,y+11+v.mg*sc-2);
+  if(v.F>0){ const fl=v.F*sc;
+    arrow(g,x2,y,fl,0,"var(--force)",[["F",{it:1}],["E",{sub:1}]],Math.min(x2+11+fl+3,360),Math.max(y-10,14),"start");
+    arrow(g,x1,y,-fl,0,"var(--force)",[["F",{it:1}],["E",{sub:1}]],Math.max(x1-11-fl-3,20),Math.max(y-10,14),"end"); }
+  txt(g,x1-6,y+30,[["q",{it:1}],["1",{sub:1}]],{"text-anchor":"end","font-size":14});
+  txt(g,x2-8,y+30,[["q",{it:1}],["2",{sub:1}]],{"text-anchor":"end","font-size":14});
+}
+
+/* text */
+const qC=q=>fmt(q*1e-6,2);
+function update(){
+  const v=values();
+  $("o-q1").textContent=st.q1===0?"0":"+"+fx(st.q1,1)+" μC"; $("o-q2").textContent=st.q2===0?"0":"+"+fx(st.q2,1)+" μC";
+  $("o-m").textContent=st.m+" g"; $("o-L").textContent=fx(st.L,2)+" m";
+  const mkg=fmt(st.m/1000,2), Ltxt=fx(st.L,2);
+  let lines;
+  if(v.th===0){
+    lines=[`${m("F")}${sub("E")} = 0|ประจุลูกหนึ่งเป็นศูนย์`, `${m("mg")} = (${mkg} kg)(10 m/s<sup>2</sup>) = ${fmt(v.mg,3)} N`, `tan ${m("θ")} = ${fr(`${m("F")}${sub("E")}`,m("mg"))} = 0 ⇒ ${m("θ")} = 0°`, `${m("T")} = ${m("mg")} = ${fmt(v.mg,3)} N`];
+    $("eq").innerHTML=DP.eqHTML(lines);
+  } else {
+    lines=[
+      `${m("r")} = 2${m("L")} sin ${m("θ")} = 2(${Ltxt} m) sin ${fx(v.deg,1)}° = ${fmt(v.r,3)} m`,
+      `${m("F")}${sub("E")} = ${fr(`${m("k")}│${m("q")}${sub(1)}││${m("q")}${sub(2)}│`,`${m("r")}<sup>2</sup>`)} = ${fr(`(9.0 × 10<sup>9</sup>)(${qC(st.q1)})(${qC(st.q2)})`,`(${fmt(v.r,3)})<sup>2</sup>`)} = ${fmt(v.F,3)} N`,
+      `${m("mg")} = (${mkg} kg)(10 m/s<sup>2</sup>) = ${fmt(v.mg,3)} N`,
+      `ตรวจสมดุล: tan ${fx(v.deg,1)}° = ${fmt(v.tanShown,3,{intok:1})} และ ${fr(`${m("F")}${sub("E")}`,m("mg"))} = ${fr(`${fmt(v.F,3)} N`,`${fmt(v.mg,3)} N`)} = ${fmt(v.tn,3,{intok:1})}${fmt(v.tanShown,3,{intok:1})===fmt(v.tn,3,{intok:1})?"":"|สองค่านี้ต่างกันเพราะปัดเศษของ θ, r และ F<sub>E</sub>"}`,
+      `${m("T")} = ${sq(`${m("F")}${sub("E")}<sup>2</sup> + (${m("mg")})<sup>2</sup>`)} = ${sq(`(${fmt(v.F,3)})<sup>2</sup> + (${fmt(v.mg,3)})<sup>2</sup>`)} = ${fmt(v.T,3)} N`];
+    $("eq").innerHTML=`<div>แก้สมการ tan ${m("θ")} = ${fr(`${m("F")}${sub("E")}`,m("mg"))} โดย ${m("F")}${sub("E")} = ${fr(`${m("k")}│${m("q")}${sub(1)}││${m("q")}${sub(2)}│`,`${m("r")}<sup>2</sup>`)} และ ${m("r")} = 2${m("L")} sin ${m("θ")} พร้อมกัน ได้ <span class="nw">${m("θ")} = ${fx(v.deg,1)}°</span></div>`+DP.eqHTML(lines);
+  }
+  $("res").innerHTML=v.th===0?`ด้ายทั้งสองอยู่ในแนวดิ่ง`:`ด้ายแต่ละเส้นเอียงทำมุม ${fx(v.deg,1)}° กับแนวดิ่ง ทรงกลมอยู่ห่างกัน ${fmt(v.r,3)} m`;
+  $("status").innerHTML = v.th===0
+    ? `ประจุลูกหนึ่งเป็นศูนย์ จึงไม่มีแรงไฟฟ้า ทรงกลมมีแต่น้ำหนักกับแรงดึงในเส้นด้าย ด้ายจึงอยู่ในแนวดิ่ง`
+    : `แรงที่ทรงกลมทั้งสองกระทำต่อกันเป็นคู่แรงกิริยา–ปฏิกิริยา มีขนาดเท่ากันคือ <span class="nw">${fmt(v.F,3)} N</span> ทรงกลมมีมวลเท่ากัน ด้ายทั้งสองจึงเอียงทำมุมเท่ากัน`+(st.q1!==st.q2?" แม้ประจุไม่เท่ากัน":"")+(v.deg>75?` มุมกว้างมากเพราะแรงไฟฟ้ามากกว่าน้ำหนักหลายเท่า`:"");
+  draw(v);
+}
+function sync(){ $("s-q1").value=st.q1; $("s-q2").value=st.q2; $("s-m").value=st.m; $("s-L").value=st.L; update(); }
+for(const k of ["q1","q2","m","L"]) $("s-"+k).addEventListener("input",e=>{ st[k]=+e.target.value; update(); });
+$("b-ex").addEventListener("click",()=>{ Object.assign(st,{q1:3,q2:3,m:30,L:0.5}); sync(); });
+sync();
+window.__sim={st,sync,update,solve,values};
+})();
+</script>
+
+</body>
+</html>

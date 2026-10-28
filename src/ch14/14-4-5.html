@@ -1,0 +1,226 @@
+<title>ต่อตัวเก็บประจุที่มีประจุอยู่แล้วเข้าด้วยกัน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+/* stacked fractions and square roots: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp,.rad .fp{display:none}
+.rad{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.rad>.rs{font-size:1.5em;line-height:1;align-self:center;margin-right:-1px}
+.rad>.rb{border-top:1.5px solid currentColor;padding:2px 2px 0}
+.flat .fr,.flat .fr>span,.flat .rad,.flat .rad>span{display:inline;padding:0;margin:0;border:0;font-size:inherit}
+.flat .fr>.fs,.flat .fr .fp,.flat .rad .fp{display:inline}
+.res{font-size:1.08rem;font-weight:700;margin-top:8px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 4.5</div>
+  <h1>ต่อตัวเก็บประจุที่มีประจุอยู่แล้วเข้าด้วยกัน</h1>
+  <p class="lead">นำตัวเก็บประจุสองตัวที่ประจุแล้วมาต่อกันโดยไม่มีแบตเตอรี่ ต่อขั้วเหมือนกันหรือขั้วต่างกัน ดูว่าประจุแบ่งกันอย่างไร ความต่างศักย์ร่วมเป็นเท่าใด และพลังงานหายไปเท่าใด</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-f">
+    <h2 id="h-f">ตัวเก็บประจุสองตัว</h2>
+    <svg id="f" viewBox="0 0 380 240" role="img" aria-label="ตัวเก็บประจุสองตัว ประจุบนแต่ละแผ่น และลวดที่ต่อแผ่นเข้าด้วยกัน"></svg>
+    <p class="cap">ตัวเลขข้างแผ่นคือประจุบนแผ่นนั้น (สีแดงบวก สีน้ำเงินลบ) แผ่นบนสองแผ่นต่อถึงกันด้วยลวดเส้นบน แผ่นล่างสองแผ่นต่อด้วยลวดเส้นล่าง กรอบเส้นประคือกลุ่มแผ่นที่ต่อถึงกัน ซึ่งประจุรวมคงตัว</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="วิธีต่อขั้ว">
+      <button id="p-same" aria-pressed="true">ขั้วเหมือนกัน</button>
+      <button id="p-opp" aria-pressed="false">ขั้วต่างกัน</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="s-c1"><span>ความจุ <i class="m">C</i><sub>1</sub></span><output id="o-c1"></output></label>
+        <input type="range" id="s-c1" min="0" step="1"></div>
+      <div class="row"><label for="s-q1"><span>ประจุเริ่มต้น <i class="m">Q</i><sub>1</sub></span><output id="o-q1"></output></label>
+        <input type="range" id="s-q1" min="0" max="300" step="5"></div>
+      <div class="row"><label for="s-c2"><span>ความจุ <i class="m">C</i><sub>2</sub></span><output id="o-c2"></output></label>
+        <input type="range" id="s-c2" min="0" step="1"></div>
+      <div class="row"><label for="s-q2"><span>ประจุเริ่มต้น <i class="m">Q</i><sub>2</sub></span><output id="o-q2"></output></label>
+        <input type="range" id="s-q2" min="0" max="300" step="5"></div>
+      <div class="btns">
+        <button class="btn" id="b-con" aria-pressed="false">ต่อเข้าด้วยกัน</button>
+        <button class="btn" id="b-47">Ex. 4.7</button>
+        <button class="btn" id="b-48">Ex. 4.8</button>
+      </div>
+      <p class="note">เปลี่ยนค่าใดเมื่อใด ลวดจะถูกปลดออก และเริ่มจากประจุเริ่มต้นใหม่</p>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณแบบ Ex. ในชีท</h2>
+    <div class="eq" id="eq"></div>
+    <div class="res" id="res"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+  <section class="card" aria-labelledby="h-en">
+    <h2 id="h-en">พลังงานรวมของตัวเก็บประจุ</h2>
+    <svg id="bars" viewBox="0 0 380 150" role="img" aria-label="แท่งพลังงานรวมก่อนต่อและหลังต่อ"></svg>
+    <p class="cap">แท่งขวาปรากฏเมื่อต่อแล้ว ส่วนที่เป็นกรอบเส้นประคือพลังงานที่หายไปเป็นความร้อนในลวดและการแผ่คลื่นแม่เหล็กไฟฟ้า (ประกายไฟ)</p>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: ต่อกับตัวที่ไม่มีประจุ (Ex. 4.7)</summary>
+    <p class="q">กด "Ex. 4.7" (<i class="m">C</i><sub>1</sub> = 4.0 μF มีประจุ 120 μC คือประจุจนมีความต่างศักย์ 30 V และ <i class="m">C</i><sub>2</sub> = 2.0 μF ไม่มีประจุ) ก่อนกด "ต่อเข้าด้วยกัน" ให้ทำนายความต่างศักย์ร่วม และพลังงานรวมหลังต่อว่าเท่าเดิมหรือไม่</p>
+    <p class="q"><b>คำตอบ</b> ความต่างศักย์ร่วม 20 V <i class="m">Q</i><sub>1</sub>′ = 80 μC และ <i class="m">Q</i><sub>2</sub>′ = 40 μC พลังงานลดจาก 1.8 mJ เป็น 1.2 mJ หายไป 0.60 mJ ตรงกับ Ex. 4.7 ประจุรวมคงตัว แต่พลังงานไม่คงตัว</p>
+  </details>
+  <details>
+    <summary>2. ต่อขั้วต่างกัน (Ex. 4.8)</summary>
+    <p class="q">กด "Ex. 4.8" (<i class="m">C</i><sub>1</sub> = 3.0 μF มีประจุ 60 μC และ <i class="m">C</i><sub>2</sub> = 6.0 μF มีประจุ 150 μC ต่อแผ่นบวกของตัวหนึ่งกับแผ่นลบของอีกตัว) แล้วกด "ต่อเข้าด้วยกัน" แต่ละตัวมีประจุเท่าใด และแผ่นบนของ <i class="m">C</i><sub>1</sub> ยังเป็นบวกหรือไม่</p>
+    <p class="q"><b>คำตอบ</b> <i class="m">Q</i><sub>1</sub>′ = 30 μC และ <i class="m">Q</i><sub>2</sub>′ = 60 μC ตรงกับ Ex. 4.8 กลุ่มแผ่นบนมีประจุรวม +60 + (-150) = -90 μC แผ่นบนของ <i class="m">C</i><sub>1</sub> ซึ่งเดิมเป็นบวกจึงกลายเป็นลบ <i class="m">C</i><sub>1</sub> กลับขั้ว</p>
+  </details>
+  <details>
+    <summary>3. เมื่อใดพลังงานไม่หายไป</summary>
+    <p class="q">ตั้ง <i class="m">C</i><sub>1</sub> = 2.0 μF มีประจุ 40 μC และ <i class="m">C</i><sub>2</sub> = 4.0 μF มีประจุ 80 μC ต่อขั้วเหมือนกัน พลังงานหายไปเท่าใด เพราะเหตุใด</p>
+    <p class="q"><b>คำตอบ</b> ไม่หายไปเลย ทั้งสองตัวมีความต่างศักย์ 20 V เท่ากันอยู่แล้ว ต่อแล้วไม่มีประจุไหล กรณีอื่นทุกกรณีพลังงานหลังต่อน้อยกว่าก่อนต่อเสมอ</p>
+  </details>
+  <details>
+    <summary>4. ประจุเท่ากัน ต่อขั้วต่างกัน</summary>
+    <p class="q">ตั้งให้ <i class="m">Q</i><sub>1</sub> = <i class="m">Q</i><sub>2</sub> (ความจุเท่าใดก็ได้) แล้วต่อขั้วต่างกัน หลังต่อมีประจุและพลังงานเหลือเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> เป็นศูนย์ทั้งหมด ประจุบวกและลบในแต่ละกลุ่มหักล้างกันพอดี พลังงานทั้งหมดกลายเป็นความร้อนและประกายไฟ</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าตัวเก็บประจุเป็นแบบอุดมคติ ไม่มีแบตเตอรี่ในวงจร และดูเฉพาะสภาพก่อนต่อกับหลังประจุหยุดถ่ายโอนแล้ว ไม่ได้แสดงช่วงที่ประจุกำลังไหล เมื่อต่อขั้วต่างกัน ภาพวาด <i class="m">C</i><sub>2</sub> พลิกกลับ ให้แผ่นบวกของตัวหนึ่งต่อกับแผ่นลบของอีกตัว พลังงานคำนวณจาก <i class="m">Q</i><sup>2</sup>/2<i class="m">C</i> ซึ่งเท่ากับ ½<i class="m">C</i>(Δ<i class="m">V</i>)<sup>2</sup> จำนวนเครื่องหมายบนแผ่นไม่ได้แสดงจำนวนประจุจริง ตัวเลขแสดง 2 ตัวตามเลขนัยสำคัญของข้อมูล ขั้นถัดไปใช้ค่าที่ปัดแล้ว และพลังงานแสดงตัวเลขเพิ่มเมื่อจำเป็น เพื่อให้ผลต่างของพลังงานถูกต้อง</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,m}=DP;
+const rd=(v,n)=>{ if(!isFinite(v)||v===0) return v; const [mt,ex]=Math.abs(v).toExponential(11).split("e"), dg=mt.replace(".",""); return Math.sign(v)*Number((Number(dg.slice(0,n))+(+dg[n]>=5?1:0))+"e"+(+ex-n+1)); };   // round half up on the decimal digits, so floating-point noise (674999.99999…) still gives 6.8 × 10^5 as by hand
+const fmt=(x,n,o)=>DP.fmt(rd(x,n||3),n,o);
+const CS=[1,2,3,4,5,6,8,10];   // μF
+const st={i1:3,q1:120,i2:1,q2:0,opp:false,con:false};
+const sub=s=>`<sub>${s}</sub>`, dV=`Δ${m("V")}`;
+const fr=(a,b)=>`<span class="fr"><span>${a}</span><span class="fs">/</span><span>${b}</span></span>`;
+const r2=v=>rd(v,2);
+const cv=c=>c<10?c.toFixed(1):String(c);
+const n2=v=>v===0?"0":fmt(v,2,{intok:1});
+const mJ=(v,n)=>v===0?"0":fmt(v*1e3,n||2,{intok:1});              // energies in mJ like Ex. 4.7
+const mJs=(v,n)=>v===0?"0":fmt(v*1e3,n||2,{intok:1,plain:1});     // the same inside the drawing
+const sg=v=>v>0?"+"+n2(v):v<0?"-"+n2(-v):"0";
+
+/* the model, kept as plain numbers so the test can call it */
+function solve(){
+  const C1=CS[st.i1], C2=CS[st.i2], q1=st.q1, q2=st.q2, s2=st.opp?-1:1;
+  const V1=q1===0?0:r2(q1/C1), V2=q2===0?0:r2(q2/C2);
+  const Qt=Math.abs(q1+s2*q2), Vp=Qt===0?0:r2(Qt/(C1+C2)), Q1p=r2(C1*Vp), Q2p=r2(C2*Vp);
+  const Ub=(q1*q1/C1+q2*q2/C2)*1e-6/2, Ua=Qt*Qt/(C1+C2)*1e-6/2, lossX=Ub-Ua;   // exact, in J (μC²/μF = 10^-6 J)
+  const none=!st.opp&&q1*C2===q2*C1 || q1===0&&q2===0;                          // equal ΔV with the same polarity: nothing flows, nothing is lost
+  const loss=none?0:r2(lossX);
+  // energies with 2 figures, or more when 2 would make the subtraction disagree with the loss
+  // when ΔV1 and ΔV2 are almost equal the loss is tiny: show it as ≈ with 2 figures for the energies rather than long numbers
+  let nU=2; if(!none) while(nU<4&&r2(rd(Ub,nU)-rd(Ua,nU))!==loss) nU++;
+  const tiny=!none&&r2(rd(Ub,nU)-rd(Ua,nU))!==loss; if(tiny) nU=2;
+  const top=q1+s2*q2, sgn=top>0?1:top<0?-1:0;                                  // the top group's total charge (C1's + plate side)
+  const flip1=sgn<0&&q1>0, flip2=st.opp?(sgn>0&&q2>0):(sgn<0&&q2>0);
+  return {C1,C2,q1,q2,V1,V2,Qt,Vp,Q1p,Q2p,Ub,Ua,loss,nU,tiny,none,top,sgn,flip1,flip2,
+    plates:{b1:[q1,-q1],b2:[s2*q2,-s2*q2],a1:[sgn*Q1p,-sgn*Q1p],a2:[sgn*Q2p,-sgn*Q2p]}};
+}
+
+/* drawing */
+const G=$("f"), X1=96, X2=262, PT=112, PB=146, WT=64, WB=194, PW=56;
+const halo=t=>{ t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); return t; };
+const ptxt=(q,exact)=>q===0?"0":(q>0?"+":"-")+(exact?String(Math.abs(q)):fmt(Math.abs(q),2,{intok:1,plain:1}))+" μC";   // given charges exactly, computed ones with 2 figures
+function plate(x,y,q,up,exact){
+  el("line",{x1:x-PW/2,y1:y,x2:x+PW/2,y2:y,stroke:"var(--ink)","stroke-width":3},G);
+  // signs on the inner face (charge sits on the faces that look at each other), one per 25 μC or so
+  const n=q===0?0:Math.max(1,Math.min(6,Math.round(Math.abs(q)/25))), dy=up?13:-4;
+  for(let i=0;i<n;i++){ const xx=x-PW/2+PW*(i+0.5)/n; txt(G,xx,y+dy,q>0?"+":"−",{"text-anchor":"middle","font-size":12,"font-weight":700,fill:q>0?"var(--pos)":"var(--elec)"}); }
+  halo(txt(G,x+PW/2+8,y+(up?-6:14),ptxt(q,exact),{"font-size":12,"font-weight":700,fill:q>0?"var(--pos)":q<0?"var(--elec)":"var(--muted)"}));
+}
+function wireRow(y,closed){
+  const w={stroke:"var(--ink)","stroke-width":2,fill:"none"}, mid=(X1+X2)/2;
+  el("path",{d:`M${X1},${y===WT?PT:PB} V${y} H${mid-14}`,...w},G); el("path",{d:`M${X2},${y===WT?PT:PB} V${y} H${mid+14}`,...w},G);
+  if(closed) el("line",{x1:mid-14,y1:y,x2:mid+14,y2:y,...w},G); else el("line",{x1:mid-14,y1:y,x2:mid+10,y2:y-12,...w},G);
+  for(const x of [mid-14,mid+14]) el("circle",{cx:x,cy:y,r:2.5,fill:"var(--ink)"},G);
+}
+function draw(s){
+  G.textContent="";
+  const P=st.con?[s.plates.a1,s.plates.a2]:[s.plates.b1,s.plates.b2];
+  // groups of joined plates
+  for(const [y0,y1,q,lab] of [[WT-18,PT+3,s.top,"บน"],[PB-3,WB+18,-s.top,"ล่าง"]]){   // conserved, so the given total is shown before and after
+    el("rect",{x:X1-PW/2-4,y:y0,width:X2-X1+PW+8,height:y1-y0,rx:8,fill:"none",stroke:"var(--helper)","stroke-dasharray":"4 4"},G);
+    const ty=lab==="บน"?y0-6:y1+15;
+    txt(G,(X1+X2)/2,ty,`กลุ่มแผ่น${lab}: ประจุรวม ${ptxt(q,true)}`,{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); }
+  wireRow(WT,st.con); wireRow(WB,st.con);
+  txt(G,(X1+X2)/2,WT+22,st.con?"ต่อแล้ว":"ยังไม่ต่อ",{"text-anchor":"middle","font-size":11.5,fill:"var(--muted)"});
+  for(const [x,pp,i,C,V] of [[X1,P[0],"1",s.C1,st.con?s.Vp:s.V1],[X2,P[1],"2",s.C2,st.con?s.Vp:s.V2]]){
+    plate(x,PT,pp[0],true,!st.con); plate(x,PB,pp[1],false,!st.con);
+    txt(G,x-PW/2-6,(PT+PB)/2+5,[["C",{it:1}],[i,{sub:1}]],{"text-anchor":"end","font-size":13,"font-weight":700});
+    if(i==="2"&&st.opp) txt(G,x-PW/2-6,(PT+PB)/2+21,"(พลิก)",{"text-anchor":"end","font-size":11,fill:"var(--muted)"});
+    txt(G,x+PW/2+8,(PT+PB)/2+5,[["Δ",{}],["V",{it:1}],[i,{sub:1}],[` = ${n2(V)} V`,{}]],{"font-size":11.5,fill:"var(--muted)"});
+  }
+}
+const B=$("bars");
+function drawBars(s){
+  B.textContent=""; const base=104, H=84, Um=Math.max(s.Ub,1e-12), h=u=>H*u/Um;
+  el("line",{x1:40,y1:base,x2:250,y2:base,stroke:"var(--ink)","stroke-width":1.2},B);
+  const bar=(x,u,lab,val)=>{ if(u>0) el("rect",{x:x-30,y:base-h(u),width:60,height:h(u),fill:"var(--graph)","fill-opacity":0.85},B);
+    txt(B,x,base+17,lab,{"text-anchor":"middle","font-size":12,fill:"var(--muted)"}); txt(B,x,base+33,val,{"text-anchor":"middle","font-size":12,"font-weight":700}); };
+  bar(90,s.Ub,"ก่อนต่อ",`${mJs(s.Ub,s.nU)} mJ`);
+  if(st.con){ bar(200,s.Ua,"หลังต่อ",`${mJs(s.Ua,s.nU)} mJ`);
+    if(s.loss>0){ const y0=base-h(s.Ub), y1=base-h(s.Ua); el("rect",{x:170,y:y0,width:60,height:Math.max(0.5,y1-y0),fill:"none",stroke:"var(--heat)","stroke-width":1.6,"stroke-dasharray":"4 3"},B);
+      txt(B,238,(y0+y1)/2+4,`หายไป ${mJs(s.loss)} mJ`,{"font-size":12,"font-weight":700,fill:"var(--heat)"}); } }
+}
+
+/* text */
+function update(){
+  const s=solve(), {C1,C2,q1,q2}=s;
+  DP.setSeg(["p-same","p-opp"],st.opp?"p-opp":"p-same");
+  $("o-c1").textContent=cv(C1)+" μF"; $("o-c2").textContent=cv(C2)+" μF"; $("o-q1").textContent=q1+" μC"; $("o-q2").textContent=q2+" μC";
+  $("s-c1").max=CS.length-1; $("s-c2").max=CS.length-1; $("s-c1").value=st.i1; $("s-c2").value=st.i2; $("s-q1").value=q1; $("s-q2").value=q2;
+  $("b-con").setAttribute("aria-pressed",st.con); $("b-con").textContent=st.con?"แยกออก":"ต่อเข้าด้วยกัน";
+  const L=[`${dV}${sub(1)} = ${fr(`${m("Q")}${sub(1)}`,`${m("C")}${sub(1)}`)} = ${fr(`${q1} μC`,`${cv(C1)} μF`)} = ${n2(s.V1)} V และ ${dV}${sub(2)} = ${fr(`${q2} μC`,`${cv(C2)} μF`)} = ${n2(s.V2)} V|ก่อนต่อ`];
+  const Ubt=[[q1,C1],[q2,C2]].map(([q,C])=>q===0?"0":fr(`(${q} × 10<sup>-6</sup>)<sup>2</sup>`,`2(${cv(C)} × 10<sup>-6</sup>)`)).join(" + ");
+  L.push(`${m("U")}<sub>ก่อน</sub> = ${fr(`${m("Q")}${sub(1)}<sup>2</sup>`,`2${m("C")}${sub(1)}`)} + ${fr(`${m("Q")}${sub(2)}<sup>2</sup>`,`2${m("C")}${sub(2)}`)} = ${Ubt} = ${mJ(s.Ub,s.nU)} mJ`);
+  let res="", sta;
+  if(!st.con){
+    sta = s.none&&(q1||q2) ? `ความต่างศักย์ของสองตัวเท่ากันอยู่แล้วและต่อขั้วเหมือนกัน ลองทำนายก่อนกด "ต่อเข้าด้วยกัน" ว่าจะมีประจุไหลหรือไม่`
+      : `ลองทำนายก่อนกด "ต่อเข้าด้วยกัน" ว่าความต่างศักย์ร่วมเป็นเท่าใด และพลังงานรวมหลังต่อเท่าเดิมหรือไม่`;
+  } else {
+    L.push(st.opp ? `${m("Q")}<sub>รวม</sub> = │${m("Q")}${sub(1)} - ${m("Q")}${sub(2)}│ = │${q1} - ${q2}│ = ${s.Qt} μC|ต่อขั้วต่างกัน ประจุหักล้างกันบางส่วน`
+                  : `${m("Q")}<sub>รวม</sub> = ${m("Q")}${sub(1)} + ${m("Q")}${sub(2)} = ${q1} + ${q2} = ${s.Qt} μC|ต่อขั้วเหมือนกัน`);
+    L.push(`${dV}′ = ${fr(`${m("Q")}<sub>รวม</sub>`,`${m("C")}${sub(1)} + ${m("C")}${sub(2)}`)} = ${fr(`${s.Qt} μC`,`${cv(C1+C2)} μF`)} = ${n2(s.Vp)} V|ความต่างศักย์ร่วม`);
+    L.push(`${m("Q")}${sub(1)}′ = ${m("C")}${sub(1)}${dV}′ = (${cv(C1)})(${n2(s.Vp)}) = ${n2(s.Q1p)} μC และ ${m("Q")}${sub(2)}′ = (${cv(C2)})(${n2(s.Vp)}) = ${n2(s.Q2p)} μC`);
+    if(Number((s.Q1p+s.Q2p).toPrecision(12))!==s.Qt) L.push(`ผลรวม ${n2(s.Q1p)} + ${n2(s.Q2p)} ต่างจาก ${s.Qt} μC เล็กน้อยเพราะการปัดเลข`);
+    L.push(`${m("U")}<sub>หลัง</sub> = ${fr(`${m("Q")}<sub>รวม</sub><sup>2</sup>`,`2(${m("C")}${sub(1)} + ${m("C")}${sub(2)})`)} = ${s.Qt===0?"0":fr(`(${s.Qt} × 10<sup>-6</sup>)<sup>2</sup>`,`2(${cv(C1+C2)} × 10<sup>-6</sup>)`)} = ${mJ(s.Ua,s.nU)} mJ`);
+    L.push(`พลังงานที่หายไป = ${m("U")}<sub>ก่อน</sub> - ${m("U")}<sub>หลัง</sub> = ${mJ(s.Ub,s.nU)} - ${mJ(s.Ua,s.nU)} ${s.tiny?"≈":"="} ${mJ(s.loss)} mJ${s.tiny?"|ความต่างศักย์เดิมเกือบเท่ากัน พลังงานที่หายไปจึงน้อยมาก ผลต่างนี้คิดจากค่าที่ละเอียดกว่าที่แสดง":""}`);
+    res=`ความต่างศักย์ร่วม ${n2(s.Vp)} V ${m("Q")}${sub(1)}′ = ${n2(s.Q1p)} μC และ ${m("Q")}${sub(2)}′ = ${n2(s.Q2p)} μC พลังงานหายไป ${mJ(s.loss)} mJ`;
+    if(q1===0&&q2===0) sta=`ไม่มีประจุตั้งแต่แรก จึงไม่มีอะไรเปลี่ยน`;
+    else if(s.none) sta=`ไม่มีประจุไหล และพลังงานไม่หายไป เพราะความต่างศักย์เท่ากันอยู่แล้วและต่อขั้วเหมือนกัน เป็นกรณีเดียวที่พลังงานไม่ลดลง`;
+    else if(s.Qt===0) sta=`ประจุบวกและลบในแต่ละกลุ่มหักล้างกันพอดี หลังต่อไม่เหลือประจุ พลังงานทั้งหมดกลายเป็นความร้อนในลวดและประกายไฟ`;
+    else { sta=`ประจุถ่ายโอนจนความต่างศักย์ของสองตัวเท่ากัน ประจุรวมของแต่ละกลุ่มแผ่นคงตัว แต่พลังงานรวมลดลง ส่วนที่หายไปกลายเป็นความร้อนในลวดและการแผ่คลื่นแม่เหล็กไฟฟ้า`;
+      const fl=[s.flip1?`${m("C")}${sub(1)}`:"",s.flip2?`${m("C")}${sub(2)}`:""].filter(Boolean);
+      if(fl.length) sta+=` และ ${fl.join(" กับ ")} กลับขั้ว แผ่นที่เคยเป็นบวกกลายเป็นลบ`; }
+  }
+  $("eq").innerHTML=DP.eqHTML(L); $("res").innerHTML=res; $("status").innerHTML=sta;
+  draw(s); drawBars(s);
+}
+const off=()=>{ st.con=false; };
+DP.seg(["p-same","p-opp"],id=>{ st.opp=id==="p-opp"; off(); update(); });
+for(const [id,k] of [["s-c1","i1"],["s-c2","i2"],["s-q1","q1"],["s-q2","q2"]]) $(id).addEventListener("input",e=>{ st[k]=+e.target.value; off(); update(); });
+$("b-con").addEventListener("click",()=>{ st.con=!st.con; update(); });
+$("b-47").addEventListener("click",()=>{ Object.assign(st,{i1:CS.indexOf(4),q1:120,i2:CS.indexOf(2),q2:0,opp:false,con:false}); update(); });
+$("b-48").addEventListener("click",()=>{ Object.assign(st,{i1:CS.indexOf(3),q1:60,i2:CS.indexOf(6),q2:150,opp:true,con:false}); update(); });
+update();
+window.__sim={st,CS,solve,update};
+})();
+</script>

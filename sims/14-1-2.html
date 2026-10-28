@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>การเหนี่ยวนำไฟฟ้าสถิตและการต่อสายดิน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Daisy Physics simulations — shared look. Colours follow the sheet: red = current / positive charge, blue = electrons / main graph line, black = circuit symbols and velocity, orange = light and heat, grey = helper lines. */
+/* Chapter 14 (electrostatics) adds: purple = electric field E, orange = electric force F and equipotential lines, green = resultant force, brown = weight mg, dark grey = field lines, crimson/teal = forces from the left/right charge (sheet Fig 1.10); red = positive charge, blue = negative charge. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
+  --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
+  --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
+  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#e27a0f; --f1:#c2185b; --f2:#1b9aaa;
+  --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
+  --math:"Times New Roman","Noto Serif",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
+  --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.nw{white-space:nowrap}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+h1{font-size:1.45rem;line-height:1.3;margin:0;text-wrap:balance;font-weight:700}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+i.m{font-family:var(--math);font-style:italic;font-size:1.08em}
+sub,sup{font-size:.72em}
+.grid{display:grid;gap:16px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr;align-items:start}}
+.col{display:grid;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:1rem;margin:0 0 8px;font-weight:700}
+svg{display:block;width:100%;height:auto;touch-action:none}
+canvas{display:block;width:100%;height:auto;border-radius:6px}
+.cap{font-size:13px;color:var(--muted);margin:6px 0 0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:15px;font-weight:600;border:0;border-radius:7px;padding:10px 6px;background:transparent;color:var(--muted);cursor:pointer;min-height:44px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.ctl{display:grid;gap:14px;margin-top:14px}
+.row{display:grid;gap:4px}
+.row label{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.row label>span{min-width:0;flex:1}
+.stat div,.card,.col{min-width:0}
+.row output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+input[type=range]{width:100%;height:36px;margin:0;accent-color:var(--graph)}
+select{font:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--chip);font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--graph);outline-offset:2px}
+.eq{font-variant-numeric:tabular-nums;display:grid;gap:6px;font-size:16px}
+.eq div{min-width:0}
+.status{font-size:15px;border-left:4px solid var(--helper);padding:6px 10px;background:var(--chip);border-radius:0 6px 6px 0}
+.status.rev{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
+.ext{font-size:14px;padding:8px 10px;border-radius:6px;background:var(--ext-bg);color:var(--ext-ink)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+.ebar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin:6px 0 4px;background:var(--chip)}
+.ebar span{display:block;height:100%;transition:width .25s}
+.legend{display:grid;gap:2px;font-size:15px;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;color:var(--graph)}
+.q{margin:0 0 6px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.big{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.ebar span{transition:none}}
+.eyebrow a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.back{margin:18px 0 4px}.back a{display:inline-block;padding:12px 0;font-weight:600;color:var(--graph);text-decoration:none}
+summary{padding:10px 0;min-height:44px;box-sizing:border-box}
+
+.lab{font-size:15px;margin:0 0 4px}
+.seg4{grid-auto-columns:1fr}
+.seg4 button{padding:10px 2px;font-size:14px}
+.log{margin:4px 0 0;padding-left:24px;font-size:15px}
+.log li{margin:3px 0}
+#tbl td:last-child{font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 1.2</div>
+  <h1>การเหนี่ยวนำไฟฟ้าสถิตและการต่อสายดิน</h1>
+  <p class="lead">นำแท่งที่มีประจุเข้าใกล้อิเล็กโทรสโคปหรือทรงกลมโลหะสองลูกโดยไม่แตะ แล้วลองต่อสายดิน แยกทรงกลม และนำแท่งออกในลำดับต่าง ๆ ดูว่าอิเล็กตรอนเคลื่อนที่อย่างไร และสุดท้ายเหลือประจุเท่าใด</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-f">
+    <h2 id="h-f">ภาพ</h2>
+    <svg id="f" viewBox="0 0 380 300" role="img" aria-label="แท่งที่มีประจุกับตัวนำ และประจุที่เกิดขึ้น"></svg>
+    <p class="cap">เครื่องหมาย + (แดง) และ − (น้ำเงิน) แต่ละตัวแทนประจุ 1 หน่วย ซึ่งเป็นประจุจำนวนหนึ่ง ไม่ใช่อิเล็กตรอนตัวเดียว ภาพวาดเฉพาะประจุส่วนเกินและประจุที่ถูกแยกออกมา ส่วนที่ยังเป็นกลางไม่ได้วาด ลูกศรสีน้ำเงิน e<sup>−</sup> บอกทางที่อิเล็กตรอนเพิ่งเคลื่อนที่</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="ตัวนำ">
+      <button id="m-es" aria-pressed="true">อิเล็กโทรสโคป</button>
+      <button id="m-sp" aria-pressed="false">ทรงกลม 2 ลูก</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><p class="lab">แท่งที่นำมาใช้</p>
+        <div class="seg" role="group" aria-label="ชนิดประจุของแท่ง">
+          <button id="r-neg" aria-pressed="true">แท่งประจุลบ</button>
+          <button id="r-pos" aria-pressed="false">แท่งประจุบวก</button>
+        </div></div>
+      <div class="row"><p class="lab">ตำแหน่งของแท่ง</p>
+        <div class="seg seg4" role="group" aria-label="ตำแหน่งของแท่ง">
+          <button id="lv0" aria-pressed="true">ไม่มีแท่ง</button>
+          <button id="lv1" aria-pressed="false">ไกล</button>
+          <button id="lv2" aria-pressed="false">ใกล้</button>
+          <button id="lv3" aria-pressed="false">ใกล้มาก</button>
+        </div></div>
+      <div class="btns">
+        <button class="btn" id="b-gnd">แตะจานด้วยนิ้ว</button>
+        <button class="btn" id="b-sep" hidden>แยกทรงกลมออกจากกัน</button>
+        <button class="btn" id="b-plus">อิเล็กโทรสโคปมีประจุบวก (Ex. 1.4)</button>
+        <button class="btn" id="b-reset">เริ่มใหม่</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-q">
+    <h2 id="h-q">ประจุตอนนี้</h2>
+    <table class="tbl" id="tbl"></table>
+    <p class="cap">นับเป็นหน่วยตามจำนวนเครื่องหมายในภาพ ค่าบวกคือขาดอิเล็กตรอน ค่าลบคือมีอิเล็กตรอนเกิน</p>
+    <div class="status" id="status" style="margin-top:10px"></div>
+    <h2 style="margin-top:14px">ขั้นที่ทำแล้ว</h2>
+    <ol class="log" id="log"></ol>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: ถ้านำแท่งออกก่อนเอานิ้วออก</summary>
+    <p class="q">เลือกอิเล็กโทรสโคปและแท่งประจุลบ แล้วทำ 3 ขั้น: นำแท่งไปที่ "ใกล้" แตะจานด้วยนิ้ว แล้วเลือก "ไม่มีแท่ง" ขณะนิ้วยังแตะอยู่ ทำนายก่อนว่าเมื่อเอานิ้วออก อิเล็กโทรสโคปจะมีประจุชนิดใด แล้วกดตรวจ จากนั้นกด "เริ่มใหม่" แล้วทำตามลำดับในชีท คือเอานิ้วออกก่อนนำแท่งออก</p>
+    <p class="q"><b>คำตอบ</b> ถ้านำแท่งออกก่อน อิเล็กตรอน 4 หน่วยที่ไหลลงดินจะไหลกลับขึ้นมา อิเล็กโทรสโคปเป็นกลาง แผ่นโลหะบางหุบ ถ้าทำตามลำดับในชีท ประจุ +4 หน่วยจะค้างอยู่ จานและแผ่นโลหะบางมีประจุบวก แผ่นจึงกางออก อิเล็กโทรสโคปได้ประจุชนิดตรงข้ามกับแท่ง และแท่งยังมีประจุเท่าเดิม เพราะไม่ได้แตะกัน</p>
+  </details>
+  <details>
+    <summary>2. ทรงกลมสองลูก: แยกก่อนหรือนำแท่งออกก่อน</summary>
+    <p class="q">เลือกทรงกลม 2 ลูกและแท่งประจุลบ แล้วลองสองลำดับ (ก) นำแท่งไปที่ "ใกล้" แยกทรงกลม แล้วนำแท่งออก (ข) กด "เริ่มใหม่" นำแท่งไปที่ "ใกล้" แล้วนำแท่งออกก่อนแยกทรงกลม แต่ละลำดับ ทรงกลม A และ B มีประจุเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> (ก) A มีประจุ +4 หน่วย B มีประจุ -4 หน่วย ขนาดเท่ากัน ชนิดตรงข้าม ประจุรวมยังเป็นศูนย์ตามกฎการอนุรักษ์ประจุ (ข) อิเล็กตรอนไหลกลับมาหักล้างกัน ทั้งสองลูกเป็นกลางเหมือนเดิม</p>
+  </details>
+  <details>
+    <summary>3. ตรวจชนิดประจุด้วยอิเล็กโทรสโคปที่มีประจุ (Ex. 1.4)</summary>
+    <p class="q">กด "อิเล็กโทรสโคปมีประจุบวก (Ex. 1.4)" แล้วนำแท่งประจุลบเข้าใกล้ทีละระดับ คือ ไกล ใกล้ และใกล้มาก แผ่นโลหะบางเป็นอย่างไร ถ้าเปลี่ยนเป็นแท่งประจุบวกล่ะ</p>
+    <p class="q"><b>คำตอบ</b> แท่งประจุลบทำให้แผ่นหุบลง (ไกล) หุบสนิท (ใกล้) แล้วกางออกอีกครั้ง (ใกล้มาก) เพราะอิเล็กตรอนที่ถูกผลักลงมามีมากจนแผ่นโลหะบางมีประจุลบ ส่วนแท่งประจุบวกทำให้แผ่นกางมากขึ้นเรื่อย ๆ การเห็นแผ่นกางมากขึ้นจึงยืนยันได้ว่าแท่งมีประจุชนิดเดียวกับอิเล็กโทรสโคป ส่วนการเห็นแผ่นหุบลงสรุปชนิดประจุไม่ได้ เพราะตัวนำที่เป็นกลางก็ทำให้แผ่นหุบลงได้ (แบบจำลองนี้ไม่ได้แสดงกรณีตัวนำที่เป็นกลาง)</p>
+  </details>
+  <details>
+    <summary>4. ต่อสายดินแล้วเป็นกลางเสมอหรือไม่</summary>
+    <p class="q">กด "เริ่มใหม่" นำแท่งประจุลบไปที่ "ใกล้มาก" แล้วแตะจานด้วยนิ้วค้างไว้ อิเล็กโทรสโคปเป็นกลางหรือไม่</p>
+    <p class="q"><b>คำตอบ</b> ไม่เป็นกลาง จานมีประจุเหนี่ยวนำ +6 หน่วย ชนิดตรงข้ามกับแท่ง แผ่นโลหะบางหุบเพราะไม่มีประจุ การต่อสายดินทำให้ตัวนำเป็นกลางเฉพาะเมื่อไม่มีวัตถุที่มีประจุอยู่ใกล้</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้นับประจุเป็นหน่วยเพื่อให้นับได้ จำนวนและตำแหน่งของเครื่องหมายวาดอย่างง่าย ไม่ได้คำนวณจากกฎของคูลอมบ์ ในอิเล็กโทรสโคป ถือว่าประจุสุทธิแบ่งอยู่ที่จานและแผ่นโลหะบางเท่ากัน และแท่งแยกประจุได้ 1 หน่วยต่อระดับความใกล้ ทรงกลมสองลูกที่แตะกันแยกประจุได้ 2 หน่วยต่อระดับ ทรงกลมที่แยกกันแล้ววาดการแยกประจุภายในลูกเพียง 1 คู่เมื่อมีแท่งอยู่ใกล้ เมื่อแตะจานขณะมีแท่งอยู่ใกล้ อิเล็กตรอนที่ไหลลงดินมีมากกว่าที่ถูกผลักลงไปที่แผ่นโลหะบาง เพราะเมื่อมีทางลงดิน แท่งผลักอิเล็กตรอนออกจากจานได้เพิ่มขึ้นด้วย ประจุบนจานจึงมากขึ้นและแผ่นโลหะบางหุบสนิท มุมกางของแผ่นโลหะบางเพิ่มตามประจุบนแผ่นแบบประมาณ ภาพไม่ได้วาดตามมาตราส่วน ข้อสรุปเรื่องชนิดประจุ ลำดับขั้นตอน และการอนุรักษ์ประจุเป็นไปตามชีท</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/* Daisy Physics simulations — shared helpers (drawing, number formatting, controls). */
+const DP=(function(){
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+/* text with optional math: parts written as [[ "R", {it:1} ], ["1",{sub:1}], " = 5 Ω"] or a plain string */
+function txt(parent,x,y,s,attrs){
+  const t=el("text",Object.assign({x,y,fill:"var(--ink)","font-size":14,"font-family":"var(--font)"},attrs||{}),parent);
+  if(typeof s==="string"){ t.textContent=s; return t; }
+  for(const p of s){ const [str,o]=typeof p==="string"?[p,{}]:p; const ts=el("tspan",{},t);
+    if(o.it){ ts.setAttribute("font-family","var(--math)"); ts.setAttribute("font-style","italic"); ts.setAttribute("font-size",(+(attrs&&attrs["font-size"])||14)+2); }
+    if(o.sub){ ts.setAttribute("font-size",Math.round(((+(attrs&&attrs["font-size"])||14))*0.72)); ts.setAttribute("dy",3); }
+    if(o.back){ ts.setAttribute("dy",-3); }
+    if(o.bold){ ts.setAttribute("font-weight",700); }
+    ts.textContent=str; }
+  return t;
+}
+const pl=pts=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+const K={stroke:"var(--ink)","stroke-width":2,fill:"none","stroke-linecap":"round","stroke-linejoin":"round"};
+function wire(g,pts,extra){ return el("polyline",Object.assign({points:pl(pts)},K,extra||{}),g); }
+/* zigzag resistor between two points (horizontal or vertical or any angle) */
+function resistor(g,x0,y0,x1,y1,n,amp){
+  n=n||5; amp=amp||7; const L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L, nx=-uy, ny=ux;
+  const pts=[[x0,y0]]; for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), s=(i%2?1:-1)*amp; pts.push([x0+ux*L*t+nx*s, y0+uy*L*t+ny*s]); } pts.push([x1,y1]);
+  return wire(g,pts);
+}
+/* cell symbol centred at (x,y) on a wire; dir = "h" (horizontal wire) or "v"; plusSide = "left"|"right" (h) or "up"|"down" (v) */
+function cell(g,x,y,dir,plusSide,opt){
+  opt=opt||{}; const gap=5, Lh=opt.long||15, Sh=opt.short||8;
+  const grp=el("g",{},g);
+  if(dir==="h"){
+    const pPlus = plusSide==="left"? x-gap : x+gap, pMinus = plusSide==="left"? x+gap : x-gap;
+    el("rect",{x:x-gap-2,y:y-Lh-1,width:2*gap+4,height:2*Lh+2,fill:"var(--card)"},grp);
+    el("line",{x1:pPlus,y1:y-Lh,x2:pPlus,y2:y+Lh,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:pMinus,y1:y-Sh,x2:pMinus,y2:y+Sh,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sx=plusSide==="left"?-1:1;
+      txt(grp,x+sx*(gap+9),y-Lh+1,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-sx*(gap+9),y-Lh+1,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  } else {
+    const pPlus = plusSide==="up"? y-gap : y+gap, pMinus = plusSide==="up"? y+gap : y-gap;
+    el("rect",{x:x-Lh-1,y:y-gap-2,width:2*Lh+2,height:2*gap+4,fill:"var(--card)"},grp);
+    el("line",{x1:x-Lh,y1:pPlus,x2:x+Lh,y2:pPlus,stroke:"var(--ink)","stroke-width":2.2},grp);
+    el("line",{x1:x-Sh,y1:pMinus,x2:x+Sh,y2:pMinus,stroke:"var(--ink)","stroke-width":4.5},grp);
+    if(!opt.nosign){ const sy=plusSide==="up"?-1:1;
+      txt(grp,x-Lh-8,y+sy*(gap+6)+5,"+",{"text-anchor":"middle","font-weight":700,"font-size":15});
+      txt(grp,x-Lh-8,y-sy*(gap+6)+5,"−",{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+  }
+  return grp;
+}
+function dot(g,x,y){ return el("circle",{cx:x,cy:y,r:3.6,fill:"var(--ink)"},g); }
+function meter(g,x,y,letter,r){ r=r||15; el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2},g); return txt(g,x,y+5.5,letter,{"text-anchor":"middle","font-weight":700,"font-size":15}); }
+function arrowHead(g,x,y,deg,color,size){ size=size||5; return el("path",{d:`M${-size},${-size} L${size},0 L${-size},${size} Z`,fill:color||"var(--current)",transform:`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${deg.toFixed(1)})`},g); }
+/* filament bulb: circle with a cross; glow = 0..1 (power relative to the reference) */
+function bulb(g,x,y,r,glow,removed){
+  const grp=el("g",{},g);
+  if(removed){ el("circle",{cx:x,cy:y,r,fill:"var(--card)",stroke:"var(--helper)","stroke-width":2,"stroke-dasharray":"4 3"},grp);
+    txt(grp,x,y+4,"ถอด",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"}); return grp; }
+  if(glow>0.002){ el("circle",{cx:x,cy:y,r:r+4+12*Math.sqrt(glow),fill:"var(--glow)",opacity:(0.18+0.5*Math.sqrt(glow)).toFixed(3)},grp); }
+  el("circle",{cx:x,cy:y,r,fill:glow>0.002?"var(--glow)":"var(--card)","fill-opacity":(glow>0.002?0.25+0.75*Math.sqrt(glow):1).toFixed(3),stroke:"var(--ink)","stroke-width":2},grp);
+  const d=r*0.7071; el("path",{d:`M${x-d},${y-d} L${x+d},${y+d} M${x-d},${y+d} L${x+d},${y-d}`,stroke:"var(--ink)","stroke-width":1.6},grp);
+  return grp;
+}
+/* numbers: n significant figures, sheet style (space before unit, hyphen-minus, 5+ digit numbers grouped with spaces, scientific notation outside 1e-3..1e5) */
+function sig(x,n){ n=n||3; if(!isFinite(x)) return x; if(Math.abs(x)<1e-300) return 0; return Number(x.toPrecision(n)); }
+function group(s){ const neg=s[0]==="-"; if(neg) s=s.slice(1); const [a,b]=s.split("."); const g=a.length>=5?a.replace(/\B(?=(\d{3})+(?!\d))/g," "):a; return (neg?"-":"")+g+(b!==undefined?"."+b:""); }
+function fmt(x,n,opt){ n=n||3; opt=opt||{}; if(!isFinite(x)) return "–"; if(Math.abs(x)<1e-300) return "0";
+  const s=sig(x,n), e=Math.floor(Math.log10(Math.abs(s)));
+  if(!opt.nosci && (e>=5 || e<=-4 || (e>=n && !opt.intok))){ const m=s/Math.pow(10,e); const SUP={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return (opt.plain? m.toFixed(n-1)+" × 10"+String(e).split("").map(c=>SUP[c]).join("") : m.toFixed(n-1)+" × 10<sup>"+e+"</sup>"); }
+  return group(s.toFixed(Math.max(0,n-1-e))); }
+const fx=(x,d)=>group(x.toFixed(d));
+function seg(ids,cb){ ids.forEach(id=>$(id).addEventListener("click",()=>{ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); cb(id); })); }
+function setSeg(ids,id){ ids.forEach(j=>$(j).setAttribute("aria-pressed",j===id)); }
+const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+/* equation line: " = " chunks never break inside; text after "|" is a small note */
+function eqHTML(lines){ return lines.map(L=>{ const [s,tail]=L.split("|"); const parts=s.split(" = "); const body=parts.length<2?s:parts.map((c,i)=>`<span class="nw">${i?"= ":""}${c}</span>`).join(" "); return `<div>${body}${tail?` <span class="note">(${tail})</span>`:""}</div>`; }).join(""); }
+const m=s=>`<i class="m">${s}</i>`, sub=s=>`<sub>${s}</sub>`;
+return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,group,seg,setSeg,reduce,eqHTML,m,sub};
+})();
+
+(function(){
+"use strict";
+const {$,el,txt}=DP;
+const ROD=6;   // units of charge drawn on the rod (it never changes: it is never touched)
+const st={mode:"es",s:-1,lv:0,gnd:false,Q:0,touch:true,qA:0,qB:0,log:[],n:0,flow:null};
+const LV=["ไม่มีแท่ง","ไกล","ใกล้","ใกล้มาก"];
+
+/* charge model (units) */
+function es(){ return {plate:st.Q/2-st.s*st.lv, leaves:st.Q/2+st.s*st.lv}; }   // electroscope: plate is the near end, leaves the far end
+function settle(){   // equilibrium after any change
+  if(st.mode==="es"){ if(st.gnd) st.Q=-2*st.s*st.lv; }
+  else if(st.touch){ const T=st.qA+st.qB; st.qA=T/2-2*st.s*st.lv; st.qB=T/2+2*st.s*st.lv; }
+}
+const snap=()=>({...st,...es()});
+const sg=n=>n>0?"+"+n:n<0?"-"+(-n):"0";
+const kind=n=>n>0?"บวก":"ลบ";
+const word=(n)=>n===0?"ไม่มีประจุ":"มีประจุ"+kind(n)+" "+Math.abs(n)+" หน่วย";
+
+/* what happened between two snapshots (also sets the e⁻ arrow) */
+function describe(a,b){
+  const out=[]; st.flow=null;
+  if(b.mode==="es"){
+    const dQ=b.Q-a.Q;
+    if(dQ>0){ out.push(`อิเล็กตรอน ${dQ} หน่วยไหลจากอิเล็กโทรสโคปผ่านนิ้วลงดิน`); st.flow={type:"gnd",dir:"down",n:dQ}; }
+    else if(dQ<0){ out.push(`อิเล็กตรอน ${-dQ} หน่วยไหลจากดินผ่านนิ้วขึ้นมา`); st.flow={type:"gnd",dir:"up",n:-dQ}; }
+    const shift=(b.s*b.lv)-(a.s*a.lv);   // electrons pushed from plate to leaves when this is negative
+    if(shift!==0 && !b.gnd){ out.push(shift<0?`อิเล็กตรอน ${-shift} หน่วยเคลื่อนจากจานลงไปที่แผ่นโลหะบาง`:`อิเล็กตรอน ${shift} หน่วยเคลื่อนจากแผ่นโลหะบางขึ้นไปที่จาน`);
+      if(!st.flow) st.flow={type:"in",dir:shift<0?"down":"up",n:Math.abs(shift)}; }
+    const La=Math.abs(a.leaves), Lb=Math.abs(b.leaves);
+    if(Lb===0 && La>0) out.push("แผ่นโลหะบางหุบ");
+    else if(La===0 && Lb>0) out.push("แผ่นโลหะบางกางออก");
+    else if(Lb>La) out.push("แผ่นโลหะบางกางมากขึ้น");
+    else if(Lb<La) out.push("แผ่นโลหะบางหุบลง");
+    if(Lb>0 && La>0 && Math.sign(a.leaves)!==Math.sign(b.leaves)) out.push("ประจุบนแผ่นโลหะบางเปลี่ยนชนิด");
+  } else {
+    const dA=b.qA-a.qA;
+    if(dA!==0 && a.touch===b.touch){ out.push(dA>0?`อิเล็กตรอน ${dA} หน่วยเคลื่อนจาก A ไป B`:`อิเล็กตรอน ${-dA} หน่วยเคลื่อนจาก B ไป A`); st.flow={type:"sp",dir:dA>0?"right":"left",n:Math.abs(dA)}; }
+    if(a.touch && !b.touch) out.push(`แยกแล้ว A ${word(b.qA)} B ${word(b.qB)}`);
+    if(!a.touch && !b.touch && (a.lv!==b.lv || a.s!==b.s)) out.push(b.lv>0?"ประจุสุทธิของแต่ละลูกไม่เปลี่ยน เกิดเพียงการแยกประจุภายในลูก":"ประจุสุทธิของแต่ละลูกไม่เปลี่ยน การแยกประจุภายในลูกหายไป");
+    if(!a.touch && b.touch){ out.push(dA===0?"ไม่มีอิเล็กตรอนเคลื่อนที่":(dA>0?`อิเล็กตรอน ${dA} หน่วยเคลื่อนจาก A ไป B`:`อิเล็กตรอน ${-dA} หน่วยเคลื่อนจาก B ไป A`));
+      if(dA!==0) st.flow={type:"sp",dir:dA>0?"right":"left",n:Math.abs(dA)}; }
+  }
+  return out.length?out.join(" "):"ไม่มีประจุเคลื่อนที่";
+}
+function act(label,fn){
+  const a=snap(); fn(); settle(); const b=snap();
+  st.n++; st.log.push(`${label} → ${describe(a,b)}`); if(st.log.length>8) st.log.shift();
+  sync();
+}
+function reset(mode,label){
+  Object.assign(st,{mode,lv:0,gnd:false,Q:0,touch:true,qA:0,qB:0,log:[],n:0,flow:null});
+  if(label){ st.n=1; st.log=[label]; }
+  sync();
+}
+
+/* drawing */
+const G=$("f");
+function sym(g,x,y,n){ txt(g,x,y+5,n>0?"+":"−",{"text-anchor":"middle","font-size":16,"font-weight":700,fill:n>0?"var(--pos)":"var(--elec)"}); }
+function row(g,cx,cy,count,sign,gap){ for(let i=0;i<count;i++) sym(g,cx+(i-(count-1)/2)*gap,cy,sign); }
+function arcSyms(g,cx,cy,r,count,sign,a0,a1){   // degrees, 0 = right, counter-clockwise
+  for(let i=0;i<count;i++){ const t=count===1?0.5:i/(count-1), a=(a0+(a1-a0)*t)*Math.PI/180; sym(g,cx+r*Math.cos(a),cy-r*Math.sin(a),sign); } }
+function rod(g,x,y,w,h){
+  el("rect",{x,y,width:w,height:h,rx:4,fill:"var(--chip)",stroke:"var(--helper)","stroke-width":1.5},g);
+  row(g,x+w/2,y+h/2,ROD,st.s,Math.min(14,(w-10)/ROD));
+  txt(g,x+w/2,y-6,st.s<0?"แท่งประจุลบ":"แท่งประจุบวก",{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+}
+function eArrow(g,x1,y1,x2,y2,label){
+  el("line",{x1,y1,x2,y2,stroke:"var(--elec)","stroke-width":2.6},g);
+  const ang=Math.atan2(y2-y1,x2-x1)*180/Math.PI; DP.arrowHead(g,x2,y2,ang,"var(--elec)",6);
+  txt(g,(x1+x2)/2+(Math.abs(x2-x1)<4?8:0),(y1+y2)/2+(Math.abs(x2-x1)<4?4:-8),label,{"font-size":13,"font-weight":700,fill:"var(--elec)","text-anchor":Math.abs(x2-x1)<4?"start":"middle"});
+}
+function drawES(){
+  const {plate,leaves}=es(), g=el("g",{},G);
+  // jar, insulating stopper, stem, plate, leaves
+  el("rect",{x:100,y:150,width:180,height:136,rx:14,fill:"var(--chip)","fill-opacity":0.55,stroke:"var(--helper)","stroke-width":1.5},g);
+  el("rect",{x:178,y:143,width:24,height:14,rx:2,fill:"var(--helper)"},g);
+  el("line",{x1:190,y1:120,x2:190,y2:214,stroke:"var(--muted)","stroke-width":5},g);
+  el("ellipse",{cx:190,cy:120,rx:48,ry:7,fill:"var(--muted)"},g);
+  const phi=Math.min(42,7*Math.abs(leaves))*Math.PI/180, Lh=48, px=190, py=212;
+  for(const sgn of [-1,1]) el("line",{x1:px,y1:py,x2:px+sgn*Lh*Math.sin(phi),y2:py+Lh*Math.cos(phi),stroke:"var(--muted)","stroke-width":4,"stroke-linecap":"round"},g);
+  txt(g,108,279,"แผ่นโลหะบาง",{"font-size":12,fill:"var(--muted)"});
+  txt(g,136,124,"จาน",{"text-anchor":"end","font-size":12,fill:"var(--muted)"});
+  // charges
+  row(g,190,106,Math.abs(plate),Math.sign(plate),13);
+  const nL=Math.abs(leaves), left=Math.ceil(nL/2), right=nL-left;
+  for(const [sgn,cnt] of [[-1,left],[1,right]]) for(let i=0;i<cnt;i++){ const t=0.5+0.3*i, x=px+sgn*Lh*t*Math.sin(phi), y=py+Lh*t*Math.cos(phi);
+    sym(g,x+sgn*11*Math.cos(phi),y-11*Math.sin(phi),Math.sign(leaves)); }   // just outside each leaf
+  // rod
+  if(st.lv>0){ const y=[0,22,56,80][st.lv]; rod(g,140,y,100,16); }
+  // finger to ground
+  if(st.gnd){
+    el("rect",{x:236,y:113,width:64,height:14,rx:7,fill:"var(--card)",stroke:"var(--ink)","stroke-width":1.6},g);
+    txt(g,268,107,"นิ้ว",{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+    el("polyline",{points:"300,120 334,120 334,236",fill:"none",stroke:"var(--ink)","stroke-width":1.6},g);
+    for(const [w,dy] of [[26,0],[17,6],[8,12]]) el("line",{x1:334-w/2,y1:236+dy,x2:334+w/2,y2:236+dy,stroke:"var(--ink)","stroke-width":2},g);
+    txt(g,334,268,"ดิน",{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+  }
+  // last electron movement
+  if(st.flow && st.flow.type==="gnd" && st.gnd){ const d=st.flow.dir==="down"; eArrow(g,350,d?150:212,350,d?212:150,"e⁻"); }
+  else if(st.flow && st.flow.type==="gnd" && !st.gnd){ /* finger already removed: nothing to point at */ }
+  else if(st.flow && st.flow.type==="in"){ const d=st.flow.dir==="down"; eArrow(g,206,d?132:200,206,d?200:132,"e⁻"); }
+}
+function drawSP(){
+  const g=el("g",{},G), R=38, cy=140, xA=150, xB=st.touch?226:296;
+  if(st.lv>0){ const xr=[0,4,26,44][st.lv]; rod(g,xr,cy-8,64,16); }
+  for(const [x,name] of [[xA,"A"],[xB,"B"]]){
+    el("line",{x1:x,y1:cy+R,x2:x,y2:250,stroke:"var(--helper)","stroke-width":4},g);
+    el("rect",{x:x-22,y:250,width:44,height:6,rx:2,fill:"var(--helper)"},g);
+    el("circle",{cx:x,cy,r:R,fill:"var(--chip)",stroke:"var(--muted)","stroke-width":2},g);
+    txt(g,x,cy-R-10,name,{"text-anchor":"middle","font-size":15,"font-weight":700});
+  }
+  txt(g,(xA+xB)/2,278,"ขาตั้งฉนวน",{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+  const r=R-11;
+  if(st.touch){
+    arcSyms(g,xA,cy,r,Math.abs(st.qA),Math.sign(st.qA),125,235);
+    arcSyms(g,xB,cy,r,Math.abs(st.qB),Math.sign(st.qB),-55,55);
+  } else {
+    for(const [x,q] of [[xA,st.qA],[xB,st.qB]]){
+      if(st.lv>0){   // net charge biased towards or away from the rod, plus one induced pair
+        const opp=q!==0 && Math.sign(q)===-st.s, nearN=1+(opp?Math.abs(q):0), farN=1+(!opp&&q!==0?Math.abs(q):0);
+        arcSyms(g,x,cy,r,nearN,-st.s,125,235); arcSyms(g,x,cy,r,farN,st.s,-55,55);
+      } else if(q!==0){ const n=Math.abs(q); for(let i=0;i<n;i++){ const a=(90+360*i/n)*Math.PI/180; sym(g,x+r*Math.cos(a),cy-r*Math.sin(a),Math.sign(q)); } }
+    }
+  }
+  if(st.flow && st.flow.type==="sp" && st.touch){ const toB=st.flow.dir==="right"; eArrow(g,toB?162:214,cy+R+16,toB?214:162,cy+R+16,"e⁻"); }
+}
+function draw(){ G.textContent=""; if(st.mode==="es") drawES(); else drawSP(); }
+
+/* text */
+function table(){
+  const r=(a,b)=>`<tr><td>${a}</td><td>${b}</td></tr>`;
+  if(st.mode==="es"){ const {plate,leaves}=es();
+    return r("จาน",sg(plate))+r("แผ่นโลหะบาง",sg(leaves)+(leaves===0?" (หุบ)":" (กาง)"))+r("ประจุสุทธิของอิเล็กโทรสโคป",sg(st.Q))+r("แท่ง",sg(st.s*ROD)+" (ไม่เปลี่ยน)"); }
+  return r("ทรงกลม A",sg(st.qA))+r("ทรงกลม B",sg(st.qB))+r("ประจุรวม A + B",sg(st.qA+st.qB))+r("แท่ง",sg(st.s*ROD)+" (ไม่เปลี่ยน)");
+}
+function statusES(){
+  const {leaves}=es(), Q=st.Q, out=[];
+  out.push(leaves===0?"แผ่นโลหะบางไม่มีประจุ จึงหุบ":`แผ่นโลหะบางมีประจุ${kind(leaves)}ชนิดเดียวกันทั้งสองแผ่น จึงผลักกันจนกางออก`);
+  if(st.gnd && st.lv>0) out.push(`ขณะต่อสายดิน จานยังมีประจุ${kind(Q)}ซึ่งเป็นประจุเหนี่ยวนำชนิดตรงข้ามกับแท่ง อิเล็กโทรสโคปจึงไม่เป็นกลาง ถ้าเอานิ้วออกก่อนแล้วจึงนำแท่งออก ประจุนี้จะค้างอยู่`);
+  else if(st.gnd) out.push("ต่อสายดินโดยไม่มีวัตถุที่มีประจุอยู่ใกล้ อิเล็กโทรสโคปจึงเป็นกลาง");
+  else if(st.lv>0 && Q===0) out.push("ประจุสุทธิยังเป็นศูนย์ เป็นเพียงการแยกประจุภายในอิเล็กโทรสโคป ถ้านำแท่งออก ประจุจะกลับมาหักล้างกันและแผ่นหุบ");
+  else if(st.lv===0 && Q!==0) out.push(`อิเล็กโทรสโคปมีประจุสุทธิ${kind(Q)} ${Math.abs(Q)} หน่วย ประจุนี้ค้างอยู่เพราะไม่มีทางให้อิเล็กตรอนไหลเข้าหรือออก`);
+  else if(st.lv>0 && Q!==0){
+    const L0=Math.abs(Q/2), L=Math.abs(leaves);
+    if(leaves!==0 && Math.sign(leaves)!==Math.sign(Q)) out.push(`แท่งอยู่ใกล้มากจนอิเล็กตรอนที่ถูก${st.s<0?"ผลักลงมา":"ดูดขึ้นไป"}ทำให้แผ่นโลหะบางมีประจุชนิดตรงข้ามกับเดิม แผ่นจึงกางออกอีกครั้ง`);
+    else if(L>L0) out.push("แผ่นกางมากกว่าตอนไม่มีแท่ง แสดงว่าแท่งมีประจุชนิดเดียวกับอิเล็กโทรสโคป");
+    else if(L<L0) out.push("แผ่นหุบลงกว่าตอนไม่มีแท่ง ในแบบจำลองนี้เพราะแท่งมีประจุต่างชนิด แต่ในการทดลองจริง การเห็นแผ่นหุบลงสรุปชนิดประจุไม่ได้ เพราะตัวนำที่เป็นกลางก็ทำให้หุบได้");
+  } else out.push("อิเล็กโทรสโคปเป็นกลาง");
+  return out.join(" ");
+}
+function statusSP(){
+  if(st.touch){
+    if(st.lv===0) return "ทรงกลมทั้งสองแตะกันและเป็นกลาง";
+    return `ทรงกลมที่แตะกันเป็นตัวนำชิ้นเดียว แท่ง${st.s<0?"ผลักอิเล็กตรอนอิสระไปที่ B":"ดูดอิเล็กตรอนอิสระมาที่ A"} A ด้านใกล้แท่งจึงมีประจุ${kind(st.qA)} B ด้านไกลมีประจุ${kind(st.qB)} ประจุรวมยังเป็นศูนย์ ถ้านำแท่งออกตอนนี้ ประจุจะกลับมาหักล้างกัน`;
+  }
+  if(st.qA!==0) return `ทรงกลมแยกกันแล้ว ประจุของแต่ละลูกจึงคงที่ A ${word(st.qA)} B ${word(st.qB)} ขนาดเท่ากัน ชนิดตรงข้าม ประจุรวมยังเป็นศูนย์`+(st.lv>0?" แท่งที่ยังอยู่ใกล้แยกประจุภายในแต่ละลูกได้เท่านั้น ประจุสุทธิของแต่ละลูกไม่เปลี่ยน":"");
+  return st.lv>0?"ทรงกลมแยกกันก่อนมีแท่งอยู่ใกล้ แต่ละลูกเกิดเพียงการแยกประจุภายในลูก ประจุสุทธิของแต่ละลูกยังเป็นศูนย์ เมื่อนำแท่งออกก็กลับเป็นกลาง":"ทรงกลมทั้งสองแยกกันและเป็นกลาง";
+}
+function sync(){
+  DP.setSeg(["m-es","m-sp"],st.mode==="es"?"m-es":"m-sp");
+  DP.setSeg(["r-neg","r-pos"],st.s<0?"r-neg":"r-pos");
+  DP.setSeg(["lv0","lv1","lv2","lv3"],"lv"+st.lv);
+  $("b-gnd").hidden=st.mode!=="es"; $("b-plus").hidden=st.mode!=="es"; $("b-sep").hidden=st.mode!=="sp";
+  $("b-gnd").textContent=st.gnd?"เอานิ้วออก":"แตะจานด้วยนิ้ว"; $("b-gnd").setAttribute("aria-pressed",st.gnd);
+  $("b-sep").textContent=st.touch?"แยกทรงกลมออกจากกัน":"ให้ทรงกลมแตะกัน";
+  $("tbl").innerHTML=table();
+  $("status").innerHTML=st.mode==="es"?statusES():statusSP();
+  const first=st.n-st.log.length+1;
+  $("log").setAttribute("start",first); $("log").innerHTML=st.log.length?st.log.map(s=>`<li>${s}</li>`).join(""):`<li style="list-style:none;margin-left:-24px">ยังไม่ได้ทำ</li>`;
+  draw();
+}
+DP.seg(["m-es","m-sp"],id=>reset(id==="m-es"?"es":"sp"));
+DP.seg(["r-neg","r-pos"],id=>{ const s=id==="r-neg"?-1:1; if(s===st.s) return sync(); act(`เปลี่ยนเป็นแท่งประจุ${s<0?"ลบ":"บวก"}`,()=>{ st.s=s; }); });
+DP.seg(["lv0","lv1","lv2","lv3"],id=>{ const lv=+id.slice(2); if(lv===st.lv) return sync(); act(lv===0?"นำแท่งออก":`นำแท่งไปที่ "${LV[lv]}"`,()=>{ st.lv=lv; }); });
+$("b-gnd").addEventListener("click",()=>act(st.gnd?"เอานิ้วออก":"แตะจานด้วยนิ้ว",()=>{ st.gnd=!st.gnd; }));
+$("b-sep").addEventListener("click",()=>act(st.touch?"แยกทรงกลม":"ให้ทรงกลมแตะกัน",()=>{ st.touch=!st.touch; }));
+$("b-reset").addEventListener("click",()=>reset(st.mode));
+$("b-plus").addEventListener("click",()=>{ reset("es"); st.Q=4; st.n=1; st.log=["อิเล็กโทรสโคปมีประจุบวก 4 หน่วย (จาน +2 แผ่นโลหะบาง +2)"]; sync(); });
+sync();
+window.__sim={st,sync,es,settle,act};
+})();
+</script>
+
+</body>
+</html>

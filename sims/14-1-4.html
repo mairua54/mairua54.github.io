@@ -262,10 +262,13 @@ return {NS,$,el,txt,pl,K,wire,resistor,cell,dot,meter,arrowHead,bulb,sig,fmt,fx,
 
 (function(){
 "use strict";
-const {$,el,txt,fmt,fx,m}=DP;
+const {$,el,txt,m}=DP;
+const rd=(v,n)=>{ if(!isFinite(v)||v===0) return v; const [mt,ex]=Math.abs(v).toExponential(11).split("e"), dg=mt.replace(".",""); return Math.sign(v)*Number((Number(dg.slice(0,n))+(+dg[n]>=5?1:0))+"e"+(+ex-n+1)); };   // round half up on the decimal digits, so floating-point noise (674999.99999…) still gives 6.8 × 10^5 as by hand
+const fmt=(x,n,o)=>DP.fmt(rd(x,n||3),n,o);
+const fx=(x,d)=>DP.fx(Math.sign(x)*Number(Math.round(Number(Math.abs(x).toPrecision(12)+"e"+d))+"e-"+d),d);   // same for a fixed number of decimals
 const K=9.0e9, UC=1e-6, Q0=1.0e-6;
 const st={q1:1,q2:4,d:0.9,s0:1,x:0.6,show:false};
-const r2s=v=>Number(v.toPrecision(2));              // 2 significant figures like the sheet
+const r2s=v=>rd(v,2);              // 2 significant figures like the sheet
 const half=()=>Math.ceil(120*st.d-1e-6)/100;          // window reaches 1.2 d beyond each charge
 const win=()=>({lo:-half(), hi:Number((st.d+half()).toFixed(2))});
 const eps=()=>Math.ceil(15*st.d-1e-6)/100;   // q0 may not come closer than 0.15 d to a charge (the circles would hide each other)

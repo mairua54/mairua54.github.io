@@ -1,0 +1,255 @@
+<title>ตัวเก็บประจุ การต่ออนุกรมและขนาน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+/* stacked fractions and square roots: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp,.rad .fp{display:none}
+.rad{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.rad>.rs{font-size:1.5em;line-height:1;align-self:center;margin-right:-1px}
+.rad>.rb{border-top:1.5px solid currentColor;padding:2px 2px 0}
+.flat .fr,.flat .fr>span,.flat .rad,.flat .rad>span{display:inline;padding:0;margin:0;border:0;font-size:inherit}
+.flat .fr>.fs,.flat .fr .fp,.flat .rad .fp{display:inline}
+.res{font-size:1.08rem;font-weight:700;margin-top:8px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 4.2–4.4</div>
+  <h1>ตัวเก็บประจุ การต่ออนุกรมและขนาน</h1>
+  <p class="lead">ต่อตัวเก็บประจุหนึ่งตัวหรือสองตัวกับแบตเตอรี่ ดูประจุ ความต่างศักย์ของแต่ละตัว ความจุสมมูล และพลังงานที่สะสม ซึ่งเท่ากับพื้นที่ใต้กราฟความต่างศักย์กับประจุ</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-c">
+    <h2 id="h-c">วงจร</h2>
+    <svg id="c" viewBox="0 0 380 190" role="img" aria-label="แบตเตอรี่ต่อกับตัวเก็บประจุ"></svg>
+    <p class="cap">แผ่นที่ต่อกับขั้วบวกของแบตเตอรี่มีประจุ +<i class="m">Q</i> (เครื่องหมายสีแดง) อีกแผ่นมี -<i class="m">Q</i> (สีน้ำเงิน) ใต้ตัวเก็บประจุแต่ละตัวบอกประจุและความต่างศักย์ของตัวนั้น</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="seg" role="group" aria-label="วิธีต่อ">
+      <button id="m-1" aria-pressed="true">ตัวเดียว</button>
+      <button id="m-s" aria-pressed="false">อนุกรม</button>
+      <button id="m-p" aria-pressed="false">ขนาน</button>
+    </div>
+    <div class="ctl">
+      <div class="row"><label for="s-c1"><span id="l-c1"></span><output id="o-c1"></output></label>
+        <input type="range" id="s-c1" min="0" step="1"></div>
+      <div class="row" id="row-c2"><label for="s-c2"><span>ความจุ <i class="m">C</i><sub>2</sub></span><output id="o-c2"></output></label>
+        <input type="range" id="s-c2" min="0" step="1"></div>
+      <div class="row"><label for="s-v"><span>ความต่างศักย์ของแบตเตอรี่ Δ<i class="m">V</i></span><output id="o-v"></output></label>
+        <input type="range" id="s-v" min="0" max="200" step="1"></div>
+      <div class="btns">
+        <button class="btn" id="b-41">Ex. 4.1</button>
+        <button class="btn" id="b-42">Ex. 4.2</button>
+        <button class="btn" id="b-44">Ex. 4.4</button>
+        <button class="btn" id="b-45">Ex. 4.5</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณแบบ Ex. ในชีท</h2>
+    <div class="eq" id="eq"></div>
+    <div class="res" id="res"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+  <section class="card" aria-labelledby="h-g">
+    <h2 id="h-g">กราฟความต่างศักย์กับประจุ</h2>
+    <svg id="g" viewBox="0 0 380 270" role="img" aria-label="กราฟความต่างศักย์กับประจุของตัวเก็บประจุแต่ละตัวและความจุสมมูล"></svg>
+    <p class="cap" id="g-cap"></p>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: ลดความต่างศักย์ลงครึ่งหนึ่ง (แนวเดียวกับ Ex. 4.3)</summary>
+    <p class="q">กด "Ex. 4.2" (50 μF ต่อกับ 200 V) ถ้าลดความต่างศักย์เหลือ 100 V ก่อนเลื่อน ให้ทำนายว่าประจุและพลังงานเหลือกี่เท่าของเดิม แล้วเลื่อนตรวจ</p>
+    <p class="q"><b>คำตอบ</b> ประจุเหลือครึ่งหนึ่ง จาก 1.0 × 10<sup>-2</sup> C เป็น 5.0 × 10<sup>-3</sup> C แต่พลังงานเหลือ 1/4 จาก 1.0 J เป็น 0.25 J เพราะ <i class="m">U</i> = ½<i class="m">C</i>(Δ<i class="m">V</i>)<sup>2</sup> สามเหลี่ยมใต้กราฟทั้งกว้างและสูงเป็นครึ่งหนึ่ง พื้นที่จึงเหลือ 1/4 ส่วนความจุคงเดิม</p>
+  </details>
+  <details>
+    <summary>2. ต่ออนุกรม: ตัวใดรับความต่างศักย์มากกว่า (Ex. 4.4)</summary>
+    <p class="q">กด "Ex. 4.4" (3.0 μF กับ 6.0 μF ต่ออนุกรมกับ 12 V) ก่อนดูตัวเลข ให้ทำนายว่าตัวใดรับความต่างศักย์มากกว่า</p>
+    <p class="q"><b>คำตอบ</b> ตัว 3.0 μF รับ 8.0 V ตัว 6.0 μF รับ 4.0 V ทั้งสองตัวมีประจุเท่ากัน 24 μC ตัวที่ความจุน้อยกว่าจึงมีความต่างศักย์มากกว่า (Δ<i class="m">V</i> = <i class="m">Q</i>/<i class="m">C</i>) ความจุสมมูล 2.0 μF และพลังงานรวม 1.4 × 10<sup>-4</sup> J ตรงกับ Ex. 4.4</p>
+  </details>
+  <details>
+    <summary>3. ต่อขนาน (Ex. 4.5)</summary>
+    <p class="q">กด "Ex. 4.5" (2.0 μF กับ 4.0 μF ต่อขนานกับ 10 V) แต่ละตัวมีประจุเท่าใด และพลังงานรวมเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> 20 μC และ 40 μC ความต่างศักย์ 10 V เท่ากันทั้งสองตัว ความจุสมมูล 6.0 μF พลังงานรวม 3.0 × 10<sup>-4</sup> J ตรงกับ Ex. 4.5</p>
+  </details>
+  <details>
+    <summary>4. ความจุสมมูลเทียบกับตัวเดี่ยว</summary>
+    <p class="q">ใช้ตัวเก็บประจุคู่เดิม สลับระหว่าง "อนุกรม" กับ "ขนาน" ความจุสมมูลอยู่ตรงไหนเมื่อเทียบกับ <i class="m">C</i><sub>1</sub> และ <i class="m">C</i><sub>2</sub> และเส้นกราฟของความจุสมมูลอยู่ตรงไหน</p>
+    <p class="q"><b>คำตอบ</b> อนุกรมได้ความจุสมมูลน้อยกว่าตัวที่น้อยที่สุด เส้นกราฟจึงชันที่สุด ขนานได้มากกว่าตัวที่มากที่สุด เส้นกราฟจึงลาดที่สุด เพราะความชันของกราฟ Δ<i class="m">V</i> กับ <i class="m">Q</i> เท่ากับ 1/<i class="m">C</i></p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าตัวเก็บประจุเป็นแบบอุดมคติ ไม่มีประจุก่อนต่อ ลวดไม่มีความต้านทาน และประจุเสร็จแล้ว (ประจุหยุดเคลื่อนที่) ใช้ <i class="m">e</i> = 1.6 × 10<sup>-19</sup> C จำนวนเครื่องหมายบนแผ่นไม่ได้แสดงจำนวนประจุจริง ตัวเลขแสดง 2 ตัวตามเลขนัยสำคัญของข้อมูล และขั้นถัดไปใช้ค่าที่ปัดแล้ว เหมือน Ex. ในชีท</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,m}=DP;
+const rd=(v,n)=>{ if(!isFinite(v)||v===0) return v; const [mt,ex]=Math.abs(v).toExponential(11).split("e"), dg=mt.replace(".",""); return Math.sign(v)*Number((Number(dg.slice(0,n))+(+dg[n]>=5?1:0))+"e"+(+ex-n+1)); };   // round half up on the decimal digits, so floating-point noise (674999.99999…) still gives 6.8 × 10^5 as by hand
+const fmt=(x,n,o)=>DP.fmt(rd(x,n||3),n,o);
+const E_=1.6e-19, CS=[1,2,3,4,5,6,8,10,20,50,100,200];   // μF
+const st={mode:"s",i1:2,i2:5,V:12};
+const sub=s=>`<sub>${s}</sub>`, dV=`Δ${m("V")}`;
+const fr=(a,b)=>`<span class="fr"><span>${a}</span><span class="fs">/</span><span>${b}</span></span>`;
+const r2=v=>rd(v,2);
+/* numbers */
+const cv=c=>c<10?c.toFixed(1):String(c);                          // capacitances from the list (and their sums): 3.0, 20
+const n2=v=>v===0?"0":fmt(v,2,{intok:Math.abs(v)<1000});           // 2 figures: 24, 8.0, 0.67, 2.4 × 10^3
+const n2s=v=>v===0?"0":fmt(v,2,{intok:Math.abs(v)<1000,plain:1});  // the same inside the drawing
+const sci=v=>{ if(v===0) return "0"; const r=r2(v), e=Math.floor(Math.log10(Math.abs(r))+1e-9); return `${(r/Math.pow(10,e)).toFixed(1)} × 10<sup>${e}</sup>`; };
+const fJ=v=>v===0?"0":(Math.abs(v)>=0.01&&Math.abs(v)<1e4?fmt(v,2,{intok:1}):sci(v));   // energy: 1.0, 0.25, 1.4 × 10^-4
+const qC=q=>q>=1000?` = ${sci(q*1e-6)} C`:"";                     // a charge of 1000 μC or more also in coulombs, like Ex. 4.1
+
+/* the model, kept as plain numbers so the test can call it */
+function solve(){
+  const C1=CS[st.i1], C2=CS[st.i2], V=st.V;
+  if(st.mode==="1"){ const Q=r2(C1*V), U=r2(0.5*C1*1e-6*V*V); return {C:C1,Q,U,caps:[{C:C1,Q,V,given:true}],N:Q===0?0:r2(Q*1e-6/E_)}; }
+  if(st.mode==="s"){ const C=r2(C1*C2/(C1+C2)), Q=r2(C*V), V1=Q===0?0:r2(Q/C1), V2=Q===0?0:r2(Q/C2), U=r2(0.5*C*1e-6*V*V);
+    return {C,Q,U,caps:[{C:C1,Q,V:V1},{C:C2,Q,V:V2}]}; }
+  const C=C1+C2, Q1=r2(C1*V), Q2=r2(C2*V), U=r2(0.5*C*1e-6*V*V);
+  return {C,Q:r2(Q1+Q2),U,caps:[{C:C1,Q:Q1,V,given:true},{C:C2,Q:Q2,V,given:true}]};
+}
+
+/* circuit */
+const SC=$("c"), L=40, R=355, T=46, B=150;
+function cap(g,x,y,dir,Q,label){   // capacitor symbol across a wire; dir "h" = on a horizontal wire
+  const h=15, gp=5, n=Q>0?2:0;
+  if(dir==="h"){ el("rect",{x:x-gp-1,y:y-h-1,width:2*gp+2,height:2*h+2,fill:"var(--card)"},g);
+    for(const s of [-1,1]) el("line",{x1:x+s*gp,y1:y-h,x2:x+s*gp,y2:y+h,stroke:"var(--ink)","stroke-width":2.6},g);
+    for(let i=0;i<n;i++){ const yy=y-h+4+i*(2*h-8)/(n-1||1); txt(g,x-gp-6,yy+4,"+",{"text-anchor":"middle","font-size":11,"font-weight":700,fill:"var(--pos)"}); txt(g,x+gp+6,yy+4,"−",{"text-anchor":"middle","font-size":11,"font-weight":700,fill:"var(--elec)"}); } }
+  else { el("rect",{x:x-h-1,y:y-gp-1,width:2*h+2,height:2*gp+2,fill:"var(--card)"},g);
+    for(const s of [-1,1]) el("line",{x1:x-h,y1:y+s*gp,x2:x+h,y2:y+s*gp,stroke:"var(--ink)","stroke-width":2.6},g);
+    for(let i=0;i<n;i++){ const xx=x-h+4+i*(2*h-8)/(n-1||1); txt(g,xx,y-gp-3,"+",{"text-anchor":"middle","font-size":11,"font-weight":700,fill:"var(--pos)"}); txt(g,xx,y+gp+11,"−",{"text-anchor":"middle","font-size":11,"font-weight":700,fill:"var(--elec)"}); } }
+}
+function drawCircuit(s){
+  SC.textContent=""; const g=SC;
+  DP.wire(g,[[L,T],[R,T],[R,B],[L,B],[L,T]]);
+  DP.cell(g,L,(T+B)/2,"v","up");
+  txt(g,L+22,(T+B)/2+5,`${st.V} V`,{"font-size":13,"font-weight":700});
+  const capT=(c,i)=>[["C",{it:1}],[i,{sub:1}],[` = ${cv(c.C)} μF`,{}]];
+  const info=(g,x,y,c,anchor)=>{ const a={"text-anchor":anchor||"middle","font-size":12,fill:"var(--muted)"};
+    txt(g,x,y,[["Q",{it:1}],[` = ${n2s(c.Q)} μC`,{}]],a); txt(g,x,y+15,[["Δ",{}],["V",{it:1}],[` = ${c.given?String(c.V):n2s(c.V)} V`,{}]],a); };   // the battery voltage is given data, shown as set
+  if(st.mode==="1"){ const x=210; cap(g,x,T,"h",s.Q); txt(g,x,T-22,[["C",{it:1}],[` = ${cv(s.caps[0].C)} μF`,{}]],{"text-anchor":"middle","font-size":13,"font-weight":700}); info(g,x,T+34,s.caps[0]); }
+  else if(st.mode==="s"){ [150,270].forEach((x,j)=>{ cap(g,x,T,"h",s.Q); txt(g,x,T-22,capT(s.caps[j],String(j+1)),{"text-anchor":"middle","font-size":13,"font-weight":700}); info(g,x,T+34,s.caps[j]); }); }
+  else { [110,236].forEach((x,j)=>{ DP.wire(g,[[x,T],[x,B]]); DP.dot(g,x,T); DP.dot(g,x,B); cap(g,x,(T+B)/2,"v",s.caps[j].Q);
+      txt(g,x+19,(T+B)/2-18,capT(s.caps[j],String(j+1)),{"font-size":12.5,"font-weight":700}); info(g,x+19,(T+B)/2+10,s.caps[j],"start"); }); }
+}
+
+/* graph: ΔV up, Q across; slope 1/C; the triangle under the line is the energy */
+const GG=$("g"), X0=56, X1=352, Y0=30, Y1=222;
+function niceUp(v){ const p=Math.pow(10,Math.floor(Math.log10(v))); for(const k of [1,1.2,1.5,2,2.5,3,4,5,6,8,10]) if(k*p>=v*(1-1e-9)) return k*p; return 10*p; }
+function niceStep(v){ const p=Math.pow(10,Math.floor(Math.log10(v))); for(const k of [1,2,2.5,5,10]) if(k*p>=v*(1-1e-9)) return k*p; return 10*p; }
+function drawGraph(s){
+  GG.textContent=""; const g=GG, V=st.V, C1=CS[st.i1], C2=CS[st.i2];
+  // the picture uses exact values, so every point sits on its line (the text shows them rounded)
+  const Ce=st.mode==="1"?C1:st.mode==="s"?C1*C2/(C1+C2):C1+C2, Qe=Ce*V;
+  const lines = st.mode==="1" ? [{C:C1,Q:Qe,V,col:"var(--graph)",name:[["C",{it:1}]],main:true}]
+    : [{C:C1,Q:st.mode==="s"?Qe:C1*V,V:st.mode==="s"?Qe/C1:V,col:"var(--graph)",name:[["C",{it:1}],["1",{sub:1}]]},
+       {C:C2,Q:st.mode==="s"?Qe:C2*V,V:st.mode==="s"?Qe/C2:V,col:"var(--graph2)",name:[["C",{it:1}],["2",{sub:1}]]},
+       {C:Ce,Q:Qe,V,col:"var(--ink)",dash:"6 4",name:[["C",{it:1}],[" สมมูล",{}]],main:true}];
+  if(st.mode!=="1"&&lines[0].C===lines[1].C){ lines[0].name=[["C",{it:1}],["1",{sub:1}],[" = ",{}],["C",{it:1}],["2",{sub:1}]]; lines[0].w=46; lines[1].name=null; lines[1].dash="7 7"; }   // equal capacitors: one line, shown in both colours
+  const Vref=V>0?V:10, Qref=V>0?Math.max(...lines.map(l=>l.Q)):Math.max(...lines.map(l=>l.C))*10;
+  const xm=niceUp(1.12*Qref), ym=niceUp(1.12*Vref), px=q=>X0+(X1-X0)*q/xm, py=v=>Y1-(Y1-Y0)*v/ym;
+  // frame and ticks
+  el("rect",{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:"none",stroke:"var(--line)"},g);
+  const xs=niceStep(xm/5), ys=niceStep(ym/5), lab=v=>v>=1e4?fmt(v,2,{plain:1}):String(Number(v.toPrecision(6)));
+  for(let q=0;q<=xm*(1+1e-9);q+=xs){ const X=px(q); el("line",{x1:X,y1:Y0,x2:X,y2:Y1,stroke:"var(--line)"},g); txt(g,X,Y1+15,lab(q),{"text-anchor":"middle","font-size":10.5,fill:"var(--muted)"}); }
+  for(let v=0;v<=ym*(1+1e-9);v+=ys){ const Y=py(v); el("line",{x1:X0,y1:Y,x2:X1,y2:Y,stroke:"var(--line)"},g); txt(g,X0-5,Y+4,lab(v),{"text-anchor":"end","font-size":10.5,fill:"var(--muted)"}); }
+  el("line",{x1:X0,y1:Y1,x2:X1,y2:Y1,stroke:"var(--ink)","stroke-width":1.3},g); el("line",{x1:X0,y1:Y0,x2:X0,y2:Y1,stroke:"var(--ink)","stroke-width":1.3},g);
+  txt(g,X1,Y1+31,[["Q",{it:1}],[" (μC)",{}]],{"text-anchor":"end","font-size":11.5,fill:"var(--muted)"});
+  txt(g,X0-6,Y0-14,[["Δ",{}],["V",{it:1}],[" (V)",{}]],{"text-anchor":"end","font-size":11.5,fill:"var(--muted)"});
+  // the energy: triangle under the main line up to the working point
+  const mn=lines.find(l=>l.main);
+  if(V>0){ el("path",{d:`M${px(0)},${py(0)} L${px(mn.Q)},${py(0)} L${px(mn.Q)},${py(mn.V)} Z`,fill:"var(--graph)","fill-opacity":0.16},g);
+    const t=txt(g,px(mn.Q*0.68),py(mn.V*0.24)+4,[["U",{it:1}],[st.mode==="1"?"":" รวม",{}]],{"text-anchor":"middle","font-size":12.5,"font-weight":700,fill:"var(--graph)"}); t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); }
+  // lines from the origin to the frame, then the working points
+  const ends=[];
+  for(const l of lines){ const qe=Math.min(xm,ym*l.C), ve=qe/l.C;
+    el("line",{x1:px(0),y1:py(0),x2:px(qe),y2:py(ve),stroke:l.col,"stroke-width":l.main&&st.mode!=="1"?2:2.4,...(l.dash?{"stroke-dasharray":l.dash}:{})},g);
+    ends.push({l,x:px(qe),y:py(ve)}); }
+  if(V>0) for(const l of lines){ el("line",{x1:px(l.Q),y1:py(l.V),x2:px(l.Q),y2:Y1,stroke:l.col,"stroke-dasharray":"2 3","stroke-width":1},g); el("line",{x1:X0,y1:py(l.V),x2:px(l.Q),y2:py(l.V),stroke:l.col,"stroke-dasharray":"2 3","stroke-width":1},g);
+    el("circle",{cx:px(l.Q),cy:py(l.V),r:4.5,fill:l.col,stroke:"var(--card)","stroke-width":1.5},g); }
+  // line names at the frame edge, nudged apart when two lines end close together
+  ends.sort((a,b)=>a.y-b.y||b.x-a.x); const placed=[];
+  for(const e of ends){ const top=e.y<Y0+6, w=e.l.w||(e.l.main&&st.mode!=="1"?56:18);
+    const tx=top?Math.min(e.x,380-w/2-2):X1-4, cx=top?tx:tx-w/2; let ty=top?e.y-4:e.y-6;
+    if(!e.l.name) continue;
+    while(placed.some(q=>Math.abs(q.ty-ty)<17&&Math.abs(q.cx-cx)<(q.w+w)/2+4)) ty+=17;   // stack names of lines that end close together
+    const t=txt(g,tx,ty,e.l.name,{"text-anchor":top?"middle":"end","font-size":12.5,"font-weight":700,fill:e.l.col}); t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4);
+    placed.push({cx,ty,w}); }
+}
+
+/* text */
+function update(){
+  const s=solve(), C1=CS[st.i1], C2=CS[st.i2], V=st.V;
+  DP.setSeg(["m-1","m-s","m-p"],{"1":"m-1",s:"m-s",p:"m-p"}[st.mode]);
+  $("l-c1").innerHTML=st.mode==="1"?`ความจุ ${m("C")}`:`ความจุ ${m("C")}${sub(1)}`; $("row-c2").hidden=st.mode==="1";
+  $("o-c1").textContent=cv(C1)+" μF"; $("o-c2").textContent=cv(C2)+" μF"; $("o-v").textContent=V+" V";
+  $("s-c1").max=CS.length-1; $("s-c2").max=CS.length-1; $("s-c1").value=st.i1; $("s-c2").value=st.i2; $("s-v").value=V;
+  const L=[], Uline=`${m("U")} = ½${m("C")}(${dV})<sup>2</sup> = ½(${cv0(s.C)} × 10<sup>-6</sup>)(${V})<sup>2</sup> = ${fJ(s.U)} J`;
+  function cv0(c){ return st.mode==="s"?n2(c):cv(c); }
+  let res, sta;
+  if(st.mode==="1"){
+    L.push(`${m("Q")} = ${m("C")}${dV} = (${cv(C1)} μF)(${V} V) = ${n2(s.Q)} μC${qC(s.Q)}`);
+    if(s.Q>0) L.push(`${m("N")} = ${fr(m("Q"),m("e"))} = ${fr(sci(s.Q*1e-6),"1.6 × 10<sup>-19</sup>")} = ${sci(s.N)} ตัว|อิเล็กตรอนที่ย้ายจากแผ่นหนึ่งผ่านวงจรไปอีกแผ่นหนึ่ง`);
+    L.push(Uline);
+    res=`ประจุ ${n2(s.Q)} μC${qC(s.Q)} และพลังงาน ${fJ(s.U)} J`;
+    sta=`ความจุขึ้นกับรูปร่าง ขนาด และฉนวนที่คั่นเท่านั้น ไม่ขึ้นกับ ${m("Q")} หรือ ${dV} ถ้าเพิ่ม ${dV} เป็น 2 เท่า ${m("Q")} เพิ่มเป็น 2 เท่า แต่ ${m("U")} เพิ่มเป็น 4 เท่า เพราะสามเหลี่ยมใต้กราฟทั้งกว้างและสูงขึ้น 2 เท่า`;
+  } else if(st.mode==="s"){
+    const [a,b]=s.caps;
+    L.push(`${m("C")} = ${fr(`${m("C")}${sub(1)}${m("C")}${sub(2)}`,`${m("C")}${sub(1)} + ${m("C")}${sub(2)}`)} = ${fr(`(${cv(C1)})(${cv(C2)})`,`${cv(C1)} + ${cv(C2)}`)} = ${n2(s.C)} μF|ความจุสมมูล`);
+    L.push(`${m("Q")} = ${m("C")}${dV} = (${n2(s.C)} μF)(${V} V) = ${n2(s.Q)} μC${qC(s.Q)}|ประจุเท่ากันทุกตัว`);
+    L.push(`${dV}${sub(1)} = ${fr(m("Q"),`${m("C")}${sub(1)}`)} = ${fr(`${n2(s.Q)} μC`,`${cv(C1)} μF`)} = ${n2(a.V)} V และ ${dV}${sub(2)} = ${fr(`${n2(s.Q)} μC`,`${cv(C2)} μF`)} = ${n2(b.V)} V`);
+    const sum=Number((a.V+b.V).toPrecision(12));
+    L.push(`ตรวจ: ${dV}${sub(1)} + ${dV}${sub(2)} = ${n2(a.V)} + ${n2(b.V)} = ${String(sum)} V${sum===V?"":"|ต่างจาก "+V+" V เล็กน้อยเพราะการปัดเลข"}`);
+    L.push(Uline);
+    res=`ความจุสมมูล ${n2(s.C)} μF ประจุตัวละ ${n2(s.Q)} μC ความต่างศักย์ ${n2(a.V)} V และ ${n2(b.V)} V พลังงานรวม ${fJ(s.U)} J`;
+    const small=C1===C2?0:(C1<C2?1:2);
+    sta=`ต่ออนุกรม ประจุเท่ากันทุกตัว ${small?`ตัวที่ความจุน้อยกว่า (${m("C")}${sub(small)}) จึงรับความต่างศักย์มากกว่า เพราะ ${dV} = ${m("Q")}/${m("C")} `:"ความจุเท่ากันจึงแบ่งความต่างศักย์เท่ากัน "}ความจุสมมูล ${n2(s.C)} μF น้อยกว่าตัวที่น้อยที่สุด`;
+  } else {
+    const [a,b]=s.caps;
+    L.push(`${m("C")} = ${m("C")}${sub(1)} + ${m("C")}${sub(2)} = ${cv(C1)} + ${cv(C2)} = ${cv(s.C)} μF|ความจุสมมูล`);
+    L.push(`${m("Q")}${sub(1)} = ${m("C")}${sub(1)}${dV} = (${cv(C1)})(${V}) = ${n2(a.Q)} μC และ ${m("Q")}${sub(2)} = (${cv(C2)})(${V}) = ${n2(b.Q)} μC|ความต่างศักย์เท่ากันทุกตัว`);
+    L.push(`${m("Q")}<sub>รวม</sub> = ${n2(a.Q)} + ${n2(b.Q)} = ${n2(s.Q)} μC${qC(s.Q)}`);
+    L.push(Uline);
+    res=`ความจุสมมูล ${cv(s.C)} μF ประจุ ${n2(a.Q)} μC และ ${n2(b.Q)} μC พลังงานรวม ${fJ(s.U)} J`;
+    const big=C1===C2?0:(C1>C2?1:2);
+    sta=`ต่อขนาน ความต่างศักย์เท่ากันทุกตัว ${big?`ตัวที่ความจุมากกว่า (${m("C")}${sub(big)}) จึงเก็บประจุมากกว่า `:"ความจุเท่ากันจึงเก็บประจุเท่ากัน "}ความจุสมมูล ${cv(s.C)} μF มากกว่าตัวที่มากที่สุด เหมือนเพิ่มพื้นที่แผ่น`;
+  }
+  if(V===0) sta=`ความต่างศักย์เป็นศูนย์ ตัวเก็บประจุยังไม่มีประจุ เลื่อน ${dV} เพื่อประจุ`;
+  $("eq").innerHTML=DP.eqHTML(L); $("res").innerHTML=res; $("status").innerHTML=sta;
+  $("g-cap").innerHTML = st.mode==="1" ? `เส้นตรงผ่านจุดกำเนิด ความชันเท่ากับ 1/${m("C")} พื้นที่สามเหลี่ยมที่แรเงาคือพลังงานที่สะสม ${m("U")} = ½${m("Q")}${dV}`
+    : `เส้นน้ำเงินคือ ${m("C")}${sub(1)} เส้นแดงคือ ${m("C")}${sub(2)} เส้นประคือความจุสมมูล ความชันของแต่ละเส้นเท่ากับ 1/${m("C")} จุดบนเส้นคือสภาพของแต่ละตัว พื้นที่ที่แรเงาคือพลังงานรวม`;
+  drawCircuit(s); drawGraph(s);
+}
+DP.seg(["m-1","m-s","m-p"],id=>{ st.mode={"m-1":"1","m-s":"s","m-p":"p"}[id]; update(); });
+$("s-c1").addEventListener("input",e=>{ st.i1=+e.target.value; update(); });
+$("s-c2").addEventListener("input",e=>{ st.i2=+e.target.value; update(); });
+$("s-v").addEventListener("input",e=>{ st.V=+e.target.value; update(); });
+const ix=c=>CS.indexOf(c);
+$("b-41").addEventListener("click",()=>{ Object.assign(st,{mode:"1",i1:ix(200),V:12}); update(); });
+$("b-42").addEventListener("click",()=>{ Object.assign(st,{mode:"1",i1:ix(50),V:200}); update(); });
+$("b-44").addEventListener("click",()=>{ Object.assign(st,{mode:"s",i1:ix(3),i2:ix(6),V:12}); update(); });
+$("b-45").addEventListener("click",()=>{ Object.assign(st,{mode:"p",i1:ix(2),i2:ix(4),V:10}); update(); });
+update();
+window.__sim={st,CS,solve,update};
+})();
+</script>

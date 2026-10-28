@@ -1,0 +1,236 @@
+<title>ทรงกลมตัวนำสองลูกเชื่อมด้วยลวด</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+/* stacked fractions and square roots: the "/" and the brackets stay in the markup (hidden) so the text still reads a/b when copied or in .flat mode */
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:2px 1px;line-height:1.3;white-space:nowrap}
+.fr>span{display:block;padding:0 3px;text-align:center}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:1px}
+.fr>.fs,.fr .fp,.rad .fp{display:none}
+.rad{display:inline-flex;align-items:stretch;vertical-align:middle;white-space:nowrap}
+.rad>.rs{font-size:1.5em;line-height:1;align-self:center;margin-right:-1px}
+.rad>.rb{border-top:1.5px solid currentColor;padding:2px 2px 0}
+.flat .fr,.flat .fr>span,.flat .rad,.flat .rad>span{display:inline;padding:0;margin:0;border:0;font-size:inherit}
+.flat .fr>.fs,.flat .fr .fp,.flat .rad .fp{display:inline}
+.res{font-size:1.08rem;font-weight:700;margin-top:8px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 3.6</div>
+  <h1>ทรงกลมตัวนำสองลูกเชื่อมด้วยลวด</h1>
+  <p class="lead">ตั้งรัศมีและประจุของทรงกลมตัวนำสองลูก ดูศักย์ของแต่ละลูก แล้วเชื่อมด้วยลวด ดูว่าอิเล็กตรอนไหลทางใด ประจุแบ่งกันอย่างไร และสนามที่ผิวของลูกใดแรงกว่า</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-f">
+    <h2 id="h-f">ทรงกลมและศักย์</h2>
+    <svg id="f" viewBox="0 0 380 344" role="img" aria-label="ทรงกลมตัวนำสองลูก ลวดเชื่อม และแท่งศักย์ของแต่ละลูก"></svg>
+    <p class="cap">เครื่องหมาย + และ − รอบผิวแทนประจุ ลูกละ 1 ตัวต่อ 1 nC ลูกศรสีม่วงคือสนามไฟฟ้าที่ผิว ความยาวเทียบกันได้ระหว่างสองลูกในภาพเดียวกัน ด้านล่างคือแท่งศักย์ของแต่ละลูก แท่งที่อยู่ใต้เส้นมีศักย์ติดลบ</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="ctl" style="margin-top:0">
+      <div class="row"><label for="s-r1"><span>รัศมี <i class="m">R</i><sub>1</sub></span><output id="o-r1"></output></label>
+        <input type="range" id="s-r1" min="1" max="10" step="1"></div>
+      <div class="row"><label for="s-q1"><span>ประจุเริ่มต้น <i class="m">Q</i><sub>1</sub></span><output id="o-q1"></output></label>
+        <input type="range" id="s-q1" min="-20" max="20" step="1"></div>
+      <div class="row"><label for="s-r2"><span>รัศมี <i class="m">R</i><sub>2</sub></span><output id="o-r2"></output></label>
+        <input type="range" id="s-r2" min="1" max="10" step="1"></div>
+      <div class="row"><label for="s-q2"><span>ประจุเริ่มต้น <i class="m">Q</i><sub>2</sub></span><output id="o-q2"></output></label>
+        <input type="range" id="s-q2" min="-20" max="20" step="1"></div>
+      <div class="btns">
+        <button class="btn" id="b-wire" aria-pressed="false">เชื่อมด้วยลวด</button>
+        <button class="btn" id="b-39">Ex. 3.9</button>
+      </div>
+      <p class="note">เปลี่ยนรัศมีหรือประจุเมื่อใด ลวดจะถูกปลดออก และเริ่มจากประจุเริ่มต้นใหม่</p>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-eq">
+    <h2 id="h-eq">คำนวณแบบ Ex. ในชีท</h2>
+    <div class="eq" id="eq"></div>
+    <div class="res" id="res"></div>
+    <div class="status" id="status" style="margin-top:10px"></div>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: อิเล็กตรอนไหลทางใด (Ex. 3.9)</summary>
+    <p class="q">กด "Ex. 3.9" (ลูกเล็ก <i class="m">R</i><sub>1</sub> = 2.0 cm มีประจุ +10 nC ลูกใหญ่ <i class="m">R</i><sub>2</sub> = 6.0 cm มีประจุ -2.0 nC) ดูศักย์ของแต่ละลูก ก่อนกด "เชื่อมด้วยลวด" ให้ทำนายว่าอิเล็กตรอนจะไหลจากลูกใดไปลูกใด</p>
+    <p class="q"><b>คำตอบ</b> ก่อนเชื่อม <i class="m">V</i><sub>1</sub> = 4.5 × 10<sup>3</sup> V และ <i class="m">V</i><sub>2</sub> = -300 V อิเล็กตรอนไหลจากที่ศักย์ต่ำไปที่ศักย์สูง จึงไหลจากลูกใหญ่ไปลูกเล็ก 5.0 × 10<sup>10</sup> ตัว หลังเชื่อม ลูกเล็กมี +2.0 nC ลูกใหญ่มี +6.0 nC และศักย์ร่วม 900 V ตรงกับ Ex. 3.9</p>
+  </details>
+  <details>
+    <summary>2. ลูกใดมีสนามที่ผิวแรงกว่า</summary>
+    <p class="q">ต่อจากข้อ 1 หลังเชื่อมแล้ว ลูกเล็กมีประจุน้อยกว่าลูกใหญ่ 3 เท่า สนามไฟฟ้าที่ผิวของลูกใดแรงกว่า และกี่เท่า</p>
+    <p class="q"><b>คำตอบ</b> ลูกเล็ก <i class="m">E</i><sub>1</sub> = <i class="m">V</i>/<i class="m">R</i><sub>1</sub> = 4.5 × 10<sup>4</sup> N/C ส่วนลูกใหญ่ <i class="m">E</i><sub>2</sub> = 1.5 × 10<sup>4</sup> N/C ลูกเล็กแรงกว่า 3 เท่า เท่ากับ <i class="m">R</i><sub>2</sub>/<i class="m">R</i><sub>1</sub> เพราะศักย์เท่ากัน ส่วนที่รัศมีความโค้งเล็ก เช่น ปลายแหลม จึงมีสนามที่ผิวแรง</p>
+  </details>
+  <details>
+    <summary>3. ทรงกลมขนาดเท่ากัน</summary>
+    <p class="q">ตั้ง <i class="m">R</i><sub>1</sub> = <i class="m">R</i><sub>2</sub> = 5.0 cm ประจุ +12 nC กับ -4.0 nC แล้วเชื่อมด้วยลวด แต่ละลูกมีประจุเท่าใด</p>
+    <p class="q"><b>คำตอบ</b> ลูกละ +4.0 nC เท่ากัน ประจุรวม +8.0 nC แบ่งครึ่ง ตรงกับการแตะทรงกลมขนาดเท่ากันในหัวข้อ 1.2</p>
+  </details>
+  <details>
+    <summary>4. เมื่อศักย์เท่ากันอยู่แล้ว</summary>
+    <p class="q">ตั้ง <i class="m">R</i><sub>1</sub> = 2.0 cm มีประจุ +2.0 nC และ <i class="m">R</i><sub>2</sub> = 6.0 cm มีประจุ +6.0 nC แล้วเชื่อมด้วยลวด มีอิเล็กตรอนไหลหรือไม่ ทั้งที่ลูกใหญ่มีประจุมากกว่า</p>
+    <p class="q"><b>คำตอบ</b> ไม่ไหล ทั้งสองลูกมีศักย์ 900 V เท่ากันอยู่แล้ว การไหลของประจุขึ้นกับความต่างศักย์ ไม่ได้ขึ้นกับว่าลูกใดมีประจุมากกว่า</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ถือว่าทรงกลมอยู่ห่างกันมากเมื่อเทียบกับรัศมี ศักย์ของแต่ละลูกจึงเป็น <i class="m">kQ</i>/<i class="m">R</i> โดยไม่ถูกรบกวนจากอีกลูก และประจุบนลวดน้อยจนตัดทิ้งได้ ภาพจึงวาดลวดแบบตัดช่วงกลาง (ระยะห่างไม่เป็นไปตามมาตราส่วน) แต่รัศมีของสองลูกเป็นไปตามมาตราส่วน ใช้ <i class="m">k</i> = 9.0 × 10<sup>9</sup> N·m<sup>2</sup>/C<sup>2</sup> และ <i class="m">e</i> = 1.6 × 10<sup>-19</sup> C จำนวนเครื่องหมายรอบผิวปัดเป็นจำนวนเต็ม (สูงสุด 20 ตัว) ภาพการไหลของอิเล็กตรอนแสดงทิศเท่านั้น ไม่ได้แสดงจำนวนจริง ตัวเลขแสดง 2 ตัวตามเลขนัยสำคัญของข้อมูล และขั้นถัดไปใช้ค่าที่ปัดแล้ว เหมือน Ex. ในชีท</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,m}=DP;
+const rd=(v,n)=>{ if(!isFinite(v)||v===0) return v; const [mt,ex]=Math.abs(v).toExponential(11).split("e"), dg=mt.replace(".",""); return Math.sign(v)*Number((Number(dg.slice(0,n))+(+dg[n]>=5?1:0))+"e"+(+ex-n+1)); };   // round half up on the decimal digits, so floating-point noise (674999.99999…) still gives 6.8 × 10^5 as by hand
+const fmt=(x,n,o)=>DP.fmt(rd(x,n||3),n,o);
+const K=9.0e9, E_=1.6e-19;
+const st={r1:2,q1:10,r2:6,q2:-2,wired:false,anim:null};
+const sub=s=>`<sub>${s}</sub>`;
+const fr=(a,b,pa,pb)=>{ const w=(s,p)=>p?`<span class="fp">${p[0]}</span>${s}<span class="fp">${p[1]}</span>`:s; return `<span class="fr"><span>${w(a,pa)}</span><span class="fs">/</span><span>${w(b,pb)}</span></span>`; };
+const r2=v=>rd(v,2);
+/* numbers: charges in nC with 2 figures, potentials plain below 1000 V */
+const qn=(v,n)=>v===0?"0":fmt(v,n||2,{intok:1});                 // 10, 2.0, 0.50 (10.5 with 3 figures)
+const qs=(v,n)=>v===0?"0":(v>0?"+":"")+qn(v,n);                  // +10, -2.0
+const Rm=c=>(c/100).toFixed(c<10?3:2);                           // 0.020 m, 0.10 m
+const Rc=c=>c<10?c.toFixed(1):String(c);                         // 2.0 cm, 10 cm (2 figures)
+const fV=v=>v===0?"0":Math.abs(v)>=1000?fmt(v,2):fmt(v,2,{intok:1});
+const sci=v=>v===0?"0":fmt(v,2);
+const nC=(v,n)=>`${v<0?"-":""}${fmt(Math.abs(v),n||2)} × 10<sup>-9</sup>`;   // a charge in coulombs as written in the sheet
+
+/* the physics, kept as plain numbers so the test can call it */
+function solve(){
+  const {r1,q1,r2:R2,q2}=st, Qt=q1+q2;
+  const V1=K*q1*1e-9/(r1/100), V2=K*q2*1e-9/(R2/100);
+  const same=q1*R2===q2*r1;                                       // equal potentials before connecting (exact, from the integers)
+  // Q' with 2 figures, or 3 when 2 would visibly break the charge total (10.5 nC would show as 11 nC)
+  const Q1x=Qt*r1/(r1+R2), Q2x=Qt*R2/(r1+R2), nf=Math.abs(rd(Q1x,2)+rd(Q2x,2)-Qt)>1e-9?3:2;
+  const Q1f=rd(Q1x,nf), Q2f=rd(Q2x,nf);
+  const V=Q1f===0?0:r2(K*Q1f*1e-9/(r1/100));                      // from the shown Q1', like the sheet
+  let dQ1=same?0:r2(Q1f-q1); if(!same&&dQ1===0) dQ1=r2(Q1x-q1);    // change of sphere 1 in nC
+  const N=dQ1===0?0:r2(Math.abs(dQ1)*1e-9/E_);
+  const Es1=V===0?0:r2(Math.abs(V)/(r1/100)), Es2=V===0?0:r2(Math.abs(V)/(R2/100));
+  return {Qt,V1:r2(V1),V2:r2(V2),V1x:V1,V2x:V2,same,Q1f,Q2f,nf,V,dQ1,N,Es1,Es2};
+}
+
+/* drawing */
+const G=$("f"), CY=92, C1=96, C2=284, PX=5, QY=194, BY=280, BH=40;
+const halo=t=>{ t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); return t; };
+const vplain=V=>V===0?"0":fmt(V,2,{plain:1,intok:Math.abs(V)<1000});
+function sphere(cx,R,Q,lab,Eabs,Emax,outer){
+  const r=R*PX;
+  el("circle",{cx,cy:CY,r,fill:Q>0?"var(--pos)":Q<0?"var(--elec)":"var(--card)","fill-opacity":Q===0?1:0.14,stroke:"var(--ink)","stroke-width":1.6},G);
+  // charge signs spread evenly round the surface: one per nC
+  const n=Math.min(20,Math.round(Math.abs(Q)));
+  for(let i=0;i<n;i++){ const a=(i+0.5)/n*2*Math.PI-Math.PI/2, x=cx+r*Math.cos(a), y=CY+r*Math.sin(a);
+    el("circle",{cx:x,cy:y,r:4.6,fill:Q>0?"var(--pos)":"var(--elec)",stroke:"var(--card)","stroke-width":1},G);
+    el("path",{d:Q>0?`M${x-2.6},${y} h5.2 M${x},${y-2.6} v5.2`:`M${x-2.6},${y} h5.2`,stroke:"#fff","stroke-width":1.5},G); }
+  // field at the surface: outward for +, inward for −, at three points away from the wire
+  if(Eabs>0&&Emax>0){ const L=8+22*Eabs/Emax, sg=Q>0?1:-1;
+    for(const a of [-Math.PI/2,outer,Math.PI/2]){ const ux=Math.cos(a), uy=Math.sin(a), r0=r+7, r1_=r+7+L, [s,e]=sg>0?[r0,r1_]:[r1_,r0];
+      const x1=cx+ux*s, y1=CY+uy*s, xe=cx+ux*(e-sg*5), ye=CY+uy*(e-sg*5);
+      el("line",{x1,y1,x2:xe,y2:ye,stroke:"var(--efield)","stroke-width":2.4},G);
+      DP.arrowHead(G,xe,ye,Math.atan2(uy,ux)*180/Math.PI+(sg>0?0:180),"var(--efield)",5); } }
+  halo(txt(G,cx,QY,lab,{"text-anchor":"middle","font-size":13,"font-weight":700}));
+  txt(G,cx,QY+16,[["R",{it:1}],[lab[1][0],{sub:1}],[` = ${Rc(R)} cm`,{}]],{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+}
+function draw(view){
+  G.textContent="";
+  const {r1,r2:R2}=st, a=C1+r1*PX, b=C2-R2*PX, mid=(a+b)/2, w={stroke:"var(--ink)","stroke-width":2};
+  // the wire: break marks in the middle (the spheres are really far apart) and a switch that is open until connected
+  el("line",{x1:a,y1:CY,x2:mid-14,y2:CY,...w},G); el("line",{x1:mid+14,y1:CY,x2:b,y2:CY,...w},G);
+  if(view.wired) el("line",{x1:mid-14,y1:CY,x2:mid+14,y2:CY,...w},G);
+  else el("line",{x1:mid-14,y1:CY,x2:mid+10,y2:CY-12,...w},G);
+  for(const x of [mid-14,mid+14]) el("circle",{cx:x,cy:CY,r:2.5,fill:"var(--ink)"},G);
+  for(const dx of [-31,-25,25,31]){ el("rect",{x:mid+dx-2,y:CY-7,width:4,height:14,fill:"var(--card)"},G); el("path",{d:`M${mid+dx-3},${CY+6} l6,-12`,stroke:"var(--ink)","stroke-width":1.4},G); }
+  txt(G,mid,CY+24,view.wired?"เชื่อมแล้ว":"ยังไม่เชื่อม",{"text-anchor":"middle","font-size":11.5,fill:"var(--muted)"});
+  // electrons moving along the wire while charge flows (direction only)
+  if(view.flow){ const [x0,x1]=view.flow.from===1?[a,b]:[b,a], dir=x1>x0?1:-1;
+    for(let i=0;i<3;i++){ const f=(view.flow.t*2.2+i/3)%1, x=x0+(x1-x0)*f;
+      el("circle",{cx:x,cy:CY,r:5,fill:"var(--elec)",stroke:"var(--card)","stroke-width":1},G); el("path",{d:`M${x-2.6},${CY} h5.2`,stroke:"#fff","stroke-width":1.5},G); }
+    const ax=mid-dir*26; el("line",{x1:ax,y1:CY-24,x2:ax+dir*46,y2:CY-24,stroke:"var(--elec)","stroke-width":2},G); DP.arrowHead(G,ax+dir*46,CY-24,dir>0?0:180,"var(--elec)",5);
+    halo(txt(G,mid,CY-33,[["e",{}],["−",{sup:1}]],{"text-anchor":"middle","font-size":12,"font-weight":700,fill:"var(--elec)"})); }
+  const pr=view.wired&&!view.flow?"′":"", Emax=Math.max(view.E1,view.E2);
+  sphere(C1,r1,view.Q1,[["Q",{it:1}],["1",{sub:1}],[pr+" = "+qs(rd(view.Q1,view.nf||2),view.nf)+" nC",{}]],view.E1,Emax,Math.PI);
+  sphere(C2,R2,view.Q2,[["Q",{it:1}],["2",{sub:1}],[pr+" = "+qs(rd(view.Q2,view.nf||2),view.nf)+" nC",{}]],view.E2,Emax,0);
+  // potential bars, one scale for before and after
+  el("line",{x1:30,y1:BY,x2:350,y2:BY,stroke:"var(--ink)","stroke-width":1.2},G);
+  txt(G,26,BY+4,"0",{"font-size":11,fill:"var(--muted)","text-anchor":"end"});
+  const s=solve(), Vm=Math.max(Math.abs(s.V1x),Math.abs(s.V2x),Math.abs(s.V),1e-9);
+  for(const [cx,V,i] of [[C1,view.V1,"1"],[C2,view.V2,"2"]]){ const h=BH*V/Vm;
+    if(Math.abs(h)>0.05) el("rect",{x:cx-18,y:Math.min(BY,BY-h),width:36,height:Math.abs(h),fill:"var(--graph)","fill-opacity":0.85},G);
+    halo(txt(G,cx,V>=0?BY-Math.max(h,0)-6:BY-h+15,[["V",{it:1}],[i,{sub:1}],[` = ${vplain(V)} V`,{}]],{"text-anchor":"middle","font-size":12})); }
+}
+
+/* text */
+let raf=0;
+function show(view){
+  const s=solve(), {r1,q1,r2:R2,q2}=st;
+  $("o-r1").textContent=Rc(r1)+" cm"; $("o-r2").textContent=Rc(R2)+" cm"; $("o-q1").textContent=qs(q1)+" nC"; $("o-q2").textContent=qs(q2)+" nC";
+  $("s-r1").value=r1; $("s-r2").value=R2; $("s-q1").value=q1; $("s-q2").value=q2;
+  $("b-wire").setAttribute("aria-pressed",st.wired); $("b-wire").textContent=st.wired?"ปลดลวด":"เชื่อมด้วยลวด";
+  const L=[`${m("V")}${sub(1)} = ${fr(`${m("k")}${m("Q")}${sub(1)}`,`${m("R")}${sub(1)}`)} = ${fr(`(9.0 × 10<sup>9</sup>)(${q1===0?"0":nC(q1)})`,Rm(r1))} = ${fV(s.V1)} V|ก่อนเชื่อม`,
+           `${m("V")}${sub(2)} = ${fr(`${m("k")}${m("Q")}${sub(2)}`,`${m("R")}${sub(2)}`)} = ${fr(`(9.0 × 10<sup>9</sup>)(${q2===0?"0":nC(q2)})`,Rm(R2))} = ${fV(s.V2)} V|ก่อนเชื่อม`];
+  let res="", sta;
+  if(!st.wired){
+    sta = s.same ? `ศักย์ของสองลูกเท่ากันอยู่แล้ว ถ้าเชื่อมด้วยลวดจะไม่มีประจุไหล ลองทำนายก่อนกด "เชื่อมด้วยลวด"`
+      : `ศักย์ของสองลูกไม่เท่ากัน ถ้าเชื่อมด้วยลวด ประจุจะไหลจนศักย์เท่ากัน ลองทำนายก่อนกด "เชื่อมด้วยลวด" ว่าอิเล็กตรอนจะไหลจากลูกใดไปลูกใด`;
+  } else {
+    L.push(`ประจุรวม = ${qs(q1)} + (${qs(q2)}) = ${qs(s.Qt)} nC|อนุรักษ์ประจุ แทนเครื่องหมาย`);
+    L.push(`${fr(`${m("Q")}${sub(1)}′`,`${m("Q")}${sub(2)}′`)} = ${fr(`${m("R")}${sub(1)}`,`${m("R")}${sub(2)}`)} = ${fr(Rc(r1),Rc(R2))}|ศักย์เท่ากัน ${m("kQ")}${sub(1)}′/${m("R")}${sub(1)} = ${m("kQ")}${sub(2)}′/${m("R")}${sub(2)}`);
+    L.push(`${m("Q")}${sub(1)}′ = ${fr(Rc(r1),Rc(r1+R2))}(${qn(s.Qt)}) = ${qs(s.Q1f,s.nf)} nC และ ${m("Q")}${sub(2)}′ = ${fr(Rc(R2),Rc(r1+R2))}(${qn(s.Qt)}) = ${qs(s.Q2f,s.nf)} nC`);
+    if(Math.abs(s.Q1f+s.Q2f-s.Qt)>1e-9) L.push(`ผลรวม ${qs(s.Q1f,s.nf)} + (${qs(s.Q2f,s.nf)}) ต่างจากประจุรวมเล็กน้อยเพราะการปัดเลข`);
+    L.push(`${m("V")} = ${fr(`${m("k")}${m("Q")}${sub(1)}′`,`${m("R")}${sub(1)}`)} = ${fr(`(9.0 × 10<sup>9</sup>)(${s.Q1f===0?"0":nC(s.Q1f,s.nf)})`,Rm(r1))} = ${fV(s.V)} V|ศักย์ร่วม`);
+    if(s.dQ1!==0){ const gain=s.dQ1<0;   // sphere 1 gains electrons when its charge goes down
+      L.push(`${m("Q")}${sub(1)}′ - ${m("Q")}${sub(1)} = ${qs(s.Q1f,s.nf)} - (${qs(q1)}) = ${qs(s.dQ1)} nC|ลูก 1 ${gain?"ได้รับ":"เสีย"}อิเล็กตรอนคิดเป็นประจุ ${qn(Math.abs(s.dQ1))} nC`);
+      L.push(`${m("N")} = ${fr(`${fmt(Math.abs(s.dQ1),2)} × 10<sup>-9</sup>`,`1.6 × 10<sup>-19</sup>`)} = ${sci(s.N)} ตัว`); }
+    if(s.V!==0) L.push(`${m("E")}${sub("ผิว,1")} = ${fr(m("V"),`${m("R")}${sub(1)}`)} = ${fr(fV(Math.abs(s.V)),Rm(r1))} = ${sci(s.Es1)} N/C และ ${m("E")}${sub("ผิว,2")} = ${fr(fV(Math.abs(s.V)),Rm(R2))} = ${sci(s.Es2)} N/C`);
+    const from=s.dQ1<0?2:1, to=3-from;
+    res = `หลังเชื่อม ${m("Q")}${sub(1)}′ = ${qs(s.Q1f,s.nf)} nC และ ${m("Q")}${sub(2)}′ = ${qs(s.Q2f,s.nf)} nC ศักย์ร่วม ${fV(s.V)} V ` + (s.dQ1===0?"ไม่มีอิเล็กตรอนไหล":`อิเล็กตรอน ${sci(s.N)} ตัว ไหลจากลูก ${from} ไปลูก ${to}`);
+    const big=r1===R2?0:(r1<R2?1:2);
+    if(s.dQ1===0) sta=`ไม่มีประจุไหล เพราะศักย์เท่ากันอยู่แล้ว การไหลของประจุขึ้นกับความต่างศักย์ ไม่ได้ขึ้นกับว่าลูกใดมีประจุมากกว่า`;
+    else sta=`อิเล็กตรอนไหลจากลูกที่ศักย์ต่ำกว่า (ลูก ${from}) ไปลูกที่ศักย์สูงกว่า (ลูก ${to}) จนศักย์เท่ากัน แล้วการไหลก็หยุด`;
+    if(s.V!==0&&big) sta+=` ลูก ${big} รัศมีเล็กกว่า มีประจุ${Math.abs(big===1?s.Q1f:s.Q2f)<Math.abs(big===1?s.Q2f:s.Q1f)?"น้อยกว่า แต่":""}มีสนามที่ผิวแรงกว่า ${fmt(Math.max(r1,R2)/Math.min(r1,R2),2,{intok:1})} เท่า เท่ากับอัตราส่วนรัศมี`;
+    else if(s.V!==0) sta+=` รัศมีเท่ากันจึงได้ประจุเท่ากัน ตรงกับหัวข้อ 1.2`;
+    if(s.Qt===0) sta=(s.dQ1===0?"ทั้งสองลูกไม่มีประจุ จึงไม่มีประจุไหล":`อิเล็กตรอนไหลจากลูกที่ศักย์ต่ำกว่า (ลูก ${from}) ไปลูกที่ศักย์สูงกว่า (ลูก ${to}) จนศักย์เท่ากัน`)+` ประจุรวมเป็นศูนย์ หลังเชื่อมทั้งสองลูกจึงไม่มีประจุ และศักย์เป็นศูนย์ทั้งคู่`;
+  }
+  if(view.flow) sta=`กำลังไหล: อิเล็กตรอนไหลจากลูก ${view.flow.from} ไปลูก ${3-view.flow.from}`;
+  $("eq").innerHTML=DP.eqHTML(L);
+  $("res").innerHTML=view.flow?"":res; $("status").innerHTML=sta;
+  draw(view);
+}
+function viewNow(){ const s=solve();
+  if(!st.wired) return {wired:false,Q1:st.q1,Q2:st.q2,V1:s.V1,V2:s.V2,E1:Math.abs(st.q1)/(st.r1*st.r1),E2:Math.abs(st.q2)/(st.r2*st.r2)};
+  return {wired:true,Q1:s.Q1f,Q2:s.Q2f,nf:s.nf,V1:s.V,V2:s.V,E1:s.Es1,E2:s.Es2}; }
+function update(){ stop(); show(viewNow()); }
+function stop(){ if(raf) cancelAnimationFrame(raf); raf=0; st.anim=null; }
+function connect(){
+  stop(); st.wired=!st.wired; const s=solve();
+  if(!st.wired||s.dQ1===0||DP.reduce){ update(); return; }
+  const from=s.dQ1<0?2:1, t0=performance.now(), T=1600;
+  const step=now=>{ const f=Math.min(1,Math.max(0,(now-t0)/T)); st.anim=f;
+    if(f>=1){ raf=0; st.anim=null; show(viewNow()); return; }
+    const g=f*f*(3-2*f), Q1=st.q1+(s.Q1f-st.q1)*g, Q2=st.q2+(s.Q2f-st.q2)*g;
+    show({wired:true,flow:{from,t:f},Q1,Q2,V1:s.V1x+(s.V-s.V1x)*g,V2:s.V2x+(s.V-s.V2x)*g,E1:Math.abs(Q1)/(st.r1*st.r1),E2:Math.abs(Q2)/(st.r2*st.r2)});
+    raf=requestAnimationFrame(step); };
+  raf=requestAnimationFrame(step);
+}
+for(const k of ["r1","q1","r2","q2"]) $("s-"+k).addEventListener("input",e=>{ stop(); st[k]=+e.target.value; st.wired=false; update(); });
+$("b-wire").addEventListener("click",connect);
+$("b-39").addEventListener("click",()=>{ stop(); Object.assign(st,{r1:2,q1:10,r2:6,q2:-2,wired:false}); update(); });
+update();
+window.__sim={st,solve,update,connect,stop};
+})();
+</script>

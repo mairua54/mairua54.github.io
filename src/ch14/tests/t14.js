@@ -21,7 +21,8 @@ const { chromium } = require('playwright');
     for(let i=0;i<xs.length-1;i++){ let a=xs[i], c=xs[i+1]; if(Math.abs(a)<1e-9||Math.abs(a-d)<1e-9||(a<0&&c>0)||(a<d&&c>d)) continue;
       const ga=g(a), gc=g(c); if(ga===0){ roots.push(a); continue; } if(ga*gc<0){ for(let j=0;j<80;j++){ const mm=(a+c)/2; if(g(a)*g(mm)<=0) c=mm; else a=mm; } roots.push((a+c)/2); } }
     return roots; }
-  const r2=v=>Number(v.toPrecision(2));
+  const rd=(v,n)=>{ if(!isFinite(v)||v===0) return v; const [mt,ex]=Math.abs(v).toExponential(11).split('e'), dg=mt.replace('.',''); return Math.sign(v)*Number((Number(dg.slice(0,n))+(+dg[n]>=5?1:0))+'e'+(+ex-n+1)); };   // round half up on the decimal digits (floating-point noise such as 674999.99999 must still give 6.8 × 10^5)
+  const r2=v=>rd(v,2);
   const num=s=>{ const m=s.match(/^(-?[\d.]+)(?: × 10(-?\d+))?$/); if(!m) return NaN; return Number(m[1])*(m[2]?Math.pow(10,+m[2]):1); };
   const near2=(disp,v)=>{ if(v===0) return disp===0; const u=Math.pow(10,Math.floor(Math.log10(Math.abs(v)))-1); return Math.abs(disp-Math.abs(v))<=0.5*u*1.0001+1e-15; };
   function check(tag){

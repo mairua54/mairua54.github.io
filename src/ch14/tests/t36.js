@@ -33,7 +33,11 @@ const { chromium } = require('playwright');
    if(!qm||+qm[1]!==r1||+qm[2]!==r1+r2||(Q1f===0?qm[5]!=='0':!same(num(qm[6]),Q1f))||+qm[7]!==r2||+qm[8]!==r1+r2||(Q2f===0?qm[11]!=='0':!same(num(qm[12]),Q2f))) bad.push([tag,"Q'",qm&&qm[0],Q1f,Q2f]);
    if(nf===3&&qm&&!/\d\.\d\d|\d\d\.\d/.test(qm[0])) bad.push([tag,'3 figures expected',qm[0]]);
    if((Math.abs(Q1f+Q2f-Qt)>1e-9)!==/ต่างจากประจุรวมเล็กน้อยเพราะการปัดเลข/.test(eq)) bad.push([tag,'rounding note',Q1f,Q2f,Qt]);
-   const V=Q1f===0?0:rd(k*Q1f*1e-9/(r1/100),2), vm=eq.match(R(`V = kQ1′/R1 = \\(9\\.0 × 109\\)\\((0|#)\\)/([\\d.]+) = (0|#) V \\(ศักย์ร่วม\\)`));
+   // V is shown with 2 figures, or 3 when 2 would move E(surface) off the exact value
+   // and break E1/E2 = R2/R1 that the status line states
+   const Vx=Q1f===0?0:k*Q1f*1e-9/(r1/100), Va=Math.abs(Vx);
+   const vf=Vx!==0&&(rd(Math.abs(rd(Vx,2))/(r1/100),2)!==rd(Va/(r1/100),2)||rd(Math.abs(rd(Vx,2))/(r2/100),2)!==rd(Va/(r2/100),2))?3:2;
+   const V=rd(Vx,vf), vm=eq.match(R(`V = kQ1′/R1 = \\(9\\.0 × 109\\)\\((0|#)\\)/([\\d.]+) = (0|#) V \\(ศักย์ร่วม\\)`));
    if(!vm||vm[3]!==Rm(r1)||(V===0?vm[4]!=='0':!same(num(vm[5]),V))) bad.push([tag,'V common',vm&&vm[0],V]);
    // electrons go from the lower potential to the higher one
    let dQ=eqV?0:rd(Q1f-q1,2); if(!eqV&&dQ===0) dQ=rd(Q1x-q1,2);

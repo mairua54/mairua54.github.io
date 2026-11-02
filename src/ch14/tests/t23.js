@@ -50,7 +50,7 @@ const { chromium } = require('playwright');
          const Sx=r2(ax+bx), Sy=r2(ay+by); if(Math.abs(num(mx_[3])-Sx)>1e-9*Math.abs(Sx)+1e-12||Math.abs(num(my_[3])-Sy)>1e-9*Math.abs(Sy)+1e-12) bad.push([tag,'component sums']);
          const mag=r2(Math.hypot(num(mx_[3]),num(my_[3]))); if(Math.abs(num(mr[1])-mag)>1e-9*mag+1e-12) bad.push([tag,'ER magnitude',mr[1],mag]);
          worstR=Math.max(worstR,Math.abs(mag-mR)/Math.max(mR,1e-300)*(mR>0.02*mx?1:0)); if(Math.abs(mag-mR)>0.05*mR+0.002*mx) bad.push([tag,'ER far from exact',mag,mR]); } }
-     if(zero!==/เป็นศูนย์/.test(res)) bad.push([tag,'res zero',res]);
+     if(zero!==(/เป็นศูนย์/.test(res)&&!/เกือบ/.test(res))) bad.push([tag,'res zero',res]);   // "เกือบเป็นศูนย์" is not zero (same guard as t14)
      if(zero!==/จุดสะเทิน สนามจาก/.test(sta)) bad.push([tag,'status zero',sta]);
    }
    // direction words in the result (exact field)

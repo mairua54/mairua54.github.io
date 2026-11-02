@@ -168,7 +168,7 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
   </details>
 </section>
 
-<p class="note">แบบจำลองนี้ถือว่าทรงกลมอยู่ห่างกันมากเมื่อเทียบกับรัศมี ศักย์ของแต่ละลูกจึงเป็น <i class="m">kQ</i>/<i class="m">R</i> โดยไม่ถูกรบกวนจากอีกลูก และประจุบนลวดน้อยจนตัดทิ้งได้ ภาพจึงวาดลวดแบบตัดช่วงกลาง (ระยะห่างไม่เป็นไปตามมาตราส่วน) แต่รัศมีของสองลูกเป็นไปตามมาตราส่วน ใช้ <i class="m">k</i> = 9.0 × 10<sup>9</sup> N·m<sup>2</sup>/C<sup>2</sup> และ <i class="m">e</i> = 1.6 × 10<sup>-19</sup> C จำนวนเครื่องหมายรอบผิวปัดเป็นจำนวนเต็ม (สูงสุด 20 ตัว) ภาพการไหลของอิเล็กตรอนแสดงทิศเท่านั้น ไม่ได้แสดงจำนวนจริง ตัวเลขแสดง 2 ตัวตามเลขนัยสำคัญของข้อมูล และขั้นถัดไปใช้ค่าที่ปัดแล้ว เหมือน Ex. ในชีท</p>
+<p class="note">แบบจำลองนี้ถือว่าทรงกลมอยู่ห่างกันมากเมื่อเทียบกับรัศมี ศักย์ของแต่ละลูกจึงเป็น <i class="m">kQ</i>/<i class="m">R</i> โดยไม่ถูกรบกวนจากอีกลูก และประจุบนลวดน้อยจนตัดทิ้งได้ ภาพจึงวาดลวดแบบตัดช่วงกลาง (ระยะห่างไม่เป็นไปตามมาตราส่วน) แต่รัศมีของสองลูกเป็นไปตามมาตราส่วน ใช้ <i class="m">k</i> = 9.0 × 10<sup>9</sup> N·m<sup>2</sup>/C<sup>2</sup> และ <i class="m">e</i> = 1.6 × 10<sup>-19</sup> C จำนวนเครื่องหมายรอบผิวปัดเป็นจำนวนเต็ม (สูงสุด 20 ตัว) ภาพการไหลของอิเล็กตรอนแสดงทิศเท่านั้น ไม่ได้แสดงจำนวนจริง ตัวเลขแสดง 2 ตัวตามเลขนัยสำคัญของข้อมูล และขั้นถัดไปใช้ค่าที่ปัดแล้ว เหมือน Ex. ในชีท (ศักย์ร่วมแสดง 3 ตัวเฉพาะเมื่อ 2 ตัวจะทำให้สนามที่ผิวคลาดไปจากค่าจริง) ถ้านำสนามที่ผิวสองค่าที่แสดงมาหารกัน อัตราส่วนอาจไม่ลงตัวเป็น <i class="m">R</i><sub>2</sub>/<i class="m">R</i><sub>1</sub> พอดี เพราะแต่ละค่าปัดเป็น 2 เลขนัยสำคัญแล้ว</p>
 <p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
 </div>
 
@@ -268,7 +268,7 @@ const qn=(v,n)=>v===0?"0":fmt(v,n||2,{intok:1});                 // 10, 2.0, 0.5
 const qs=(v,n)=>v===0?"0":(v>0?"+":"")+qn(v,n);                  // +10, -2.0
 const Rm=c=>(c/100).toFixed(c<10?3:2);                           // 0.020 m, 0.10 m
 const Rc=c=>c<10?c.toFixed(1):String(c);                         // 2.0 cm, 10 cm (2 figures)
-const fV=v=>v===0?"0":Math.abs(v)>=1000?fmt(v,2):fmt(v,2,{intok:1});
+const fV=(v,n)=>v===0?"0":Math.abs(v)>=1000?fmt(v,n||2):fmt(v,n||2,{intok:1});
 const sci=v=>v===0?"0":fmt(v,2);
 const nC=(v,n)=>`${v<0?"-":""}${fmt(Math.abs(v),n||2)} × 10<sup>-9</sup>`;   // a charge in coulombs as written in the sheet
 
@@ -280,11 +280,15 @@ function solve(){
   // Q' with 2 figures, or 3 when 2 would visibly break the charge total (10.5 nC would show as 11 nC)
   const Q1x=Qt*r1/(r1+R2), Q2x=Qt*R2/(r1+R2), nf=Math.abs(rd(Q1x,2)+rd(Q2x,2)-Qt)>1e-9?3:2;
   const Q1f=rd(Q1x,nf), Q2f=rd(Q2x,nf);
-  const V=Q1f===0?0:r2(K*Q1f*1e-9/(r1/100));                      // from the shown Q1', like the sheet
+  // V from the shown Q1', like the sheet. 3 figures when 2 would move E(surface) off the exact
+  // value and break E1/E2 = R2/R1 that the status line states (same idea as nf above)
+  const Vx=Q1f===0?0:K*Q1f*1e-9/(r1/100), Va=Math.abs(Vx);
+  const vf=Vx!==0&&(r2(Math.abs(r2(Vx))/(r1/100))!==r2(Va/(r1/100))||r2(Math.abs(r2(Vx))/(R2/100))!==r2(Va/(R2/100)))?3:2;
+  const V=rd(Vx,vf);
   let dQ1=same?0:r2(Q1f-q1); if(!same&&dQ1===0) dQ1=r2(Q1x-q1);    // change of sphere 1 in nC
   const N=dQ1===0?0:r2(Math.abs(dQ1)*1e-9/E_);
   const Es1=V===0?0:r2(Math.abs(V)/(r1/100)), Es2=V===0?0:r2(Math.abs(V)/(R2/100));
-  return {Qt,V1:r2(V1),V2:r2(V2),V1x:V1,V2x:V2,same,Q1f,Q2f,nf,V,dQ1,N,Es1,Es2};
+  return {Qt,V1:r2(V1),V2:r2(V2),V1x:V1,V2x:V2,same,Q1f,Q2f,nf,V,vf,dQ1,N,Es1,Es2};
 }
 
 /* drawing */
@@ -354,13 +358,13 @@ function show(view){
     L.push(`${fr(`${m("Q")}${sub(1)}′`,`${m("Q")}${sub(2)}′`)} = ${fr(`${m("R")}${sub(1)}`,`${m("R")}${sub(2)}`)} = ${fr(Rc(r1),Rc(R2))}|ศักย์เท่ากัน ${m("kQ")}${sub(1)}′/${m("R")}${sub(1)} = ${m("kQ")}${sub(2)}′/${m("R")}${sub(2)}`);
     L.push(`${m("Q")}${sub(1)}′ = ${fr(Rc(r1),Rc(r1+R2))}(${qn(s.Qt)}) = ${qs(s.Q1f,s.nf)} nC และ ${m("Q")}${sub(2)}′ = ${fr(Rc(R2),Rc(r1+R2))}(${qn(s.Qt)}) = ${qs(s.Q2f,s.nf)} nC`);
     if(Math.abs(s.Q1f+s.Q2f-s.Qt)>1e-9) L.push(`ผลรวม ${qs(s.Q1f,s.nf)} + (${qs(s.Q2f,s.nf)}) ต่างจากประจุรวมเล็กน้อยเพราะการปัดเลข`);
-    L.push(`${m("V")} = ${fr(`${m("k")}${m("Q")}${sub(1)}′`,`${m("R")}${sub(1)}`)} = ${fr(`(9.0 × 10<sup>9</sup>)(${s.Q1f===0?"0":nC(s.Q1f,s.nf)})`,Rm(r1))} = ${fV(s.V)} V|ศักย์ร่วม`);
+    L.push(`${m("V")} = ${fr(`${m("k")}${m("Q")}${sub(1)}′`,`${m("R")}${sub(1)}`)} = ${fr(`(9.0 × 10<sup>9</sup>)(${s.Q1f===0?"0":nC(s.Q1f,s.nf)})`,Rm(r1))} = ${fV(s.V,s.vf)} V|ศักย์ร่วม`);
     if(s.dQ1!==0){ const gain=s.dQ1<0;   // sphere 1 gains electrons when its charge goes down
       L.push(`${m("Q")}${sub(1)}′ - ${m("Q")}${sub(1)} = ${qs(s.Q1f,s.nf)} - (${qs(q1)}) = ${qs(s.dQ1)} nC|ลูก 1 ${gain?"ได้รับ":"เสีย"}อิเล็กตรอนคิดเป็นประจุ ${qn(Math.abs(s.dQ1))} nC`);
       L.push(`${m("N")} = ${fr(`${fmt(Math.abs(s.dQ1),2)} × 10<sup>-9</sup>`,`1.6 × 10<sup>-19</sup>`)} = ${sci(s.N)} ตัว`); }
-    if(s.V!==0) L.push(`${m("E")}${sub("ผิว,1")} = ${fr(m("V"),`${m("R")}${sub(1)}`)} = ${fr(fV(Math.abs(s.V)),Rm(r1))} = ${sci(s.Es1)} N/C และ ${m("E")}${sub("ผิว,2")} = ${fr(fV(Math.abs(s.V)),Rm(R2))} = ${sci(s.Es2)} N/C`);
+    if(s.V!==0) L.push(`${m("E")}${sub("ผิว,1")} = ${fr(m("V"),`${m("R")}${sub(1)}`)} = ${fr(fV(Math.abs(s.V),s.vf),Rm(r1))} = ${sci(s.Es1)} N/C และ ${m("E")}${sub("ผิว,2")} = ${fr(fV(Math.abs(s.V),s.vf),Rm(R2))} = ${sci(s.Es2)} N/C`);
     const from=s.dQ1<0?2:1, to=3-from;
-    res = `หลังเชื่อม ${m("Q")}${sub(1)}′ = ${qs(s.Q1f,s.nf)} nC และ ${m("Q")}${sub(2)}′ = ${qs(s.Q2f,s.nf)} nC ศักย์ร่วม ${fV(s.V)} V ` + (s.dQ1===0?"ไม่มีอิเล็กตรอนไหล":`อิเล็กตรอน ${sci(s.N)} ตัว ไหลจากลูก ${from} ไปลูก ${to}`);
+    res = `หลังเชื่อม ${m("Q")}${sub(1)}′ = ${qs(s.Q1f,s.nf)} nC และ ${m("Q")}${sub(2)}′ = ${qs(s.Q2f,s.nf)} nC ศักย์ร่วม ${fV(s.V,s.vf)} V ` + (s.dQ1===0?"ไม่มีอิเล็กตรอนไหล":`อิเล็กตรอน ${sci(s.N)} ตัว ไหลจากลูก ${from} ไปลูก ${to}`);
     const big=r1===R2?0:(r1<R2?1:2);
     if(s.dQ1===0) sta=`ไม่มีประจุไหล เพราะศักย์เท่ากันอยู่แล้ว การไหลของประจุขึ้นกับความต่างศักย์ ไม่ได้ขึ้นกับว่าลูกใดมีประจุมากกว่า`;
     else sta=`อิเล็กตรอนไหลจากลูกที่ศักย์ต่ำกว่า (ลูก ${from}) ไปลูกที่ศักย์สูงกว่า (ลูก ${to}) จนศักย์เท่ากัน แล้วการไหลก็หยุด`;

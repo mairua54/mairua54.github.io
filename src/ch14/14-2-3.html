@@ -167,20 +167,43 @@ function traceLines(){
 
 /* drawing */
 const G=$("f");
+/* labels: keep what is already on the picture and nudge a new label clear of it,
+   so E1, E2, ER, P and the charge names do not sit on top of one another */
+let placed=[];
+const grow=(b,p)=>({x:b.x-(p||2),y:b.y-(p||2),width:b.width+2*(p||2),height:b.height+2*(p||2)});
+const over=(a,b)=>a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height;
+function keep(t){ try{ placed.push(grow(t.getBBox())); }catch(e){} }
+function nudge(gl,ux,uy){                     // move the label perpendicular to the arrow until it is clear
+  let b0; try{ b0=grow(gl.getBBox()); }catch(e){ return; }
+  const at=d=>({x:b0.x-uy*d,y:b0.y+ux*d,width:b0.width,height:b0.height});
+  // how far a box sticks out of the picture; moving must not make that worse
+  const outb=b=>Math.max(0,2-b.x)+Math.max(0,2-b.y)+Math.max(0,b.x+b.width-(W-2))+Math.max(0,b.y+b.height-(H-2));
+  const base=outb(b0);
+  const free=b=>!placed.some(o=>over(b,o))&&outb(b)<=base+0.5;
+  if(free(b0)){ placed.push(b0); return; }
+  for(const d of [15,-15,28,-28,41,-41,54,-54]){
+    const b=at(d);
+    if(free(b)){ gl.setAttribute("transform",`translate(${(-uy*d).toFixed(1)},${(ux*d).toFixed(1)})`); placed.push(b); return; }
+  }
+  placed.push(b0);
+}
 function arrow(g,x,y,dx,dy,color,label){
   let L=Math.hypot(dx,dy); if(L<1e-9) return;
   const ux=dx/L, uy=dy/L, h=6.5; if(L<12){ dx=ux*12; dy=uy*12; L=12; }
   el("line",{x1:x,y1:y,x2:x+dx-ux*h,y2:y+dy-uy*h,stroke:color,"stroke-width":3.2,"stroke-linecap":"round"},g);
   DP.arrowHead(g,x+dx-ux*h,y+dy-uy*h,Math.atan2(dy,dx)*180/Math.PI,color,h);
   const lx=Math.min(Math.max(x+dx+ux*13,12),W-12), ly=Math.min(Math.max(y+dy+uy*12+5,14),H-6);
-  txt(g,lx,ly,label,{"text-anchor":"middle","font-size":14,"font-weight":700,fill:color});
+  const gl=el("g",{},g);
+  const tl=txt(gl,lx,ly,label,{"text-anchor":"middle","font-size":14,"font-weight":700,fill:color});
+  tl.setAttribute("paint-order","stroke"); tl.setAttribute("stroke","var(--card)"); tl.setAttribute("stroke-width",4);   // halo so the name stays readable over a field line
+  nudge(gl,ux,uy);
 }
 function draw(v){
-  G.textContent="";
+  G.textContent=""; placed=[];
   const s=sc();
   // axis
   el("line",{x1:0,y1:PY(0),x2:W,y2:PY(0),stroke:"var(--line)","stroke-width":1.2},G);
-  txt(G,W-6,PY(0)-6,"x (m)",{"text-anchor":"end","font-size":12,fill:"var(--muted)"});
+  keep(txt(G,W-6,PY(0)-6,"x (m)",{"text-anchor":"end","font-size":12,fill:"var(--muted)"}));
   // field lines
   if(st.lines){
     const g=el("g",{},G);
@@ -198,15 +221,15 @@ function draw(v){
     if(q===0) continue;
     const cx=PX(xc), cy=PY(0);
     el("circle",{cx,cy,r:11,fill:q>0?"var(--pos)":"var(--elec)",stroke:"var(--card)","stroke-width":1.5},G);
-    txt(G,cx,cy+6,q>0?"+":"−",{"text-anchor":"middle","font-size":17,"font-weight":700,fill:"#fff"});
+    keep(txt(G,cx,cy+6,q>0?"+":"−",{"text-anchor":"middle","font-size":17,"font-weight":700,fill:"#fff"}));
     const lab=txt(G,cx,cy+28,[["q",{it:1}],[n,{sub:1}]],{"text-anchor":"middle","font-size":13,"font-weight":700});
-    lab.setAttribute("paint-order","stroke"); lab.setAttribute("stroke","var(--card)"); lab.setAttribute("stroke-width",4);
+    lab.setAttribute("paint-order","stroke"); lab.setAttribute("stroke","var(--card)"); lab.setAttribute("stroke-width",4); keep(lab);
   }
   // neutral point
   if(st.show && v.z.x!==undefined){
     const w=win(), nx=PX(v.z.x), ny=PY(0);
     if(v.z.x>=w.lo&&v.z.x<=w.hi){ el("circle",{cx:nx,cy:ny,r:6,fill:"var(--card)",stroke:"var(--ink)","stroke-width":2.2},G);
-      const t=txt(G,nx,ny+62,"N (จุดสะเทิน)",{"text-anchor":"middle","font-size":12.5,"font-weight":700}); t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); }
+      const t=txt(G,nx,ny+62,"N (จุดสะเทิน)",{"text-anchor":"middle","font-size":12.5,"font-weight":700}); t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); keep(t); }
   }
   // point P and the field vectors there
   const x=PX(st.px), y=PY(st.py);
@@ -224,10 +247,10 @@ function draw(v){
     if(st.q1!==0) arrow(g,x,y1,v.E1[0]*f,-v.E1[1]*f,"var(--f1)",[["E",{it:1}],["1",{sub:1}]]);
     if(st.q2!==0) arrow(g,x,y2,v.E2[0]*f,-v.E2[1]*f,"var(--f2)",[["E",{it:1}],["2",{sub:1}]]);
     if(!v.exactZero && st.q1!==0 && st.q2!==0) arrow(g,x,yR,v.ER[0]*f,-v.ER[1]*f,"var(--efield)",[["E",{it:1}],["R",{sub:1}]]);
-    if(axis && v.exactZero && st.q1!==0 && st.q2!==0){ const t=txt(g,x,yR+5,[["E",{it:1}],["R",{sub:1}],[" = 0",{back:1}]],{"text-anchor":"middle","font-size":14,"font-weight":700,fill:"var(--efield)"}); t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); }
+    if(axis && v.exactZero && st.q1!==0 && st.q2!==0){ const gz=el("g",{},g), t=txt(gz,x,yR+5,[["E",{it:1}],["R",{sub:1}],[" = 0",{back:1}]],{"text-anchor":"middle","font-size":14,"font-weight":700,fill:"var(--efield)"}); t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--card)"); t.setAttribute("stroke-width",4); nudge(gz,1,0); }
   }
   el("circle",{cx:x,cy:y,r:4.5,fill:"var(--ink)",stroke:"var(--card)","stroke-width":1.5},G);
-  const pl=txt(G,x-9,(st.py===0&&st.q1!==0&&st.q2!==0)?y+17:y-8,"P",{"text-anchor":"end","font-size":14,"font-weight":700}); pl.setAttribute("paint-order","stroke"); pl.setAttribute("stroke","var(--card)"); pl.setAttribute("stroke-width",4);
+  const gp=el("g",{},G), pl=txt(gp,x-9,(st.py===0&&st.q1!==0&&st.q2!==0)?y+17:y-8,"P",{"text-anchor":"end","font-size":14,"font-weight":700}); pl.setAttribute("paint-order","stroke"); pl.setAttribute("stroke","var(--card)"); pl.setAttribute("stroke-width",4); nudge(gp,1,0);
 }
 
 /* numbers */

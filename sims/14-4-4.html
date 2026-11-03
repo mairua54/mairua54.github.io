@@ -16,18 +16,18 @@
   --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
   --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
   --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
-  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#e27a0f; --f1:#c2185b; --f2:#1b9aaa;
+  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#1b9aaa; --f1:#c2185b; --f2:#1b9aaa;
   --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
   --math:"Times New Roman","Noto Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#4fd0dd; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#4fd0dd; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 .nw{white-space:nowrap}
@@ -274,7 +274,8 @@ const fr=(a,b)=>`<span class="fr"><span>${a}</span><span class="fs">/</span><spa
 const r2=v=>rd(v,2);
 /* numbers */
 const cv=c=>c<10?c.toFixed(1):String(c);                          // capacitances from the list (and their sums): 3.0, 20
-const n2=v=>v===0?"0":fmt(v,2,{intok:Math.abs(v)<1000});           // 2 figures: 24, 8.0, 0.67, 2.4 × 10^3
+const n2=v=>v===0?"0":fmt(v,2,{intok:Math.abs(v)<1000});
+const nC=(v,n)=>v===0?"0":fmt(v,n||2,{intok:Math.abs(v)<1000});   // the equivalent capacitance in series may need 3 figures (see solve)           // 2 figures: 24, 8.0, 0.67, 2.4 × 10^3
 const n2s=v=>v===0?"0":fmt(v,2,{intok:Math.abs(v)<1000,plain:1});  // the same inside the drawing
 const sci=v=>{ if(v===0) return "0"; const r=r2(v), e=Math.floor(Math.log10(Math.abs(r))+1e-9); return `${(r/Math.pow(10,e)).toFixed(1)} × 10<sup>${e}</sup>`; };
 const fJ=v=>v===0?"0":(Math.abs(v)>=0.01&&Math.abs(v)<1e4?fmt(v,2,{intok:1}):sci(v));   // energy: 1.0, 0.25, 1.4 × 10^-4
@@ -284,8 +285,10 @@ const qC=q=>q>=1000?` = ${sci(q*1e-6)} C`:"";                     // a charge of
 function solve(){
   const C1=CS[st.i1], C2=CS[st.i2], V=st.V;
   if(st.mode==="1"){ const Q=r2(C1*V), U=r2(0.5*C1*1e-6*V*V); return {C:C1,Q,U,caps:[{C:C1,Q,V,given:true}],N:Q===0?0:r2(Q*1e-6/E_)}; }
-  if(st.mode==="s"){ const C=r2(C1*C2/(C1+C2)), Q=r2(C*V), V1=Q===0?0:r2(Q/C1), V2=Q===0?0:r2(Q/C2), U=r2(0.5*C*1e-6*V*V);
-    return {C,Q,U,caps:[{C:C1,Q,V:V1},{C:C2,Q,V:V2}]}; }
+  if(st.mode==="s"){ const Cx=C1*C2/(C1+C2), mn=Math.min(C1,C2);
+    const cf=r2(Cx)>=mn?3:2;   // 3 figures when 2 would round the equivalent capacitance up to the smallest capacitor, which the status line says it stays below (1 μF with 200 μF gives 0.995, not 1.0)
+    const C=rd(Cx,cf), Q=r2(C*V), V1=Q===0?0:r2(Q/C1), V2=Q===0?0:r2(Q/C2), U=r2(0.5*C*1e-6*V*V);
+    return {C,cf,Q,U,caps:[{C:C1,Q,V:V1},{C:C2,Q,V:V2}]}; }
   const C=C1+C2, Q1=r2(C1*V), Q2=r2(C2*V), U=r2(0.5*C*1e-6*V*V);
   return {C,Q:r2(Q1+Q2),U,caps:[{C:C1,Q:Q1,V,given:true},{C:C2,Q:Q2,V,given:true}]};
 }
@@ -367,7 +370,7 @@ function update(){
   $("o-c1").textContent=cv(C1)+" μF"; $("o-c2").textContent=cv(C2)+" μF"; $("o-v").textContent=V+" V";
   $("s-c1").max=CS.length-1; $("s-c2").max=CS.length-1; $("s-c1").value=st.i1; $("s-c2").value=st.i2; $("s-v").value=V;
   const L=[], Uline=`${m("U")} = ½${m("C")}(${dV})<sup>2</sup> = ½(${cv0(s.C)} × 10<sup>-6</sup>)(${V})<sup>2</sup> = ${fJ(s.U)} J`;
-  function cv0(c){ return st.mode==="s"?n2(c):cv(c); }
+  function cv0(c){ return st.mode==="s"?nC(c,s.cf):cv(c); }
   let res, sta;
   if(st.mode==="1"){
     L.push(`${m("Q")} = ${m("C")}${dV} = (${cv(C1)} μF)(${V} V) = ${n2(s.Q)} μC${qC(s.Q)}`);
@@ -377,15 +380,15 @@ function update(){
     sta=`ความจุขึ้นกับรูปร่าง ขนาด และฉนวนที่คั่นเท่านั้น ไม่ขึ้นกับ ${m("Q")} หรือ ${dV} ถ้าเพิ่ม ${dV} เป็น 2 เท่า ${m("Q")} เพิ่มเป็น 2 เท่า แต่ ${m("U")} เพิ่มเป็น 4 เท่า เพราะสามเหลี่ยมใต้กราฟทั้งกว้างและสูงขึ้น 2 เท่า`;
   } else if(st.mode==="s"){
     const [a,b]=s.caps;
-    L.push(`${m("C")} = ${fr(`${m("C")}${sub(1)}${m("C")}${sub(2)}`,`${m("C")}${sub(1)} + ${m("C")}${sub(2)}`)} = ${fr(`(${cv(C1)})(${cv(C2)})`,`${cv(C1)} + ${cv(C2)}`)} = ${n2(s.C)} μF|ความจุสมมูล`);
-    L.push(`${m("Q")} = ${m("C")}${dV} = (${n2(s.C)} μF)(${V} V) = ${n2(s.Q)} μC${qC(s.Q)}|ประจุเท่ากันทุกตัว`);
+    L.push(`${m("C")} = ${fr(`${m("C")}${sub(1)}${m("C")}${sub(2)}`,`${m("C")}${sub(1)} + ${m("C")}${sub(2)}`)} = ${fr(`(${cv(C1)})(${cv(C2)})`,`${cv(C1)} + ${cv(C2)}`)} = ${nC(s.C,s.cf)} μF|ความจุสมมูล`);
+    L.push(`${m("Q")} = ${m("C")}${dV} = (${nC(s.C,s.cf)} μF)(${V} V) = ${n2(s.Q)} μC${qC(s.Q)}|ประจุเท่ากันทุกตัว`);
     L.push(`${dV}${sub(1)} = ${fr(m("Q"),`${m("C")}${sub(1)}`)} = ${fr(`${n2(s.Q)} μC`,`${cv(C1)} μF`)} = ${n2(a.V)} V และ ${dV}${sub(2)} = ${fr(`${n2(s.Q)} μC`,`${cv(C2)} μF`)} = ${n2(b.V)} V`);
     const sum=Number((a.V+b.V).toPrecision(12));
     L.push(`ตรวจ: ${dV}${sub(1)} + ${dV}${sub(2)} = ${n2(a.V)} + ${n2(b.V)} = ${String(sum)} V${sum===V?"":"|ต่างจาก "+V+" V เล็กน้อยเพราะการปัดเลข"}`);
     L.push(Uline);
-    res=`ความจุสมมูล ${n2(s.C)} μF ประจุตัวละ ${n2(s.Q)} μC ความต่างศักย์ ${n2(a.V)} V และ ${n2(b.V)} V พลังงานรวม ${fJ(s.U)} J`;
+    res=`ความจุสมมูล ${nC(s.C,s.cf)} μF ประจุตัวละ ${n2(s.Q)} μC ความต่างศักย์ ${n2(a.V)} V และ ${n2(b.V)} V พลังงานรวม ${fJ(s.U)} J`;
     const small=C1===C2?0:(C1<C2?1:2);
-    sta=`ต่ออนุกรม ประจุเท่ากันทุกตัว ${small?`ตัวที่ความจุน้อยกว่า (${m("C")}${sub(small)}) จึงรับความต่างศักย์มากกว่า เพราะ ${dV} = ${m("Q")}/${m("C")} `:"ความจุเท่ากันจึงแบ่งความต่างศักย์เท่ากัน "}ความจุสมมูล ${n2(s.C)} μF น้อยกว่าตัวที่น้อยที่สุด`;
+    sta=`ต่ออนุกรม ประจุเท่ากันทุกตัว ${small?`ตัวที่ความจุน้อยกว่า (${m("C")}${sub(small)}) จึงรับความต่างศักย์มากกว่า เพราะ ${dV} = ${m("Q")}/${m("C")} `:"ความจุเท่ากันจึงแบ่งความต่างศักย์เท่ากัน "}ความจุสมมูล ${nC(s.C,s.cf)} μF น้อยกว่าตัวที่น้อยที่สุด`;
   } else {
     const [a,b]=s.caps;
     L.push(`${m("C")} = ${m("C")}${sub(1)} + ${m("C")}${sub(2)} = ${cv(C1)} + ${cv(C2)} = ${cv(s.C)} μF|ความจุสมมูล`);

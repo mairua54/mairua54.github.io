@@ -21,7 +21,9 @@ const { chromium } = require('playwright');
    if(st.mode==='1'){ C=C1; const Q=r2(C*V); Qmain=Q; Qs=[Q]; Vs=[V];
      const m=eq.match(R(`Q = CΔV = \\(([\\d.]+) μF\\)\\((\\d+) V\\) = (0|#) μC( = # C)?`)); if(!m||m[1]!==cv(C)||+m[2]!==V||!Q0(m[3],Q)||(!!m[5])!==big(Q)||(m[5]&&!same(num(m[6]),Q*1e-6))) bad.push([tag,'Q single',m&&m[0],Q]);
      if(Q>0){ const n=eq.match(R(`N = Q/e = #/1\\.6 × 10-19 = # ตัว`)); if(!n||!same(num(n[1]),Q*1e-6)||!same(num(n[2]),r2(Q*1e-6/e))) bad.push([tag,'N',n&&n[0]]); }
-   } else if(st.mode==='s'){ C=r2(C1*C2/(C1+C2)); const Q=r2(C*V); Qmain=Q; Qs=[Q,Q]; Vs=Q===0?[0,0]:[r2(Q/C1),r2(Q/C2)];
+   } else if(st.mode==='s'){ const Cx=C1*C2/(C1+C2), mn=Math.min(C1,C2); C=rd(Cx,r2(Cx)>=mn?3:2);   // 3 figures when 2 would round up to the smallest capacitor
+     if(!(C<mn)) bad.push([tag,'shown C not below the smallest',C,mn]);   // the status line says the equivalent capacitance stays below it
+     const Q=r2(C*V); Qmain=Q; Qs=[Q,Q]; Vs=Q===0?[0,0]:[r2(Q/C1),r2(Q/C2)];
      // the exact physics: same charge, voltages add
      const Qx=C1*C2/(C1+C2)*V; if(Math.abs(Qx/C1+Qx/C2-V)>1e-9*Math.max(V,1)) bad.push([tag,'series physics']);
      const cm=eq.match(R(`C = C1C2/C1 \\+ C2 = \\(([\\d.]+)\\)\\(([\\d.]+)\\)/([\\d.]+) \\+ ([\\d.]+) = # μF`)); if(!cm||cm[1]!==cv(C1)||cm[2]!==cv(C2)||!same(num(cm[5]),C)) bad.push([tag,'C series',cm&&cm[0],C]);

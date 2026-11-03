@@ -16,18 +16,18 @@
   --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
   --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
   --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
-  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#e27a0f; --f1:#c2185b; --f2:#1b9aaa;
+  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#1b9aaa; --f1:#c2185b; --f2:#1b9aaa;
   --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
   --math:"Times New Roman","Noto Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#4fd0dd; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#ffa24a; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#4fd0dd; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 .nw{white-space:nowrap}
@@ -157,9 +157,14 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
     <p class="q">ใช้มวลและความยาวเส้นด้ายของ Ex. 1.10 ตั้งประจุลูกละ 2.0 μC แล้วเปลี่ยนเป็นลูกละ 4.0 μC มุมและแรงไฟฟ้าเปลี่ยนไปอย่างไร</p>
     <p class="q"><b>คำตอบ</b> มุมเพิ่มจาก 28.2° เป็น 44.4° ไม่ถึง 2 เท่า และแรงไฟฟ้าเพิ่มจาก 0.161 N เป็น 0.294 N ไม่ถึง 4 เท่า แม้ผลคูณของประจุเพิ่มเป็น 4 เท่า เพราะทรงกลมผลักกันจนอยู่ห่างกันมากขึ้น ระยะ <i class="m">r</i> ที่เพิ่มขึ้นทำให้แรงลดลงตาม 1/<i class="m">r</i><sup>2</sup></p>
   </details>
+  <details>
+    <summary>4. ถ้ามวลไม่เท่ากัน (ข้อ 37)</summary>
+    <p class="q">แบบจำลองนี้ตั้งมวลของทรงกลมสองลูกให้เท่ากันเสมอ ถ้ามวลเป็น <i class="m">m</i> กับ 2<i class="m">m</i> และประจุเป็น <i class="m">q</i> กับ 4<i class="m">q</i> ด้ายสองเส้นจะทำมุมกับแนวดิ่งต่างกันอย่างไร (ให้มุมทั้งสองมีค่าน้อย)</p>
+    <p class="q"><b>คำตอบ</b> tan <i class="m">θ</i><sub>1</sub> = 2 tan <i class="m">θ</i><sub>2</sub> ลูกเบากว่าเอียงมากกว่า แรงไฟฟ้าที่ลูกทั้งสองได้รับยังเท่ากันเสมอ (คู่แรงกิริยา–ปฏิกิริยา ไม่ขึ้นกับว่าประจุต่างกันแค่ไหน) แต่ละลูกจึงได้ tan <i class="m">θ</i> = <i class="m">F</i><sub>E</sub>/(<i class="m">mg</i>) ซึ่งแปรผกผันกับมวล นั่นคือ tan <i class="m">θ</i><sub>1</sub>/tan <i class="m">θ</i><sub>2</sub> = <i class="m">m</i><sub>2</sub>/<i class="m">m</i><sub>1</sub> = 2 ข้อนี้โจทย์กำหนดให้มุมมีค่าน้อย เพราะถ้ามุมกว้าง ทรงกลมสองลูกจะอยู่คนละระดับ แรงไฟฟ้าจึงไม่อยู่ในแนวระดับ และสมการข้างต้นใช้ไม่ได้</p>
+  </details>
 </section>
 
-<p class="note">แบบจำลองนี้ถือว่าทรงกลมเป็นจุดประจุ (เล็กมากเมื่อเทียบกับ <i class="m">r</i>) ด้ายเบา ไม่ยืด และเป็นฉนวน ประจุไม่รั่ว ทรงกลมสองลูกมีมวลเท่ากันเสมอ และใช้ <i class="m">g</i> = 10 m/s<sup>2</sup> ตาม Ex. 1.10 กับ <i class="m">k</i> = 9.0 × 10<sup>9</sup> N·m<sup>2</sup>/C<sup>2</sup> มุม <i class="m">θ</i> หาจากการแก้สมการ tan <i class="m">θ</i> = <i class="m">F</i><sub>E</sub>/(<i class="m">mg</i>) โดย <i class="m">r</i> = 2<i class="m">L</i> sin <i class="m">θ</i> ด้วยการคำนวณเชิงตัวเลข ตัวเลขจึงแสดง 3 ตัว และขั้นถัดไปใช้ค่าที่ปัดแล้ว แบบจำลองจุดประจุไม่ได้คิดการเหนี่ยวนำ จึงใช้ไม่ได้กับกรณีที่ลูกหนึ่งไม่มีประจุ ประจุวาดเป็นบวกทั้งคู่ ถ้าเป็นลบทั้งคู่ ผลเหมือนกันเพราะยังผลักกัน ภาพไม่ได้วาดตามมาตราส่วน เมื่อมุมกว้าง ภาพย่อความยาวเส้นด้ายให้อยู่ในจอ ลูกศรแรงบนลูกขวาเป็นสัดส่วนกัน ยกเว้นลูกศรที่สั้นมาก ซึ่งวาดด้วยความยาวขั้นต่ำเพื่อให้เห็นทิศ และขนาดทรงกลมวาดใหญ่กว่าจริง</p>
+<p class="note">แบบจำลองนี้ถือว่าทรงกลมเป็นจุดประจุ (เล็กมากเมื่อเทียบกับ <i class="m">r</i>) ด้ายเบา ไม่ยืด และเป็นฉนวน ประจุไม่รั่ว ทรงกลมสองลูกมีมวลเท่ากันเสมอ (กรณีมวลไม่เท่ากันดู "ลองทำ" ข้อ 4) และใช้ <i class="m">g</i> = 10 m/s<sup>2</sup> ตาม Ex. 1.10 กับ <i class="m">k</i> = 9.0 × 10<sup>9</sup> N·m<sup>2</sup>/C<sup>2</sup> มุม <i class="m">θ</i> หาจากการแก้สมการ tan <i class="m">θ</i> = <i class="m">F</i><sub>E</sub>/(<i class="m">mg</i>) โดย <i class="m">r</i> = 2<i class="m">L</i> sin <i class="m">θ</i> ด้วยการคำนวณเชิงตัวเลข ตัวเลขจึงแสดง 3 ตัว และขั้นถัดไปใช้ค่าที่ปัดแล้ว แบบจำลองจุดประจุไม่ได้คิดการเหนี่ยวนำ จึงใช้ไม่ได้กับกรณีที่ลูกหนึ่งไม่มีประจุ ประจุวาดเป็นบวกทั้งคู่ ถ้าเป็นลบทั้งคู่ ผลเหมือนกันเพราะยังผลักกัน ภาพไม่ได้วาดตามมาตราส่วน เมื่อมุมกว้าง ภาพย่อความยาวเส้นด้ายให้อยู่ในจอ ลูกศรแรงบนลูกขวาเป็นสัดส่วนกัน ยกเว้นลูกศรที่สั้นมาก ซึ่งวาดด้วยความยาวขั้นต่ำเพื่อให้เห็นทิศ และขนาดทรงกลมวาดใหญ่กว่าจริง</p>
 <p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
 </div>
 

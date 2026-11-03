@@ -21,8 +21,12 @@ const { chromium } = require('playwright');
    if(st.mode==='1'){ C=C1; const Q=r2(C*V); Qmain=Q; Qs=[Q]; Vs=[V];
      const m=eq.match(R(`Q = CΔV = \\(([\\d.]+) μF\\)\\((\\d+) V\\) = (0|#) μC( = # C)?`)); if(!m||m[1]!==cv(C)||+m[2]!==V||!Q0(m[3],Q)||(!!m[5])!==big(Q)||(m[5]&&!same(num(m[6]),Q*1e-6))) bad.push([tag,'Q single',m&&m[0],Q]);
      if(Q>0){ const n=eq.match(R(`N = Q/e = #/1\\.6 × 10-19 = # ตัว`)); if(!n||!same(num(n[1]),Q*1e-6)||!same(num(n[2]),r2(Q*1e-6/e))) bad.push([tag,'N',n&&n[0]]); }
-   } else if(st.mode==='s'){ const Cx=C1*C2/(C1+C2), mn=Math.min(C1,C2); C=rd(Cx,r2(Cx)>=mn?3:2);   // 3 figures when 2 would round up to the smallest capacitor
-     if(!(C<mn)) bad.push([tag,'shown C not below the smallest',C,mn]);   // the status line says the equivalent capacitance stays below it
+   } else if(st.mode==='s'){ const Cx=C1*C2/(C1+C2), mn=Math.min(C1,C2), Ux=0.5*Cx*1e-6*V*V;
+     let cf=2; while(cf<4&&(rd(Cx,cf)>=mn||r2(rd(Cx,cf)*V)!==r2(Cx*V)||r2(0.5*rd(Cx,cf)*1e-6*V*V)!==r2(Ux))) cf++;
+     C=rd(Cx,cf); const tie=r2(rd(Cx,4)*V)!==r2(Cx*V)||r2(0.5*rd(Cx,4)*1e-6*V*V)!==r2(Ux);   // exactly on a rounding boundary: no number of figures helps
+     if(!(C<mn)) bad.push([tag,'shown C not below the smallest',C,mn]);                      // the status line says so
+     if(!tie&&r2(C*V)!==r2(Cx*V)) bad.push([tag,'Q differs from the exact C',C,Cx,V]);       // no rounding chain
+     if(!tie&&r2(0.5*C*1e-6*V*V)!==r2(Ux)) bad.push([tag,'U differs from the exact C',C,Cx,V]);
      const Q=r2(C*V); Qmain=Q; Qs=[Q,Q]; Vs=Q===0?[0,0]:[r2(Q/C1),r2(Q/C2)];
      // the exact physics: same charge, voltages add
      const Qx=C1*C2/(C1+C2)*V; if(Math.abs(Qx/C1+Qx/C2-V)>1e-9*Math.max(V,1)) bad.push([tag,'series physics']);

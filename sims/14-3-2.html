@@ -273,7 +273,7 @@ const r2=v=>rd(v,2);
 const Ev=()=>ES[st.ei], q=()=>st.c==="p"?QE:-QE, mass=()=>st.c==="p"?MP:ME;
 const Vx=x=>Ev()*(XR-x);                              // V = 0 on the line x = 0.40 m
 const s3=v=>rd(v,3);   // potentials and potential differences with 3 figures (E has up to 3)
-const nV=v=>fmt(s3(v),3,{intok:1});
+const nV=v=>Number.isInteger(s3(v))?String(s3(v)):fmt(s3(v),3,{intok:1});   // ค่าที่ลงตัวพิมพ์เป็นจำนวนเต็ม (50 V ไม่ใช่ 50.0 V) ให้ป้ายในภาพสม่ำเสมอกับ 200 V และ 0 V
 const d2=x=>{ const s=x.toFixed(2); return s==="-0.00"?"0.00":s; };
 
 /* drawing */

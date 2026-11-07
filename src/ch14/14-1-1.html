@@ -1,0 +1,251 @@
+<title>การขัดสีและการถ่ายโอนอิเล็กตรอน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/*COMMON_CSS*/
+.lab{font-size:15px;margin:0 0 4px}
+.pair{display:grid;gap:10px}
+@media (min-width:420px){.pair{grid-template-columns:1fr 1fr}}
+#tbl td:last-child{font-weight:700}
+.rowv{display:flex;align-items:baseline;gap:8px}
+.rowv .big{font-size:1.05rem}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Daisy Physics · <a href="../14/">บท 14 ไฟฟ้าสถิต</a> · หัวข้อ 1.1</div>
+  <h1>การขัดสีและการถ่ายโอนอิเล็กตรอน</h1>
+  <p class="lead">เลือกวัสดุสองชนิดจากตารางที่ 1.1 แล้วกดถู ดูว่าอิเล็กตรอนย้ายไปทางไหน ย้ายกี่ตัว และวัตถุแต่ละชิ้นเหลือประจุเท่าใด ประจุรวมของระบบไม่เปลี่ยน</p>
+</header>
+
+<div class="grid">
+<div class="col">
+  <section class="card" aria-labelledby="h-f">
+    <h2 id="h-f">ภาพ</h2>
+    <svg id="f" viewBox="0 0 380 318" role="img" aria-label="วัตถุสองชิ้นที่นำมาขัดสีกัน และประจุที่เกิดขึ้น"></svg>
+    <p class="cap">เครื่องหมาย + (แดง) และ − (น้ำเงิน) แต่ละตัวแทนประจุส่วนเกินจำนวนหนึ่ง ไม่ใช่อิเล็กตรอนตัวเดียว ภาพวาดเฉพาะประจุส่วนเกิน ส่วนที่ยังเป็นกลางไม่ได้วาด ลูกศรสีน้ำเงิน e<sup>−</sup> บอกทางที่อิเล็กตรอนย้ายตอนถู แถบล่างคือลำดับในตารางที่ 1.1</p>
+  </section>
+  <section class="card" aria-labelledby="h-ctl">
+    <h2 id="h-ctl">ปรับค่า</h2>
+    <div class="ctl">
+      <div class="pair">
+        <div class="row"><p class="lab">วัตถุ ก</p><select id="mA" aria-label="วัสดุของวัตถุ ก"></select></div>
+        <div class="row"><p class="lab">วัตถุ ข</p><select id="mB" aria-label="วัสดุของวัตถุ ข"></select></div>
+      </div>
+      <div class="row"><p class="lab">จำนวนอิเล็กตรอนที่ย้าย <span id="nTxt" class="big"></span> ตัว</p>
+        <input type="range" id="nR" min="0" max="9" step="1" value="2" aria-label="จำนวนอิเล็กตรอนที่ย้าย"></div>
+      <div class="row"><p class="lab">ประจุของวัตถุ ก ก่อนถู <span id="q0Txt" class="big"></span></p>
+        <input type="range" id="q0R" min="-50" max="50" step="10" value="0" aria-label="ประจุของวัตถุ ก ก่อนถู เป็นจำนวนเท่าของประจุมูลฐาน"></div>
+      <div class="btns">
+        <button class="btn" id="b-rub">ถู</button>
+        <button class="btn" id="b-glass">ถูแท่งแก้วด้วยผ้าไหม</button>
+        <button class="btn" id="b-pvc">ถูท่อพีวีซีด้วยผ้าสักหลาด</button>
+        <button class="btn" id="b-ex12">Ex. 1.2</button>
+        <button class="btn" id="b-reset">เริ่มใหม่</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="col">
+  <section class="card" aria-labelledby="h-q">
+    <h2 id="h-q">ประจุหลังถู</h2>
+    <table class="tbl" id="tbl"></table>
+    <div class="status" id="status" style="margin-top:10px"></div>
+    <h2 style="margin-top:14px">การคำนวณ</h2>
+    <div class="eq" id="eq"></div>
+    <p class="cap">ใช้ <i class="m">e</i> = 1.6 × 10<sup>−19</sup> C ตามชีท และปัดเป็นเลขนัยสำคัญ 2 ตัว</p>
+  </section>
+</div>
+</div>
+
+<section class="card" aria-labelledby="h-try">
+  <h2 id="h-try">ลองทำ</h2>
+  <details>
+    <summary>1. ทำนายก่อน: ถูแผ่นเปอร์สเปกซ์ด้วยผ้าไหม</summary>
+    <p class="q">ก่อนเลือกในแบบจำลอง ให้เปิดตารางที่ 1.1 แล้วทำนายว่าแผ่นเปอร์สเปกซ์กับผ้าไหม ชิ้นใดมีประจุบวก จากนั้นตั้งวัตถุ ก เป็นแผ่นเปอร์สเปกซ์ วัตถุ ข เป็นผ้าไหม แล้วกดถู</p>
+    <p class="q"><b>คำตอบ</b> แผ่นเปอร์สเปกซ์อยู่ลำดับ 3 ผ้าไหมอยู่ลำดับ 6 ลำดับน้อยกว่าคือเสียอิเล็กตรอนง่ายกว่า อิเล็กตรอนจึงย้ายจากแผ่นเปอร์สเปกซ์ไปผ้าไหม แผ่นเปอร์สเปกซ์มีประจุบวก ผ้าไหมมีประจุลบ ขนาดเท่ากัน</p>
+  </details>
+  <details>
+    <summary>2. ประจุรวมของระบบเปลี่ยนไหม</summary>
+    <p class="q">ตั้งประจุของวัตถุ ก ก่อนถูเป็น 0 แล้วเลื่อนจำนวนอิเล็กตรอนไปมา สังเกตบรรทัดสุดท้ายของการคำนวณ จากนั้นตั้งประจุของวัตถุ ก ก่อนถูเป็น +20<i class="m">e</i> แล้วเลื่อนอีกครั้ง</p>
+    <p class="q"><b>คำตอบ</b> ประจุรวมคงเดิมเสมอ เท่ากับประจุรวมก่อนถู การขัดสีย้ายอิเล็กตรอนจากวัตถุหนึ่งไปอีกวัตถุหนึ่งเท่านั้น ไม่ได้สร้างประจุขึ้นใหม่ นี่คือกฎการอนุรักษ์ประจุไฟฟ้าในหัวข้อ 1.1</p>
+  </details>
+  <details>
+    <summary>3. ตรวจ Ex. 1.2 ด้วยแบบจำลอง</summary>
+    <p class="q">กดปุ่ม "Ex. 1.2" แล้วเทียบตัวเลขบนหน้ากับคำตอบใน Ex. 1.2 ของชีท ปุ่มนี้ตั้งให้วัตถุ ก มีประจุ +3.2 × 10<sup>−18</sup> C ก่อนถู และอิเล็กตรอน 50 ตัวย้ายจากวัตถุ ข ไปวัตถุ ก</p>
+    <p class="q"><b>คำตอบ</b> <i class="m">q</i><sub>ก</sub> = -4.8 × 10<sup>−18</sup> C และ <i class="m">q</i><sub>ข</sub> = +8.0 × 10<sup>−18</sup> C ตรงกับชีท ประจุรวมยังเป็น +3.2 × 10<sup>−18</sup> C เท่าเดิม สังเกตว่าวัตถุ ก เปลี่ยนจากประจุบวกเป็นประจุลบ เพราะอิเล็กตรอนที่ได้รับมามากกว่าประจุบวกที่มีอยู่เดิม</p>
+  </details>
+  <details>
+    <summary>4. ถูวัสดุชนิดเดียวกันได้ประจุไหม</summary>
+    <p class="q">ตั้งวัตถุ ก และวัตถุ ข เป็นวัสดุชนิดเดียวกัน แล้วกดถู เกิดอะไรขึ้น และเพราะเหตุใด</p>
+    <p class="q"><b>คำตอบ</b> ไม่มีอิเล็กตรอนย้าย ทั้งสองชิ้นจึงไม่มีประจุส่วนเกิน เพราะวัสดุชนิดเดียวกันยึดอิเล็กตรอนไว้ได้เท่ากัน ไม่มีฝ่ายใดเสียอิเล็กตรอนง่ายกว่า การขัดสีจะให้ประจุก็ต่อเมื่อวัสดุสองชนิดอยู่คนละลำดับในตารางที่ 1.1</p>
+  </details>
+</section>
+
+<p class="note">แบบจำลองนี้ใช้ลำดับในตารางที่ 1.1 ตัดสินทิศการย้ายของอิเล็กตรอนเท่านั้น ไม่ได้ทำนายว่าถูจริงแล้วจะย้ายกี่ตัว จำนวนอิเล็กตรอนที่ย้ายจึงเป็นค่าที่ผู้ใช้ตั้งเอง ในการถูจริง จำนวนขึ้นกับแรงกด พื้นที่สัมผัส และความชื้นในอากาศ จำนวนเครื่องหมาย + และ − ในภาพวาดตามสัดส่วนของประจุอย่างคร่าว ไม่ได้นับทีละตัว และภาพไม่ได้วาดตามมาตราส่วน ตัวเลขบนหน้าปัดเป็นเลขนัยสำคัญ 2 ตัว ส่วนชีทใช้ 2 ตัวในหัวข้อนี้เช่นกัน</p>
+<p class="back"><a href="../14/">← แบบจำลองอื่นของบท 14 ไฟฟ้าสถิต</a></p>
+</div>
+
+<script>
+/*COMMON_JS*/
+(function(){
+"use strict";
+const {$,el,txt,fmt,m,sub,eqHTML,reduce}=DP;
+const E=1.6e-19;
+/* ตารางที่ 1.1 ของชีท: ลำดับน้อย = เสียอิเล็กตรอนง่าย */
+const MAT=[["แก้ว",1],["เส้นผม",2],["แผ่นเปอร์สเปกซ์",3],["ไนลอน",4],["ผ้าสักหลาด",5],
+           ["ผ้าไหม",6],["ผ้าฝ้าย",7],["อำพัน",8],["พีวีซี",9],["เทฟลอน",10]];
+const NS=[10,20,50,100,1000,1e6,1e9,1e10,3e10,1e11];
+const st={a:0,b:5,ni:2,q0:0,rubbed:false};
+window.__sim={st,set,update};
+
+/* ---------- แบบจำลองประจุ (หน่วยเป็นเท่าของ e) ---------- */
+function model(){
+  const ra=MAT[st.a][1], rb=MAT[st.b][1];
+  const dir = ra<rb ? 1 : ra>rb ? -1 : 0;        // +1 = ก เสียอิเล็กตรอน, -1 = ก ได้รับ
+  const N = dir===0 ? 0 : NS[st.ni];
+  const moved = st.rubbed ? N : 0;
+  const qa = st.q0 + dir*moved;                   // หน่วยเป็นเท่าของ e
+  const qb = -dir*moved;
+  return {ra,rb,dir,N,moved,qa,qb,tot:st.q0};
+}
+const nameA=()=>MAT[st.a][0], nameB=()=>MAT[st.b][0];
+const sgn=u=>u>0?"+":u<0?"-":"";
+function qTxt(u){ if(u===0) return "0 C"; return sgn(u)+fmt(Math.abs(u)*E,2)+" C"; }
+function uTxt(u){ return u===0?"0":sgn(u)+Math.abs(u)+"e"; }
+
+/* ---------- ภาพ ---------- */
+function draw(){
+  const g=$("f"); g.textContent="";
+  const M=model();
+  const BX=[{x:28,w:120,lab:"ก",name:nameA(),q:M.qa},{x:232,w:120,lab:"ข",name:nameB(),q:M.qb}];
+  for(const b of BX){
+    el("rect",{x:b.x,y:70,width:b.w,height:96,rx:12,fill:"var(--chip)",stroke:"var(--ink)","stroke-width":2},g);
+    txt(g,b.x+b.w/2,60,"วัตถุ "+b.lab,{"text-anchor":"middle","font-size":14,"font-weight":700});
+    txt(g,b.x+b.w/2,186,b.name,{"text-anchor":"middle","font-size":14,fill:"var(--muted)"});
+    /* เครื่องหมายประจุ: มากสุด 6 ตัว ตามสัดส่วนคร่าว ๆ */
+    const nmax=6, k=Math.abs(b.q)===0?0:Math.max(1,Math.min(nmax,Math.round(Math.abs(b.q)/Math.max(1,Math.abs(M.moved)||Math.abs(b.q))*4)));
+    const sym=b.q>0?"+":"−", col=b.q>0?"var(--pos)":"var(--elec)";
+    for(let i=0;i<k;i++){
+      const cx=b.x+22+(b.w-44)*(k===1?0.5:i/(k-1)), cy=i%2?126:100;
+      txt(g,cx,cy,sym,{"text-anchor":"middle","font-size":21,"font-weight":700,fill:col});
+    }
+    if(b.q===0) txt(g,b.x+b.w/2,120,"เป็นกลาง",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"});
+  }
+  /* ลูกศรการย้ายของอิเล็กตรอน */
+  const midy=118;
+  if(M.dir!==0 && M.moved>0){
+    const x0=M.dir>0?160:220, x1=M.dir>0?220:160;
+    el("line",{x1:x0,y1:midy,x2:x1,y2:midy,stroke:"var(--elec)","stroke-width":2.4},g);
+    DP.arrowHead(g,x1,midy,M.dir>0?0:180,"var(--elec)",6);
+    txt(g,190,midy-12,"e",{"text-anchor":"middle","font-size":14,fill:"var(--elec)","font-weight":700}).appendChild(
+      (()=>{const t=el("tspan",{dy:-4,"font-size":10});t.textContent="−";return t;})());
+  } else {
+    txt(g,190,midy+5,M.dir===0?"ไม่ย้าย":"ยังไม่ถู",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"});
+  }
+  txt(g,190,205,M.dir===0?"วัสดุชนิดเดียวกัน":"ถูกัน",{"text-anchor":"middle","font-size":13,fill:"var(--muted)"});
+  /* แถบลำดับในตารางที่ 1.1 */
+  const LX=30,LW=320,LY=250;
+  el("line",{x1:LX,y1:LY,x2:LX+LW,y2:LY,stroke:"var(--fline)","stroke-width":2},g);
+  for(let r=1;r<=10;r++){
+    const x=LX+LW*(r-1)/9;
+    el("line",{x1:x,y1:LY-5,x2:x,y2:LY+5,stroke:"var(--fline)","stroke-width":1.4},g);
+    txt(g,x,LY+20,String(r),{"text-anchor":"middle","font-size":11,fill:"var(--muted)"});
+  }
+  txt(g,LX,LY+38,"เสียอิเล็กตรอนง่าย",{"font-size":11,fill:"var(--muted)"});
+  txt(g,LX+LW,LY+38,"ยึดอิเล็กตรอนแน่น",{"text-anchor":"end","font-size":11,fill:"var(--muted)"});
+  const marks = M.ra===M.rb ? [[M.ra,"ก, ข"]] : [[M.ra,"ก"],[M.rb,"ข"]];
+  for(const [r,lab] of marks){
+    const x=LX+LW*(r-1)/9;
+    el("circle",{cx:x,cy:LY,r:5,fill:"var(--graph)"},g);
+    txt(g,x,LY-12,lab,{"text-anchor":"middle","font-size":13,"font-weight":700,fill:"var(--graph)"});
+  }
+  txt(g,190,LY+58,"ลำดับในตารางที่ 1.1",{"text-anchor":"middle","font-size":12,fill:"var(--muted)"});
+}
+
+/* ---------- ตัวเลขและข้อความ ---------- */
+function update(){
+  const M=model();
+  draw();
+  $("nTxt").textContent=fmt(NS[st.ni],2,{plain:1});
+  $("q0Txt").textContent=uTxt(st.q0)+(st.q0?" ("+qTxt(st.q0)+")":"");
+  $("tbl").innerHTML=
+    "<tr><th>วัตถุ</th><th>ลำดับ</th><th>อิเล็กตรอน</th><th>ประจุ</th></tr>"+
+    [["ก "+nameA(),M.ra,M.dir>0?-M.moved:M.moved,M.qa],
+     ["ข "+nameB(),M.rb,M.dir>0?M.moved:-M.moved,M.qb]]
+    .map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]===0?"เท่าเดิม":(r[2]>0?"ได้รับ ":"เสีย ")+fmt(Math.abs(r[2]),2)+" ตัว"}</td><td>${qTxt(r[3])}</td></tr>`).join("")
+    +`<tr><td>รวม</td><td></td><td></td><td>${qTxt(M.tot)}</td></tr>`;
+
+  const lines=[];
+  if(!st.rubbed){ lines.push("กดปุ่ม \"ถู\" เพื่อย้ายอิเล็กตรอน"); }
+  else if(M.dir===0){ lines.push("ไม่มีอิเล็กตรอนย้าย จึงไม่มีประจุส่วนเกิน"); }
+  else {
+    const loser=M.dir>0?"ก "+nameA():"ข "+nameB(), gainer=M.dir>0?"ข "+nameB():"ก "+nameA();
+    lines.push(`ประจุที่ย้าย = ${fmt(M.moved,2)} × 1.6 × 10<sup>-19</sup> = ${fmt(M.moved*E,2)} C`);
+    lines.push(`${loser} เสียอิเล็กตรอน จึงมีประจุบวกเพิ่ม ${fmt(M.moved*E,2)} C`);
+    lines.push(`${gainer} ได้รับอิเล็กตรอน จึงมีประจุลบเพิ่ม ${fmt(M.moved*E,2)} C`);
+    if(st.q0!==0) lines.push(`${m("q")}${sub("ก")} = (${qTxt(st.q0)}) + (${M.dir>0?"+":"-"}${fmt(M.moved*E,2)} C) = ${qTxt(M.qa)}`);
+  }
+  const hidden = st.q0!==0 && M.moved>0 && Math.abs(M.moved)>100*Math.abs(st.q0);
+  lines.push(`${m("q")}${sub("ก")} + ${m("q")}${sub("ข")} = ${qTxt(M.qa)} + ${qTxt(M.qb)} = ${qTxt(M.tot)} | `+
+    (hidden ? "ค่าที่แสดงปัดเป็นเลขนัยสำคัญ 2 ตัว สองค่าจึงดูหักล้างกันพอดี แต่ผลรวมจริงยังเท่ากับประจุรวมก่อนถู"
+            : `ประจุรวมก่อนถู ${qTxt(st.q0)} เท่าเดิม`));
+  $("eq").innerHTML=eqHTML(lines);
+
+  const s=$("status"); s.className="status";
+  if(M.dir===0){
+    s.innerHTML=`วัตถุทั้งสองเป็น<b>วัสดุชนิดเดียวกัน</b> (ลำดับ ${M.ra} เท่ากัน) ยึดอิเล็กตรอนไว้ได้เท่ากัน จึงไม่มีฝ่ายใดเสียอิเล็กตรอนให้อีกฝ่าย ถูเท่าไรก็ไม่เกิดประจุส่วนเกิน`;
+  } else if(!st.rubbed){
+    s.innerHTML=`${nameA()} อยู่ลำดับ ${M.ra} ส่วน ${nameB()} อยู่ลำดับ ${M.rb} ลำดับที่น้อยกว่าเสียอิเล็กตรอนง่ายกว่า ลองทำนายก่อนว่าชิ้นใดจะมีประจุบวก แล้วจึงกดถู`;
+  } else {
+    const loser=M.dir>0?nameA():nameB(), gainer=M.dir>0?nameB():nameA();
+    const rl=Math.min(M.ra,M.rb), rg=Math.max(M.ra,M.rb);
+    let add="";
+    if(st.q0!==0 && Math.sign(M.qa)!==Math.sign(st.q0) && M.qa!==0)
+      add=` วัตถุ ก เปลี่ยนชนิดประจุ เพราะประจุที่ย้ายมามากกว่าประจุเดิมที่มีอยู่`;
+    s.innerHTML=`${loser} อยู่ลำดับ ${rl} ซึ่งน้อยกว่า ${gainer} ที่อยู่ลำดับ ${rg} จึง<b>เสียอิเล็กตรอน</b>ให้ ${gainer} ${loser}จึงมีประจุบวก ส่วน ${gainer} มีประจุลบ ขนาดเท่ากัน${add}`;
+  }
+}
+
+/* ---------- ภาพเคลื่อนไหวตอนถู ---------- */
+let anim=null;
+function rub(){
+  st.rubbed=true; update();
+  if(reduce || model().dir===0) return;
+  const g=$("f"), M=model();
+  if(anim) cancelAnimationFrame(anim);
+  const dots=[0,1,2].map(i=>el("circle",{cx:-10,cy:118,r:4,fill:"var(--elec)"},g));
+  const t0=performance.now();
+  (function step(t){
+    const p=(t-t0)/700;
+    if(p>=1){ dots.forEach(d=>d.remove()); anim=null; return; }
+    dots.forEach((d,i)=>{
+      const q=Math.max(0,Math.min(1,p*1.6-i*0.2));
+      const x=M.dir>0?148+72*q:232-72*q;
+      d.setAttribute("cx",x.toFixed(1)); d.setAttribute("opacity",(q>0?1:0).toFixed(0));
+    });
+    anim=requestAnimationFrame(step);
+  })(t0);
+}
+
+/* ---------- ตัวควบคุม ---------- */
+function set(o){ Object.assign(st,o); update(); }
+function fill(sel,cur){
+  const s=$(sel); s.innerHTML=MAT.map(([n,r],i)=>`<option value="${i}">${r}. ${n}</option>`).join("");
+  s.value=String(cur);
+}
+function sync(){ fill("mA",st.a); fill("mB",st.b); $("nR").value=String(st.ni); $("q0R").value=String(st.q0); update(); }
+$("mA").addEventListener("change",e=>{ st.a=+e.target.value; st.rubbed=false; update(); });
+$("mB").addEventListener("change",e=>{ st.b=+e.target.value; st.rubbed=false; update(); });
+$("nR").addEventListener("input",e=>{ st.ni=+e.target.value; update(); });
+$("q0R").addEventListener("input",e=>{ st.q0=+e.target.value; update(); });
+$("b-rub").addEventListener("click",rub);
+$("b-glass").addEventListener("click",()=>{ Object.assign(st,{a:0,b:5,ni:2,q0:0,rubbed:true}); sync(); });
+$("b-pvc").addEventListener("click",()=>{ Object.assign(st,{a:8,b:4,ni:2,q0:0,rubbed:true}); sync(); });
+$("b-ex12").addEventListener("click",()=>{ Object.assign(st,{a:8,b:0,ni:2,q0:20,rubbed:true}); sync(); });
+$("b-reset").addEventListener("click",()=>{ Object.assign(st,{a:0,b:5,ni:2,q0:0,rubbed:false}); sync(); });
+sync();
+})();
+</script>

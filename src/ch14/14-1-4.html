@@ -30,7 +30,7 @@
   <section class="card" aria-labelledby="h-f">
     <h2 id="h-f">แรงที่กระทำต่อ <i class="m">q</i><sub>0</sub></h2>
     <svg id="f" viewBox="0 0 380 186" role="img" aria-label="จุดประจุสองตัวบนแกน x และลูกศรแรงที่กระทำต่อประจุ q0"></svg>
-    <p class="cap">แตะหรือลากบนภาพเพื่อเลื่อน <i class="m">q</i><sub>0</sub> (วงกลมเล็ก) ลูกศร <i class="m">F</i><sub>1</sub> (ชมพูเข้ม) คือแรงจาก <i class="m">q</i><sub>1</sub> ลูกศร <i class="m">F</i><sub>2</sub> (เขียวน้ำเงิน) คือแรงจาก <i class="m">q</i><sub>2</sub> และลูกศร <i class="m">F</i><sub>R</sub> (เขียว) ด้านล่างคือแรงลัพธ์ แถบสีจางคือช่วงที่ <i class="m">q</i><sub>0</sub> อยู่</p>
+    <p class="cap">แตะหรือลากบนภาพเพื่อเลื่อน <i class="m">q</i><sub>0</sub> (วงกลมเล็ก) ลูกศร <i class="m">F</i><sub>1</sub> (ชมพูเข้ม) คือแรงจาก <i class="m">q</i><sub>1</sub> ลูกศร <i class="m">F</i><sub>2</sub> (เขียวน้ำเงิน) คือแรงจาก <i class="m">q</i><sub>2</sub> และลูกศร <i class="m">F</i><sub>R</sub> (ส้ม) ด้านล่างคือแรงลัพธ์ แถบสีจางคือช่วงที่ <i class="m">q</i><sub>0</sub> อยู่</p>
   </section>
   <section class="card" aria-labelledby="h-ctl">
     <h2 id="h-ctl">ปรับค่า</h2>
@@ -191,12 +191,12 @@ function draw(v){
   if(st.show && v.z.x!==undefined){
     const zx=px(v.z.x), lab=`แรงลัพธ์ = 0 ที่ x = ${xtxt(v.z.x)} m`;
     if(v.z.x>=w.lo && v.z.x<=w.hi){
-      el("path",{d:`M${zx},${AY-8} L${zx+8},${AY} L${zx},${AY+8} L${zx-8},${AY} Z`,fill:"var(--card)",stroke:"var(--fnet)","stroke-width":2.2},G);
-      txt(G,Math.min(Math.max(zx,88),292),AY+44,lab,{"text-anchor":"middle","font-size":12.5,"font-weight":700,fill:"var(--fnet)"});
+      el("path",{d:`M${zx},${AY-8} L${zx+8},${AY} L${zx},${AY+8} L${zx-8},${AY} Z`,fill:"var(--card)",stroke:"var(--force)","stroke-width":2.2},G);
+      txt(G,Math.min(Math.max(zx,88),292),AY+44,lab,{"text-anchor":"middle","font-size":12.5,"font-weight":700,fill:"var(--force)"});
     } else {
       const left=v.z.x<w.lo, ex=left?VX0:VX1;
-      el("path",{d:left?`M${ex},${AY} L${ex+10},${AY-7} L${ex+10},${AY+7} Z`:`M${ex},${AY} L${ex-10},${AY-7} L${ex-10},${AY+7} Z`,fill:"var(--fnet)"},G);
-      txt(G,left?VX0:VX1,AY+44,lab+" (นอกภาพ)",{"text-anchor":left?"start":"end","font-size":12.5,"font-weight":700,fill:"var(--fnet)"});
+      el("path",{d:left?`M${ex},${AY} L${ex+10},${AY-7} L${ex+10},${AY+7} Z`:`M${ex},${AY} L${ex-10},${AY-7} L${ex-10},${AY+7} Z`,fill:"var(--force)"},G);
+      txt(G,left?VX0:VX1,AY+44,lab+" (นอกภาพ)",{"text-anchor":left?"start":"end","font-size":12.5,"font-weight":700,fill:"var(--force)"});
     }
   }
   // q0
@@ -212,8 +212,8 @@ function draw(v){
     const L=F=>Math.max(8,Math.abs(F)*f);
     if(v.F1!==0) arrow(xq,ROW[1],L(v.F1),Math.sign(v.F1),"var(--f1)",[["F",{it:1}],["1",{sub:1}]]);
     if(v.F2!==0) arrow(xq,ROW[2],L(v.F2),Math.sign(v.F2),"var(--f2)",[["F",{it:1}],["2",{sub:1}]]);
-    if(v.exactZero) txt(G,Math.min(Math.max(xq,40),340),ROW.R+5,[["F",{it:1}],["R",{sub:1}],[" = 0",{back:1}]],{"text-anchor":"middle","font-size":14,"font-weight":700,fill:"var(--fnet)"});
-    else arrow(xq,ROW.R,L(v.FR),Math.sign(v.FR),"var(--fnet)",[["F",{it:1}],["R",{sub:1}]]);
+    if(v.exactZero) txt(G,Math.min(Math.max(xq,40),340),ROW.R+5,[["F",{it:1}],["R",{sub:1}],[" = 0",{back:1}]],{"text-anchor":"middle","font-size":14,"font-weight":700,fill:"var(--force)"});
+    else arrow(xq,ROW.R,L(v.FR),Math.sign(v.FR),"var(--force)",[["F",{it:1}],["R",{sub:1}]]);
   }
 }
 

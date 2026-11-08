@@ -16,18 +16,18 @@
   --bg:#f6f7f9; --card:#ffffff; --ink:#1a1d22; --muted:#5d6570; --line:#d9dde3;
   --current:#d1262b; --pos:#d1262b; --elec:#1f5fbf; --graph:#1f5fbf; --graph2:#d1262b; --helper:#8b939d; --heat:#e0780f; --chem:#4f5b69;
   --cursor:#1f5fbf; --warn-bg:#fdecea; --warn-ink:#6e1212; --warn-line:#c00000; --chip:#eef1f5; --glow:#ffb020; --ext-bg:#eef4ff; --ext-ink:#183f7a;
-  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --weight:#8c564b; --fline:#555555; --equi:#1b9aaa; --f1:#c2185b; --f2:#1b9aaa;
+  --efield:#7b3fa0; --force:#e27a0f; --fnet:#2a9d3a; --tension:#404040; --weight:#8c564b; --fline:#555555; --equi:#1b9aaa; --f1:#c2185b; --f2:#1b9aaa;
   --font:"Sarabun","Leelawadee UI","Tahoma",sans-serif;
   --math:"Times New Roman","Noto Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#4fd0dd; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --tension:#9aa3ad; --weight:#d49a8a; --fline:#b3bac4; --equi:#4fd0dd; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --card:#1b1e23; --ink:#e7e9ec; --muted:#a2a9b3; --line:#30353d;
   --current:#ff6b6b; --pos:#ff6b6b; --elec:#6aa5ff; --graph:#6aa5ff; --graph2:#ff6b6b; --helper:#7d8691; --heat:#ffa24a; --chem:#aab4c0;
-  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --weight:#d49a8a; --fline:#b3bac4; --equi:#4fd0dd; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
+  --cursor:#6aa5ff; --warn-bg:#3a1f22; --warn-ink:#ffc9c9; --warn-line:#ff7b7b; --chip:#262a31; --glow:#ffc44d; --ext-bg:#18243a; --ext-ink:#b9d2ff; --efield:#c79bf2; --force:#ffa24a; --fnet:#5fd06f; --tension:#9aa3ad; --weight:#d49a8a; --fline:#b3bac4; --equi:#4fd0dd; --f1:#ff6fa3; --f2:#4fd0dd; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 .nw{white-space:nowrap}
@@ -163,7 +163,7 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
   <details>
     <summary>4. ถูวัสดุชนิดเดียวกันได้ประจุไหม</summary>
     <p class="q">ตั้งวัตถุ ก และวัตถุ ข เป็นวัสดุชนิดเดียวกัน แล้วกดถู เกิดอะไรขึ้น และเพราะเหตุใด</p>
-    <p class="q"><b>คำตอบ</b> ไม่มีอิเล็กตรอนย้าย ทั้งสองชิ้นจึงไม่มีประจุส่วนเกิน เพราะวัสดุชนิดเดียวกันยึดอิเล็กตรอนไว้ได้เท่ากัน ไม่มีฝ่ายใดเสียอิเล็กตรอนง่ายกว่า การขัดสีจะให้ประจุก็ต่อเมื่อวัสดุสองชนิดอยู่คนละลำดับในตารางที่ 1.1</p>
+    <p class="q"><b>คำตอบ</b> ตามตารางที่ 1.1 ทั้งสองชิ้นอยู่ลำดับเดียวกัน ไม่มีฝ่ายใดเสียอิเล็กตรอนง่ายกว่า แบบจำลองจึงไม่ย้ายอิเล็กตรอน และไม่มีประจุส่วนเกิน การขัดสีจะให้ประจุก็ต่อเมื่อวัสดุสองชนิดอยู่คนละลำดับในตาราง (ในการถูจริง วัสดุชนิดเดียวกันอาจเกิดประจุได้เล็กน้อยจากความต่างของผิว แต่น้อยกว่าการถูวัสดุต่างชนิดมาก)</p>
   </details>
 </section>
 
@@ -342,7 +342,7 @@ function update(){
 
   const lines=[];
   if(!st.rubbed){ lines.push("กดปุ่ม \"ถู\" เพื่อย้ายอิเล็กตรอน"); }
-  else if(M.dir===0){ lines.push("ไม่มีอิเล็กตรอนย้าย จึงไม่มีประจุส่วนเกิน"); }
+  else if(M.dir===0){ lines.push("ตามตารางนี้ไม่มีอิเล็กตรอนย้าย จึงไม่มีประจุส่วนเกิน"); }
   else {
     const loser=M.dir>0?"ก "+nameA():"ข "+nameB(), gainer=M.dir>0?"ข "+nameB():"ก "+nameA();
     lines.push(`ประจุที่ย้าย = ${fmt(M.moved,2)} × 1.6 × 10<sup>-19</sup> = ${fmt(M.moved*E,2)} C`);
@@ -358,7 +358,7 @@ function update(){
 
   const s=$("status"); s.className="status";
   if(M.dir===0){
-    s.innerHTML=`วัตถุทั้งสองเป็น<b>วัสดุชนิดเดียวกัน</b> (ลำดับ ${M.ra} เท่ากัน) ยึดอิเล็กตรอนไว้ได้เท่ากัน จึงไม่มีฝ่ายใดเสียอิเล็กตรอนให้อีกฝ่าย ถูเท่าไรก็ไม่เกิดประจุส่วนเกิน`;
+    s.innerHTML=`วัตถุทั้งสองเป็น<b>วัสดุชนิดเดียวกัน</b> (ลำดับ ${M.ra} เท่ากัน) ยึดอิเล็กตรอนไว้ได้เท่ากัน จึงไม่มีฝ่ายใดเสียอิเล็กตรอนให้อีกฝ่าย ตามตารางนี้ถูเท่าไรก็ไม่เกิดประจุส่วนเกิน`;
   } else if(!st.rubbed){
     s.innerHTML=`${nameA()} อยู่ลำดับ ${M.ra} ส่วน ${nameB()} อยู่ลำดับ ${M.rb} ลำดับที่น้อยกว่าเสียอิเล็กตรอนง่ายกว่า ลองทำนายก่อนว่าชิ้นใดจะมีประจุบวก แล้วจึงกดถู`;
   } else {

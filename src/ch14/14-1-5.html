@@ -30,7 +30,7 @@
   <section class="card" aria-labelledby="h-f">
     <h2 id="h-f">ภาพ</h2>
     <svg id="f" viewBox="0 0 380 300" role="img" aria-label="ทรงกลมสองลูกแขวนจากจุดเดียวกันและแรงที่กระทำ"></svg>
-    <p class="cap">ลูกศรบนทรงกลมลูกขวาคือแรงทั้งสามที่กระทำต่อลูกนั้น ได้แก่ แรงดึงในเส้นด้าย <i class="m">T</i> (ดำ) น้ำหนัก <i class="m">mg</i> (น้ำตาลแดง) และแรงไฟฟ้า <i class="m">F</i><sub>E</sub> (ส้ม) ลูกศรสีส้มบนลูกซ้ายคือแรงไฟฟ้าที่ลูกขวากระทำต่อลูกซ้าย</p>
+    <p class="cap">ลูกศรบนทรงกลมลูกขวาคือแรงทั้งสามที่กระทำต่อลูกนั้น ได้แก่ แรงดึงในเส้นด้าย <i class="m">T</i> (เทา) น้ำหนัก <i class="m">mg</i> (น้ำตาลแดง) และแรงไฟฟ้า <i class="m">F</i><sub>E</sub> (ส้ม) ลูกศรสีส้มบนลูกซ้ายคือแรงไฟฟ้าที่ลูกขวากระทำต่อลูกซ้าย</p>
   </section>
   <section class="card" aria-labelledby="h-ctl">
     <h2 id="h-ctl">ปรับค่า</h2>
@@ -150,7 +150,7 @@ function draw(v){
   // forces on the right sphere, one scale: T, mg, F_E (F_E² + (mg)² = T²)
   const sc=Math.min(80/v.T,(v.F>0?42/v.F:Infinity));
   const ux=(PX-x2), uy=(PY-y), uL=Math.hypot(ux,uy), Tl=v.T*sc;
-  arrow(g,x2,y,ux/uL*Tl,uy/uL*Tl,"var(--ink)",[["T",{it:1}]],x2+ux/uL*(Tl+11)+12,y+uy/uL*(Tl+11)+6);
+  arrow(g,x2,y,ux/uL*Tl,uy/uL*Tl,"var(--tension)",[["T",{it:1}]],x2+ux/uL*(Tl+11)+12,y+uy/uL*(Tl+11)+6);
   arrow(g,x2,y,0,v.mg*sc,"var(--weight)",[["mg",{it:1}]],x2+18,y+11+v.mg*sc-2);
   if(v.F>0){ const fl=v.F*sc;
     arrow(g,x2,y,fl,0,"var(--force)",[["F",{it:1}],["E",{sub:1}]],Math.min(x2+11+fl+3,360),Math.max(y-10,14),"start");

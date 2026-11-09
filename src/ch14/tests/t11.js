@@ -73,7 +73,7 @@ const round2 = x => x === 0 ? 0 : 0.5 * Math.pow(10, Math.floor(Math.log10(Math.
   const exOK2 = ex.cells[2][3].includes('8.0');
   const exOK3 = ex.cells[3][3].includes('3.2');
   if (!(exOK && exOK2 && exOK3)) { fail++; console.log('✗ Ex. 1.2', JSON.stringify(ex.cells)); }
-  else console.log('✓ Ex. 1.2 ตรงกับชีท:', ex.cells[1][3], '|', ex.cells[2][3], '| รวม', ex.cells[3][3]);
+  else console.log('✓ Ex. 1.2 ตรงกับชีต:', ex.cells[1][3], '|', ex.cells[2][3], '| รวม', ex.cells[3][3]);
 
   // ยังไม่กดถู ต้องไม่มีประจุ
   const pre = await p.evaluate(() => {

@@ -85,18 +85,18 @@ for ch in chapters:
     write(os.path.join(ROOT, ch['chapter'], 'index.html'),
           HEAD + f'<title>บท {ch["chapter"]} {html.escape(ch["title"])} · Daisy Physics แบบจำลอง</title>\n' + FONT + STYLE +
           f'</head>\n<body><main>\n<a class="back" href="../">← ทุกบท</a>\n<h1>บท {ch["chapter"]} {html.escape(ch["title"])}</h1>\n'
-          f'<p>{html.escape(ch.get("level", ""))} · แบบจำลอง {len(ch["sims"])} อัน เรียงตามหัวข้อในชีท</p>\n'
+          f'<p>{html.escape(ch.get("level", ""))} · แบบจำลอง {len(ch["sims"])} อัน เรียงตามหัวข้อในชีต</p>\n'
           f'<nav class="jump">{jump}</nav>\n{body}</main></body>\n</html>\n')
 
 cards = ''.join(f'<a class="card" href="{ch["chapter"]}/"><b>บท {ch["chapter"]} {html.escape(ch["title"])}</b>'
                 f'<span>{html.escape(ch.get("level", ""))} · แบบจำลอง {len(ch["sims"])} อัน</span></a>\n' for ch in chapters)
 write(os.path.join(ROOT, 'index.html'),
       HEAD + '<title>Daisy Physics แบบจำลอง</title>\n' + FONT + STYLE + '</head>\n<body><main>\n<h1>Daisy Physics แบบจำลอง</h1>\n'
-      '<p>แบบจำลองประกอบชีทเรียนฟิสิกส์ เลือกบท หรือสแกน QR code ในชีทเพื่อเปิดแบบจำลองนั้นโดยตรง</p>\n'
+      '<p>แบบจำลองประกอบชีตเรียนฟิสิกส์ เลือกบท หรือสแกน QR code ในชีตเพื่อเปิดแบบจำลองนั้นโดยตรง</p>\n'
       f'<div class="cards">\n{cards}</div>\n</main></body>\n</html>\n')
 open(os.path.join(ROOT, '.nojekyll'), 'w').close()
-write(os.path.join(ROOT, 'README.md'), '# Daisy Physics แบบจำลอง\n\nแบบจำลองประกอบชีท Daisy Physics เผยแพร่ที่ https://mairua54.github.io/\n\n'
+write(os.path.join(ROOT, 'README.md'), '# Daisy Physics แบบจำลอง\n\nแบบจำลองประกอบชีต Daisy Physics เผยแพร่ที่ https://mairua54.github.io/\n\n'
       '- ต้นฉบับและวิธีทำงานอยู่ใน `src/` (อ่าน `src/README.md` ก่อนแก้อะไร)\n'
       '- `index.html`, `<บท>/`, `sims/`, `q/` สร้างจาก `src/tools/build_site.py` ห้ามแก้ด้วยมือ\n'
-      '- `q/<รหัส>/` คือลิงก์สั้นที่พิมพ์ใต้ QR code ในชีท ห้ามลบหรือเปลี่ยนชื่อ เพราะ QR ที่พิมพ์แล้วแก้ไม่ได้\n')
+      '- `q/<รหัส>/` คือลิงก์สั้นที่พิมพ์ใต้ QR code ในชีต ห้ามลบหรือเปลี่ยนชื่อ เพราะ QR ที่พิมพ์แล้วแก้ไม่ได้\n')
 print('chapters:', [c['chapter'] for c in chapters], ' sims:', len(ids))

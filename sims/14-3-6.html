@@ -113,7 +113,7 @@ summary{padding:10px 0;min-height:44px;box-sizing:border-box}
   <section class="card" aria-labelledby="h-f">
     <h2 id="h-f">ทรงกลมและศักย์</h2>
     <svg id="f" viewBox="0 0 380 344" role="img" aria-label="ทรงกลมตัวนำสองลูก ลวดเชื่อม และแท่งศักย์ของแต่ละลูก"></svg>
-    <p class="cap">เครื่องหมาย + และ − รอบผิวแทนประจุ ลูกละ 1 ตัวต่อ 1 nC ลูกศรสีม่วงคือสนามไฟฟ้าที่ผิว ความยาวเทียบกันได้ระหว่างสองลูกในภาพเดียวกัน ด้านล่างคือแท่งศักย์ของแต่ละลูก แท่งที่อยู่ใต้เส้นมีศักย์ติดลบ</p>
+    <p class="cap">เครื่องหมาย + และ − รอบผิวแทนประจุ ลูกละ 1 ตัวต่อ 1 nC ลูกศรสีม่วงคือสนามไฟฟ้าที่ผิว ความยาวเทียบกันได้ระหว่างสองลูกในภาพเดียวกัน (ลูกศรที่สั้นมากวาดด้วยความยาวขั้นต่ำเพื่อให้ยังเห็นทิศ) ด้านล่างคือแท่งศักย์ของแต่ละลูก แท่งที่อยู่ใต้เส้นมีศักย์ติดลบ</p>
   </section>
   <section class="card" aria-labelledby="h-ctl">
     <h2 id="h-ctl">ปรับค่า</h2>
@@ -304,7 +304,7 @@ function sphere(cx,R,Q,lab,Eabs,Emax,outer){
     el("circle",{cx:x,cy:y,r:4.6,fill:Q>0?"var(--pos)":"var(--elec)",stroke:"var(--card)","stroke-width":1},G);
     el("path",{d:Q>0?`M${x-2.6},${y} h5.2 M${x},${y-2.6} v5.2`:`M${x-2.6},${y} h5.2`,stroke:"#fff","stroke-width":1.5},G); }
   // field at the surface: outward for +, inward for −, at three points away from the wire
-  if(Eabs>0&&Emax>0){ const L=8+22*Eabs/Emax, sg=Q>0?1:-1;
+  if(Eabs>0&&Emax>0){ const L=Math.max(6,30*Eabs/Emax), sg=Q>0?1:-1;
     for(const a of [-Math.PI/2,outer,Math.PI/2]){ const ux=Math.cos(a), uy=Math.sin(a), r0=r+7, r1_=r+7+L, [s,e]=sg>0?[r0,r1_]:[r1_,r0];
       const x1=cx+ux*s, y1=CY+uy*s, xe=cx+ux*(e-sg*5), ye=CY+uy*(e-sg*5);
       el("line",{x1,y1,x2:xe,y2:ye,stroke:"var(--efield)","stroke-width":2.4},G);

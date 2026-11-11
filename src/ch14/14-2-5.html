@@ -30,7 +30,7 @@
   <section class="card" aria-labelledby="h-f">
     <h2 id="h-f">ทางเดินของอนุภาค</h2>
     <svg id="f" viewBox="0 0 380 230" role="img" aria-label="ทางเดินของอนุภาคระหว่างแผ่นโลหะคู่ขนาน"></svg>
-    <p class="cap">แผ่นยาว <i class="m">L</i> = 4.0 cm ห่างกัน 2.0 cm ตาม Ex. 2.8 ลูกศรสีม่วงคือสนามไฟฟ้า <i class="m">E</i> ลูกศรสีดำคือความเร็ว เส้นประหลังพ้นแผ่นคือทางเดินต่อไปซึ่งเป็นเส้นตรง เพราะนอกแผ่นถือว่าไม่มีสนาม</p>
+    <p class="cap">แผ่นยาว <i class="m">L</i> = 4.0 cm ห่างกัน 2.0 cm ตาม Ex. 2.8 ลูกศรสีเทาคือเส้นสนามไฟฟ้า <i class="m">E</i> ลูกศรสีดำคือความเร็ว เส้นประหลังพ้นแผ่นคือทางเดินต่อไปซึ่งเป็นเส้นตรง เพราะนอกแผ่นถือว่าไม่มีสนาม</p>
     <div class="btns" style="margin-top:8px"><button class="btn" id="b-fire">ยิงอีกครั้ง</button></div>
   </section>
   <section class="card" aria-labelledby="h-ctl">
@@ -126,9 +126,9 @@ function draw(v,frac){
       txt(G,x,top-10,topPos?"+":"−",{"text-anchor":"middle","font-size":14,"font-weight":700,fill:topPos?"var(--pos)":"var(--elec)"});
       txt(G,x,bot+20,topPos?"−":"+",{"text-anchor":"middle","font-size":14,"font-weight":700,fill:topPos?"var(--elec)":"var(--pos)"}); }
     for(const x of [110,170,230]){ const y0=st.down?YM-24:YM+24, y1=st.down?YM+24:YM-24;
-      el("line",{x1:x,y1:y0,x2:x,y2:y1-(st.down?5:-5),stroke:"var(--efield)","stroke-width":1.6,"stroke-opacity":0.7},G);
-      DP.arrowHead(G,x,y1-(st.down?5:-5),st.down?90:-90,"var(--efield)",5); }
-    txt(G,250,YM+(st.down?30:-22),[["E",{it:1}]],{"font-size":15,fill:"var(--efield)"});
+      el("line",{x1:x,y1:y0,x2:x,y2:y1-(st.down?5:-5),stroke:"var(--fline)","stroke-width":1.6,"stroke-opacity":0.7},G);
+      DP.arrowHead(G,x,y1-(st.down?5:-5),st.down?90:-90,"var(--fline)",5); }
+    txt(G,250,YM+(st.down?30:-22),[["E",{it:1}]],{"font-size":15,fill:"var(--fline)"});
   }
   // dimensions
   el("line",{x1:X0,y1:bot+32,x2:X1,y2:bot+32,stroke:"var(--helper)","stroke-width":1},G);

@@ -332,7 +332,7 @@ function update(){
   const M=model();
   draw();
   $("nTxt").textContent=fmt(NS[st.ni],2,{plain:1});
-  $("q0Txt").textContent=uTxt(st.q0)+(st.q0?" ("+qTxt(st.q0)+")":"");
+  $("q0Txt").innerHTML=uTxt(st.q0)+(st.q0?" ("+qTxt(st.q0)+")":"");
   $("tbl").innerHTML=
     "<tr><th>วัตถุ</th><th>ลำดับ</th><th>อิเล็กตรอน</th><th>ประจุ</th></tr>"+
     [["ก "+nameA(),M.ra,M.dir>0?-M.moved:M.moved,M.qa],
